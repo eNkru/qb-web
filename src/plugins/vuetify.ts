@@ -18,7 +18,7 @@ switch (locale) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { default: translation } = require('vuetify/src/locale/' + locale);
+const { default: translation } = require('vuetify/lib/locale/' + locale + '.js');
 
 export default new Vuetify({
   lang: {

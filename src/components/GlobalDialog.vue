@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, watch } from '@vue/composition-api';
+import { computed, ref, watch } from 'vue';
 
 import { tr } from '@/locale';
 import { DialogType, DialogConfig } from '@/store/types';

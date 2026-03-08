@@ -10,6 +10,8 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
+    "skipLibCheck": true,
+    "useUnknownInCatchVariables": false,
     "baseUrl": ".",
     "types": [
       "webpack-env",

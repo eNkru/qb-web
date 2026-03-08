@@ -210,7 +210,7 @@ import { Watch } from 'vue-property-decorator';
 import { Preferences, Category } from '../types';
 import { AddFormState } from '@/store/types';
 
-/* eslint-disable @typescript-eslint/camelcase */
+/* eslint-disable camelcase */
 const defaultParams = {
   urls: '',
   category: '',
@@ -222,7 +222,7 @@ const defaultParams = {
   firstLastPiecePrio: false,
   autoTMM: false,
 };
-/* eslint-enable @typescript-eslint/camelcase */
+/* eslint-enable camelcase */
 
 @Component({
   computed: {
@@ -292,7 +292,7 @@ export default class AddForm extends Vue {
 
   created() {
     defaultParams.paused = this.prefs.start_paused_enabled;
-    /* eslint-disable-next-line @typescript-eslint/camelcase */
+    /* eslint-disable-next-line camelcase */
     defaultParams.root_path = this.prefs.create_subfolder_enabled;
     defaultParams.savepath = this.prefs.save_path;
     defaultParams.autoTMM = this.prefs.auto_tmm_enabled;

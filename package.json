@@ -11,25 +11,24 @@
   "dependencies": {
     "@mdi/font": "^5.0.45",
     "@types/node-polyglot": "^0.4.34",
-    "@vue/composition-api": "^1.0.5",
-    "axios": "^0.21.1",
+    "axios": "^0.27.2",
     "core-js": "^3.6.5",
     "dayjs": "^1.8.23",
     "debug": "^4.1.1",
     "lodash": "^4.17.21",
     "node-polyglot": "^2.4.0",
     "roboto-fontface": "*",
-    "vue": "^2.6.11",
+    "vue": "^2.7.16",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^9.1.2",
-    "vue-router": "^3.2.0",
-    "vuetify": "^2.5.8",
-    "vuex": "^3.4.0"
+    "vue-router": "^3.6.5",
+    "vuetify": "^2.7.2",
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
     "@types/debug": "^4.1.5",
-    "@types/jest": "^25.1.4",
-    "@types/lodash": "^4.14.149",
+    "@types/jest": "^27.5.2",
+    "@types/lodash": "4.14.149",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.8",
@@ -52,8 +51,8 @@
     "ts-jest": "^27.0.4",
     "typescript": "~4.5.5",
     "vue-cli-plugin-vuetify": "^2.0.5",
-    "vue-template-compiler": "^2.6.11",
-    "vuetify-loader": "^1.4.3"
+    "vue-template-compiler": "^2.7.16",
+    "vuetify-loader": "^1.9.2"
   },
   "gitHooks": {
     "pre-commit": "lint-staged"

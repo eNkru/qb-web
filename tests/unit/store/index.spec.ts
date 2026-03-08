@@ -50,7 +50,7 @@ describe('all torrents getter', () => {
       mainData: {
         categories: {},
         tags: [""],
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line camelcase
         server_state: undefined as any,
         torrents: {
           a: mockBaseTorrent({}),

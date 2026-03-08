@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/camelcase */
+/* eslint-disable camelcase */
 export default {
   lang: 'Türkçe',
   auto: 'Otomatik',

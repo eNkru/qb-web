@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/camelcase */
+/* eslint-disable camelcase */
 import Axios, { AxiosInstance, AxiosPromise, AxiosResponse } from 'axios';
 import {
   RssNode,

@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import './plugins/i18n';
-import './plugins/composition-api';
 import vuetify from './plugins/vuetify';
 
 import store from './store';

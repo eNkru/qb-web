@@ -12,7 +12,7 @@
         :prepend-icon="item.model ? item.icon : item['icon-alt']"
         append-icon=""
       >
-        <template v-slot:activator>
+        <template #activator>
           <v-list-item-content>
             <v-list-item-title>
               {{ item.title }}
@@ -328,7 +328,7 @@ export default class Drawer extends Vue {
   async switchUi() {
     await api.switchToOldUi();
 
-    window.location.reload(true);
+    window.location.reload();
   }
 
   @Emit('input')

@@ -10,7 +10,7 @@ function registerProtocolHandler() {
   const baseUrl = location.origin + location.pathname;
 
   try {
-    navigator.registerProtocolHandler('magnet', baseUrl + '#download=%s', document.title);
+    navigator.registerProtocolHandler('magnet', baseUrl + '#download=%s');
   } catch (e) {
     log('Register protocol handler failed.', e);
   }

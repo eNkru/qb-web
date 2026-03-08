@@ -20,6 +20,8 @@ module.exports = {
 
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/ban-types': 'off',
+    'vue/multi-word-component-names': 'off',
 
     'vue/singleline-html-element-content-newline': ['warn', {
       ignores: ['pre', 'textarea', 'span', 'v-icon'],

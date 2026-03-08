@@ -1,7 +1,7 @@
 import { merge, map, groupBy, sortBy } from 'lodash';
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { computed, Ref } from '@vue/composition-api';
+import { computed, Ref } from 'vue';
 
 import { configStore } from './config';
 import { dialogStore } from './dialog';

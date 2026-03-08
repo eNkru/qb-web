@@ -4,7 +4,7 @@
     :prepend-icon="model ? group.icon : group['icon-alt']"
     class="filter-group"
   >
-    <template v-slot:activator>
+    <template #activator>
       <v-list-item-content>
         <v-list-item-title v-class:primary--text="selected !== null">
           {{ group.title }}
@@ -58,10 +58,11 @@ export default class FilterGroup extends Vue {
   @Prop()
   readonly group!: Group
 
-  model = this.group.model
+  model: boolean | null = false
   selected: string | null = null
 
   created() {
+    this.model = this.group.model;
     const s = this.$store.getters.config.filter[this.group.select];
     if (this.group.children.some(child => child.key === s)) {
       this.selected = s;
