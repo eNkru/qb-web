@@ -25,6 +25,11 @@ class Api {
   }
 
   private normalizeBaseUrl(baseUrl?: string) {
+    // Use dev-server proxy in `npm run serve` to avoid browser CORS issues.
+    if (process.env.NODE_ENV === 'development') {
+      return apiEndpoint;
+    }
+
     if (!baseUrl) {
       return apiEndpoint;
     }

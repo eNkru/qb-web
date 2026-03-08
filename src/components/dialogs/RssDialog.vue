@@ -97,7 +97,7 @@
                 dense
                 @update:active="selectNode = $event[0]"
               >
-                <template v-slot:prepend="row">
+                <template #prepend="row">
                   <v-progress-circular
                     v-if="isItemLoading(row)"
                     indeterminate
@@ -109,7 +109,7 @@
                     v-text="getRowIcon(row)"
                   />
                 </template>
-                <template v-slot:label="row">
+                <template #label="row">
                   {{ row.item.name }}
                   <template v-if="row.item.children">
                     ({{ row.item.children.length }})

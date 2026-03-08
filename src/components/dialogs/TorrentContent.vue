@@ -7,7 +7,7 @@
       selectable
       @input="selectChanged"
     >
-      <template v-slot:prepend="row">
+      <template #prepend="row">
         <v-progress-circular
           v-if="inChanging.includes(row.item.id)"
           size="24"
@@ -19,7 +19,7 @@
           v-text="getRowIcon(row)"
         />
       </template>
-      <template v-slot:append="row">
+      <template #append="row">
         <span>
           [{{ row.item.size | size }}]
         </span>
@@ -65,10 +65,6 @@ interface TreeItem {
   children?: Array<TreeItem>;
   size: number;
   progress: number;
-}
-
-interface Data {
-  files: Array<File>;
 }
 
 const FILE_KEY = '/FILE/';

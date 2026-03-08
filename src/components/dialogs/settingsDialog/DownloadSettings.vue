@@ -85,7 +85,7 @@
         />
       </preference-row>
       <preference-row i18n-key="temp_path">
-        <template v-slot:header>
+        <template #header>
           <v-checkbox
             dense
             :value="preferences.temp_path_enabled"

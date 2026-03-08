@@ -40,10 +40,10 @@
                 v-text="item.fileName"
               />
             </template>
-            <template v-slot:[`item.fileSize`]="{ item }">
+            <template #[`item.fileSize`]="{ item }">
               {{ item.fileSize | formatSize }}
             </template>
-            <template v-slot:[`item.actions`]="{ item }">
+            <template #[`item.actions`]="{ item }">
               <v-icon @click="downloadTorrent(item)">mdi-download</v-icon>
             </template>
           </v-data-table>

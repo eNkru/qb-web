@@ -56,7 +56,7 @@
           <v-icon>mdi-alert-circle</v-icon>
         </v-btn>
         <v-menu offset-y>
-          <template v-slot:activator="{ on }">
+          <template #activator="{ on }">
             <v-btn
               icon
               v-on="on"
@@ -160,7 +160,7 @@
         :footer-props="footerProps"
         :mobile-breakpoint="0"
       >
-        <template v-slot:item="row">
+        <template #item="row">
           <tr
             :key="row.item.hash"
             @dblclick.prevent="showInfo(row.item)"

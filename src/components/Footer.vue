@@ -11,7 +11,7 @@
     >
       <div v-if="!phoneLayout">
         <v-tooltip top>
-          <template v-slot:activator="{ on }">
+          <template #activator="{ on }">
             <span v-on="on">
               qBittorrent {{ app.version }}
             </span>
@@ -40,7 +40,7 @@
         v-if="!phoneLayout"
       />
       <v-tooltip top>
-        <template v-slot:activator="{ on }">
+        <template #activator="{ on }">
           <div
             class="icon-label"
             v-on="on"
@@ -93,7 +93,7 @@
       />
       <div class="icon-label">
         <v-tooltip top>
-          <template v-slot:activator="{ on }">
+          <template #activator="{ on }">
             <v-icon
               v-on="on"
               :color="info.connection_status | connectionIconColor"
@@ -123,7 +123,7 @@
           label="Alternative speed limits"
           class="mt-0 pt-0 speed-switch"
         >
-          <template v-slot:prepend>
+          <template #prepend>
             <v-icon
               v-bind="speedModeBind"
             >
@@ -135,7 +135,7 @@
           top
           v-else
         >
-          <template v-slot:activator="{ on }">
+          <template #activator="{ on }">
             <v-icon
               v-on="on"
               v-bind="speedModeBind"

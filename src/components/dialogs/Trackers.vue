@@ -5,7 +5,7 @@
     :items-per-page="-1"
     :hide-default-footer="true"
   >
-    <template v-slot:item="row">
+    <template #item="row">
       <tr>
         <td>{{ row.item.tier }}</td>
         <td>{{ row.item.url }}</td>
