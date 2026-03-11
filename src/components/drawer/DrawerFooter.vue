@@ -183,35 +183,28 @@ export default class DrawerFooter extends Vue {
 
   @Watch('currentLocale')
   async onCurrentLocaleChanged(locale: AllLocaleKey, oldValue: AllLocaleKey) {
-    console.log('[DrawerFooter] Locale changed from:', oldValue, 'to:', locale);
-    
     // Guard against undefined from v-list-item-group
     if (locale === undefined) {
-      console.log('[DrawerFooter] Ignoring undefined locale');
       return;
     }
     
     if (locale === this.oldLocale) {
-      console.log('[DrawerFooter] Locale matches oldLocale, ignoring');
       return;
     }
 
     const localeKey = locale === AUTO_KEY ? defaultLocale : locale
-    console.log('[DrawerFooter] Showing confirmation dialog for locale:', localeKey);
     const confirm = await this.asyncShowDialog({
       text: tr('dialog.switch_locale.msg', { lang: translations[localeKey].lang }),
       type: DialogType.OkCancel,
     });
 
     if (!confirm) {
-      console.log('[DrawerFooter] User cancelled, reverting to:', this.oldLocale);
       this.currentLocale = this.oldLocale;
       return;
     }
 
     // Update the old locale tracker
     this.oldLocale = locale;
-    console.log('[DrawerFooter] User confirmed, updating config and reloading');
 
     this.updateConfig({
       key: 'locale',
