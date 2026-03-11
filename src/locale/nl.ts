@@ -171,6 +171,7 @@ export default {
       rechecking: 'Hercontroleren…',
       dht_nodes: '%{smart_count} node |||| %{smart_count} nodes',
       base_url: 'Base URL',
+      font_size: 'Lettergrootte',
     },
   
     msg: {

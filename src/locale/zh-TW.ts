@@ -160,6 +160,7 @@ export default {
     reannounced: '已重新通告',
     rechecking: '重新檢查中…',
     dht_nodes: '%{smart_count} 節點',
+    font_size: '字體大小',
   },
 
   msg: {

@@ -50,6 +50,14 @@
         </v-list>
       </v-menu>
 
+      <v-btn
+        icon
+        @click="cycleFontScale"
+        :title="fontScaleTitle"
+      >
+        <v-icon>mdi-format-size</v-icon>
+      </v-btn>
+
       <v-menu>
         <template #activator="{ on }">
           <v-btn
@@ -133,6 +141,8 @@ export default class DrawerFooter extends Vue {
   showSnackBar!: (_: SnackBarConfig) => void
   updateConfig!: (_: ConfigPayload) => void
 
+  fontScales = [0.9, 1, 1.2, 1.35]
+
   get currentThemeMode() {
     return this.$store.getters.config.themeMode || AUTO_KEY;
   }
@@ -158,6 +168,15 @@ export default class DrawerFooter extends Vue {
     } else {
       return 'mdi-brightness-auto'
     }
+  }
+
+  get currentFontScale() {
+    const scale = this.$store.getters.config.fontScale;
+    return typeof scale === 'number' && scale > 0 ? scale : 1;
+  }
+
+  get fontScaleTitle() {
+    return `${tr('label.font_size')}: ${Math.round(this.currentFontScale * 100)}%`;
   }
 
   get phoneLayout() {
@@ -218,6 +237,16 @@ export default class DrawerFooter extends Vue {
     location.reload();
   }
 
+  cycleFontScale() {
+    const current = this.currentFontScale;
+    const currentIndex = this.fontScales.findIndex(scale => Math.abs(scale - current) < 0.001);
+    const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % this.fontScales.length;
+    this.updateConfig({
+      key: 'fontScale',
+      value: this.fontScales[nextIndex],
+    });
+  }
+
   @Watch('currentThemeMode')
   onThemeModeChanged(mode: ThemeModeKey | typeof AUTO_KEY) {
     // Watcher kept for potential future use
@@ -241,7 +270,19 @@ export default class DrawerFooter extends Vue {
 <style lang="scss" scoped>
 .button-bar {
   display: flex;
-  padding: 0.5em;
+  padding: 0 8px;
+  align-items: center;
+  height: 52px;
+}
+
+.button-bar :deep(.v-btn) {
+  min-width: 40px;
+  width: 40px;
+  height: 40px;
+}
+
+.button-bar :deep(.v-icon) {
+  font-size: 22px;
 }
 
 .footer {
