@@ -135,6 +135,26 @@ yarn run serve
 # Proxies /api requests to QB_WEBUI_URL (default: http://127.0.0.1:8080)
 ```
 
+**Important:** Make sure qBittorrent is running with Web UI enabled before starting the dev server.
+
+If your qBittorrent instance is on a different port or host, set the environment variable:
+```bash
+# Different port
+QB_WEBUI_URL=http://localhost:9090 yarn serve
+
+# Different host
+QB_WEBUI_URL=http://192.168.1.100:8080 yarn serve
+
+# Remote instance
+QB_WEBUI_URL=https://example.com:8080 yarn serve
+```
+
+**Troubleshooting:** If you get `ECONNREFUSED` errors, verify:
+1. qBittorrent is running
+2. Web UI is enabled (Tools → Options → Web UI)
+3. The port matches your QB_WEBUI_URL setting
+4. Firewall allows connections to qBittorrent
+
 ### Build
 ```bash
 yarn run build
