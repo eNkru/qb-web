@@ -124,10 +124,8 @@ export default class InfoDialog extends Vue {
   @PropSync('tab', String)
   tabSync!: string
 
-  torrents!: Torrent[]
-
-  created() {
-    this.torrents = this.value
+  get torrents() {
+    return (this.value || []).filter(Boolean)
   }
 
   get phoneLayout() {
