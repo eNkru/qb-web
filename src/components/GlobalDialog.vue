@@ -76,7 +76,7 @@ export default {
       const o = Object.assign({dialog: {}}, userConfig.value) as DialogConfig;
 
       if (!('width' in o.dialog)) {
-        o.dialog.width = ctx.root.$vuetify.breakpoint.smAndDown ? null : DefaultDialogWidth
+        o.dialog.width = (ctx.root && ctx.root.$vuetify && ctx.root.$vuetify.breakpoint.smAndDown) ? null : DefaultDialogWidth
       }
 
       return o
