@@ -304,6 +304,12 @@ export default class App extends Vue {
     theme.dark = this.mql.matches
   }
 
+  @Watch('config.fontScale', {immediate: true})
+  onFontScale(scale: number | null) {
+    const safeScale = typeof scale === 'number' && scale > 0 ? scale : 1;
+    document.documentElement.style.setProperty('--app-font-scale', String(safeScale));
+  }
+
   @Watch('config.darkMode')
   onDarkMode(mode: any) {
     // Migration: if darkMode is set but themeMode is not, migrate the setting (only once on load)
@@ -331,6 +337,10 @@ export default class App extends Vue {
 <style lang="scss">
 html {
   overflow-y: hidden;
+}
+
+html {
+  font-size: calc(16px * var(--app-font-scale, 1));
 }
 
 // Grey theme background colors

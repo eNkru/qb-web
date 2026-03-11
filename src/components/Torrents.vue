@@ -655,7 +655,7 @@ export default class Torrents extends Vue {
     }
 
     td {
-      font-size: 13px;
+      font-size: 0.8125rem;
       height: auto;
       border-bottom: none !important;
 

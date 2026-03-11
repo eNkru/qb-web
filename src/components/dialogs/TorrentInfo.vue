@@ -206,7 +206,7 @@ export default class TorrentInfo extends BaseTorrentInfo {
 
 <style lang="scss" scoped>
 .torrent-info {
-  font-size: 12px;
+  font-size: 0.875rem;
 
   .label {
     text-align: right;

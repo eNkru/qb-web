@@ -159,6 +159,7 @@ export default {
     rechecking: 'Перепроверка…',
     dht_nodes: '%{smart_count} узел |||| Узлов: %{smart_count}',
     base_url: 'Базовый URL',
+    font_size: 'Размер шрифта',
   },
 
   msg: {

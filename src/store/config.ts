@@ -18,6 +18,7 @@ export interface Config {
   darkMode: string | null;
   themeMode: 'light' | 'dark' | 'grey' | null;
   displaySpeedInTitle: boolean | null;
+  fontScale: number | null;
 }
 
 const defaultConfig = {
@@ -35,6 +36,7 @@ const defaultConfig = {
   darkMode: null,
   themeMode: null,
   displaySpeedInTitle: false,
+  fontScale: 1,
 };
 
 function saveConfig(obj: any) {

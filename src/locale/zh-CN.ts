@@ -171,6 +171,7 @@ export default {
     rechecking: '重新检查中…',
     dht_nodes: '%{smart_count} 节点',
     base_url: 'Base URL',
+    font_size: '字体大小',
   },
 
   msg: {
