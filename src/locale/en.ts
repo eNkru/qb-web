@@ -49,6 +49,7 @@ export default {
   logs: 'Logs',
   light: 'Light',
   dark: 'Dark',
+  grey: 'Grey',
 
   all: 'All',
   category: 'Category |||| Categories',

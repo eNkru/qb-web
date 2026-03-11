@@ -48,6 +48,7 @@ export default {
   logs: 'Логи',
   light: 'Светлый',
   dark: 'Тёмный',
+  grey: 'Серый',
 
   all: 'Все',
   category: 'Категория |||| Категории',

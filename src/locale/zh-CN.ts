@@ -49,6 +49,7 @@ export default {
   logs: '日志',
   light: '亮色',
   dark: '暗色',
+  grey: '灰色',
 
   all: '全部',
   category: '分类',

@@ -16,6 +16,7 @@ export interface Config {
   };
   locale: string | null;
   darkMode: string | null;
+  themeMode: 'light' | 'dark' | 'grey' | null;
   displaySpeedInTitle: boolean | null;
 }
 
@@ -32,6 +33,7 @@ const defaultConfig = {
   },
   locale: null,
   darkMode: null,
+  themeMode: null,
   displaySpeedInTitle: false,
 };
 

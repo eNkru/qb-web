@@ -48,6 +48,7 @@ export default {
   logs: 'Günlükler',
   light: 'Aydınlık',
   dark: 'Karanlık',
+  grey: 'Gri',
 
   all: 'Tümü',
   category: 'Kategori |||| Kategoriler',

@@ -56,17 +56,17 @@
             icon
             v-on="on"
           >
-            <v-icon v-text="darkModeIcon" />
+            <v-icon v-text="themeModeIcon" />
           </v-btn>
         </template>
 
         <v-list>
           <v-list-item-group
-            v-model="currentDarkMode"
+            v-model="currentThemeMode"
             color="primary"
           >
             <v-list-item
-              v-for="item in darkModes"
+              v-for="item in themeModes"
               :key="item[0]"
               :value="item[0]"
             >
@@ -100,7 +100,7 @@ import AppFooter from '@/components/Footer.vue';
 const AUTO_KEY = 'auto';
 
 type AllLocaleKey = NonNullable<LocaleKey> | typeof AUTO_KEY;
-type DarkModeKey = true | false | null;
+type ThemeModeKey = 'light' | 'dark' | 'grey' | null;
 
 @Component({
   components: {
@@ -119,13 +119,13 @@ type DarkModeKey = true | false | null;
 export default class DrawerFooter extends Vue {
   locales = this.buildLocales()
   currentLocale = this.$store.getters.config.locale || AUTO_KEY
-  currentDarkMode = this.$store.getters.config.darkMode || AUTO_KEY
   oldLocale = this.currentLocale
   showInfo = false
 
-  darkModes = [
-    [false, tr('light')],
-    [true, tr('dark')],
+  themeModes = [
+    ['light', tr('light')],
+    ['dark', tr('dark')],
+    ['grey', tr('grey')],
     [AUTO_KEY, tr('auto')],
   ]
 
@@ -133,11 +133,28 @@ export default class DrawerFooter extends Vue {
   showSnackBar!: (_: SnackBarConfig) => void
   updateConfig!: (_: ConfigPayload) => void
 
-  get darkModeIcon() {
-    if (this.currentDarkMode == true) {
+  get currentThemeMode() {
+    return this.$store.getters.config.themeMode || AUTO_KEY;
+  }
+
+  set currentThemeMode(value: ThemeModeKey | typeof AUTO_KEY) {
+    // Guard against undefined values from v-list-item-group
+    if (value === undefined) {
+      return;
+    }
+    this.updateConfig({
+      key: 'themeMode',
+      value: value === AUTO_KEY ? null : value,
+    });
+  }
+
+  get themeModeIcon() {
+    if (this.currentThemeMode === 'dark') {
       return 'mdi-brightness-4'
-    } else if (this.currentDarkMode == false) {
+    } else if (this.currentThemeMode === 'light') {
       return 'mdi-brightness-7'
+    } else if (this.currentThemeMode === 'grey') {
+      return 'mdi-brightness-6'
     } else {
       return 'mdi-brightness-auto'
     }
@@ -193,12 +210,9 @@ export default class DrawerFooter extends Vue {
     location.reload();
   }
 
-  @Watch('currentDarkMode')
-  onDarkModeChanged(mode: DarkModeKey | typeof AUTO_KEY) {
-    this.updateConfig({
-      key: 'darkMode',
-      value: mode == AUTO_KEY ? null : mode,
-    });
+  @Watch('currentThemeMode')
+  onThemeModeChanged(mode: ThemeModeKey | typeof AUTO_KEY) {
+    // Watcher kept for potential future use
   }
 
   async triggerApplicationShutdown() {

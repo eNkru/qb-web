@@ -241,24 +241,83 @@ export default class App extends Vue {
     }
   }
 
-  @Watch('config.darkMode', {immediate: true})
-  onDarkMode(mode: any) {
+  @Watch('config.themeMode', {immediate: true})
+  onThemeMode(mode: 'light' | 'dark' | 'grey' | null) {
     const { theme } = this.$vuetify;
 
+    // If user explicitly chose a theme
     if (mode != null) {
       if (this.mql) {
         this.mql.removeListener(null)
         this.mql = undefined
       }
-      theme.dark = mode
-      return
+      
+      // Apply grey theme (soft light mode)
+      if (mode === 'grey') {
+        theme.dark = false;
+        
+        // Apply darker grey color scheme
+        theme.themes.light.primary = '#6b8fb5';
+        theme.themes.light.secondary = '#757575';
+        theme.themes.light.accent = '#90b4d4';
+        theme.themes.light.error = '#d32f2f';
+        theme.themes.light.info = '#5c9fd6';
+        theme.themes.light.success = '#66bb6a';
+        theme.themes.light.warning = '#ffa726';
+        
+        // Add grey theme class
+        this.$nextTick(() => {
+          const app = (this.$refs.app as any)?.$el;
+          if (app) {
+            app.classList.add('grey-theme');
+          }
+        });
+      } else {
+        // Reset to default colors for light/dark
+        theme.themes.light.primary = '#1976d2';
+        theme.themes.light.secondary = '#424242';
+        theme.themes.light.accent = '#82B1FF';
+        theme.themes.light.error = '#FF5252';
+        theme.themes.light.info = '#2196F3';
+        theme.themes.light.success = '#4CAF50';
+        theme.themes.light.warning = '#FFC107';
+        
+        // Remove grey theme class
+        this.$nextTick(() => {
+          const app = (this.$refs.app as any)?.$el;
+          if (app) {
+            app.classList.remove('grey-theme');
+          }
+        });
+        
+        // Set dark mode based on selection
+        theme.dark = (mode === 'dark');
+      }
+      return;
     }
 
+    // If mode is null (auto), follow system preference
     this.mql = window.matchMedia('(prefers-color-scheme: dark)');
     this.mql.addListener((e: MediaQueryListEvent) => {
       theme.dark = e.matches
     })
     theme.dark = this.mql.matches
+  }
+
+  @Watch('config.darkMode')
+  onDarkMode(mode: any) {
+    // Migration: if darkMode is set but themeMode is not, migrate the setting (only once on load)
+    if (mode != null && this.config.themeMode == null) {
+      this.$store.commit('updateConfig', {
+        key: 'themeMode',
+        value: mode ? 'dark' : 'light',
+      });
+      // Clear the old darkMode setting
+      this.$store.commit('updateConfig', {
+        key: 'darkMode',
+        value: null,
+      });
+    }
   }
 }
 </script>
@@ -272,5 +331,74 @@ export default class App extends Vue {
 <style lang="scss">
 html {
   overflow-y: hidden;
+}
+
+// Grey theme background colors
+.v-application.theme--light {
+  &.grey-theme {
+    background-color: #e0e0e0 !important;
+    
+    .v-main {
+      background-color: #e0e0e0 !important;
+    }
+    
+    .v-card {
+      background-color: #ececec !important;
+    }
+    
+    .v-sheet {
+      background-color: #ececec !important;
+    }
+    
+    .v-navigation-drawer {
+      background-color: #ececec !important;
+    }
+    
+    .v-toolbar {
+      background-color: #ececec !important;
+    }
+    
+    .v-data-table {
+      background-color: #ececec !important;
+      
+      tbody tr {
+        background-color: #ececec !important;
+        
+        &:hover {
+          background-color: #d5d5d5 !important;
+        }
+      }
+      
+      tbody tr:nth-child(2n) {
+        background-color: #e5e5e5 !important;
+      }
+      
+      thead {
+        background-color: #d8d8d8 !important;
+        
+        th {
+          background-color: #d8d8d8 !important;
+        }
+      }
+      
+      .v-data-table-header {
+        background-color: #d8d8d8 !important;
+        
+        th {
+          background-color: #d8d8d8 !important;
+        }
+      }
+    }
+    
+    .v-list {
+      background-color: #ececec !important;
+    }
+    
+    .v-list-item {
+      &:hover {
+        background-color: #d5d5d5 !important;
+      }
+    }
+  }
 }
 </style>
