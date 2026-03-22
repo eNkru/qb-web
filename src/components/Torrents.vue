@@ -183,7 +183,29 @@
                 {{ row.item.name }}
               </span>
             </td>
-            <td>{{ row.item.tracker | trackerSite }}</td>
+            <td>
+              <v-tooltip bottom>
+                <template #activator="{ on, attrs }">
+                  <v-chip
+                    v-bind="attrs"
+                    small
+                    label
+                    outlined
+                    class="site-chip"
+                    v-on="on"
+                  >
+                    <img
+                      v-if="getTrackerSiteIcon(row.item.tracker)"
+                      :src="getTrackerSiteIcon(row.item.tracker)"
+                      :alt="getTrackerSiteName(row.item.tracker)"
+                      class="site-chip__icon"
+                    >
+                    {{ getTrackerSiteName(row.item.tracker) }}
+                  </v-chip>
+                </template>
+                <span>{{ getTrackerHostname(row.item.tracker) || row.item.tracker }}</span>
+              </v-tooltip>
+            </td>
             <td>{{ row.item.size | formatSize }}</td>
             <td>
               <v-progress-linear
@@ -248,10 +270,31 @@ import InfoDialog from './dialogs/InfoDialog.vue'
 import api from '../Api'
 import { formatSize } from '@/filters'
 import { getSiteAbbreviation } from '@/utils/siteMap'
+import SiteMap from '@/sites'
 import { DialogType, TorrentFilter, ConfigPayload, DialogConfig, SnackBarConfig } from '@/store/types'
 import Component from 'vue-class-component'
 import { Torrent, Category, Tag } from '@/types'
 import { Watch } from 'vue-property-decorator'
+
+function getTopDomain(host: string) {
+  const parts = host.split('.');
+  if (parts.length > 2) {
+    return parts.slice(-2).join('.');
+  }
+  return host;
+}
+
+function getTrackerHostname(tracker: string) {
+  if (!tracker) {
+    return '';
+  }
+
+  try {
+    return new URL(tracker).hostname;
+  } catch {
+    return '';
+  }
+}
 
 function getStateInfo(state: string) {
   let icon;
@@ -490,6 +533,29 @@ export default class Torrents extends Vue {
       === Math.min(this.torrents.length, this.pageOptions.rowsPerPage);
   }
 
+  getTrackerSiteName(tracker: string) {
+    const hostname = getTrackerHostname(tracker);
+    if (!hostname) {
+      return tracker;
+    }
+
+    return getSiteAbbreviation(hostname);
+  }
+
+  getTrackerSiteIcon(tracker: string) {
+    const hostname = getTrackerHostname(tracker);
+    if (!hostname) {
+      return undefined;
+    }
+
+    const domain = getTopDomain(hostname);
+    return (SiteMap[hostname] || SiteMap[domain])?.icon;
+  }
+
+  getTrackerHostname(tracker: string) {
+    return getTrackerHostname(tracker);
+  }
+
   getProgressColorClass(progress: number) {
     const color = (progress >= 0.5 || (this as any).$vuetify.theme.dark)
       ? 'white' : 'black';
@@ -721,5 +787,16 @@ export default class Torrents extends Vue {
 .icon-label {
   display: flex;
   align-items: center;
+}
+
+.site-chip {
+  max-width: 100%;
+}
+
+.site-chip__icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  margin-right: 6px;
 }
 </style>
