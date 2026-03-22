@@ -725,6 +725,11 @@ export default class Torrents extends Vue {
       padding-left: 4px;
     }
 
+    ::v-deep .v-data-table__wrapper table {
+      border-collapse: separate;
+      border-spacing: 0 6px;
+    }
+
     @include dark-mode-value(
       map-deep-get($material-light, 'table', 'hover'),
       map-get($material-dark-elevation-colors, '4'),
@@ -738,6 +743,9 @@ export default class Torrents extends Vue {
       font-size: 0.8125rem;
       height: auto;
       border-bottom: none !important;
+      padding-top: 8px !important;
+      padding-bottom: 8px !important;
+      background-color: inherit;
 
       .v-input--checkbox {
         margin-top: 0;
