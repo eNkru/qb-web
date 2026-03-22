@@ -12,6 +12,10 @@ const sites: {[key: string]: SiteInfo} = {
     name: 'M-Team',
     icon: getSiteIcon('m-team'),
   },
+  'audiences.me': {
+    name: 'AudienceS',
+    icon: getSiteIcon('audiences'),
+  },
   'keepfrds.com': {
     name: 'PT@KEEPFRDS',
     icon: getSiteIcon('keepfrds'),
@@ -30,7 +34,7 @@ const sites: {[key: string]: SiteInfo} = {
   },
   'hdhome.org': {
     name: 'HDHome',
-    icon: getSiteIcon('nexusphp'),
+    icon: getSiteIcon('hdhome'),
   },
   'dmhy.org': {
     name: 'U2',
@@ -46,7 +50,7 @@ const sites: {[key: string]: SiteInfo} = {
   },
   'oshen.win': {
     name: 'OshenPT',
-    icon: getSiteIcon('nexusphp'),
+    icon: getSiteIcon('oshen'),
   },
   'soulvoice.club': {
     name: '铃音Club',
@@ -92,7 +96,7 @@ const sites: {[key: string]: SiteInfo} = {
   },
   'hdfans.org': {
     name: 'HDFans',
-    icon: getSiteIcon('nexusphp'),
+    icon: getSiteIcon('hdfans'),
   },
   'hdatmos.club': {
     name: 'HDAtmos',
@@ -124,11 +128,15 @@ const sites: {[key: string]: SiteInfo} = {
   },
   'nicept.net': {
     name: 'NicePT',
-    icon: getSiteIcon('nexusphp'),
+    icon: getSiteIcon('nicept'),
   },
   '2xfree.org': {
     name: '2xfree',
     icon: getSiteIcon('2xfree'),
+  },
+  'animez.to': {
+    name: 'AnimeZ',
+    icon: getSiteIcon('animez'),
   },
 };
 
