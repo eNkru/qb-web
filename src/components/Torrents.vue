@@ -183,6 +183,7 @@
                 {{ row.item.name }}
               </span>
             </td>
+            <td>{{ row.item.tracker | trackerSite }}</td>
             <td>{{ row.item.size | formatSize }}</td>
             <td>
               <v-progress-linear
@@ -246,6 +247,7 @@ import EditTrackerDialog from './dialogs/EditTrackerDialog.vue'
 import InfoDialog from './dialogs/InfoDialog.vue'
 import api from '../Api'
 import { formatSize } from '@/filters'
+import { getSiteAbbreviation } from '@/utils/siteMap'
 import { DialogType, TorrentFilter, ConfigPayload, DialogConfig, SnackBarConfig } from '@/store/types'
 import Component from 'vue-class-component'
 import { Torrent, Category, Tag } from '@/types'
@@ -361,6 +363,17 @@ function getStateInfo(state: string) {
 
       return `${formatSize(speed)}/s`;
     },
+    trackerSite(tracker: string) {
+      if (!tracker) {
+        return '';
+      }
+      try {
+        const hostname = new URL(tracker).hostname;
+        return getSiteAbbreviation(hostname);
+      } catch {
+        return tracker;
+      }
+    },
     stateIcon(state: string) {
       const item = getStateInfo(state);
       return `mdi-${item.icon}`;
@@ -390,6 +403,7 @@ function getStateInfo(state: string) {
 export default class Torrents extends Vue {
   readonly headers = [
     { text: tr('name'), value: 'name' },
+    { text: tr('sites'), value: 'tracker' },
     { text: tr('size'), value: 'size' },
     { text: tr('progress'), value: 'progress' },
     { text: tr('status'), value: 'state' },

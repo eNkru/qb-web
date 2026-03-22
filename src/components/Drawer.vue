@@ -71,6 +71,7 @@ import api from '../Api';
 import { formatSize } from '@/filters';
 import { StateType } from '@/consts';
 import SiteMap from '@/sites'
+import { getSiteAbbreviation } from '@/utils/siteMap'
 import Component from 'vue-class-component';
 import { Prop, Emit } from 'vue-property-decorator';
 
@@ -248,8 +249,9 @@ export default class Drawer extends Vue {
     return sortBy(Object.entries(this.torrentGroupBySite).map(([key, value]) => {
       const size = formatSize(sumBy(value, 'size'));
       const domain = getTopDomain(key);
-      const site = SiteMap[domain];
-      const title = `${site ? site.name : (key || tr('others'))} (${value.length})`;
+      const site = SiteMap[key] || SiteMap[domain];
+      const siteName = key ? getSiteAbbreviation(key) : tr('others');
+      const title = `${siteName} (${value.length})`;
       const icon = site?.icon ?? 'mdi-server';
       const append = `[${size}]`;
       return {
