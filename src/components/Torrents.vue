@@ -195,12 +195,18 @@
         <template #item="row">
           <tr
             :key="row.item.hash"
+            :class="{
+              'torrent-row': true,
+              'torrent-row--selected': row.isSelected,
+            }"
+            @click="toggleRowSelection(row)"
             @dblclick.prevent="showInfo(row.item)"
           >
             <td>
               <v-checkbox
                 :value="row.isSelected"
                 @change="row.select"
+                @click.stop=""
                 hide-details
               />
             </td>
@@ -604,6 +610,10 @@ export default class Torrents extends Vue {
     return priority;
   }
 
+  toggleRowSelection(row: any) {
+    row.select(!row.isSelected);
+  }
+
   created() {
     this.pageOptions = this.$store.getters.config.pageOptions;
   }
@@ -771,6 +781,18 @@ export default class Torrents extends Vue {
 
     ::v-deep .v-data-table__wrapper {
       flex: 1;
+    }
+
+    ::v-deep .torrent-row {
+      cursor: pointer;
+    }
+
+    ::v-deep .torrent-row--selected > td {
+      background-color: rgba(25, 118, 210, 0.12);
+    }
+
+    ::v-deep .torrent-row--selected:hover > td {
+      background-color: rgba(25, 118, 210, 0.18);
     }
 
     ::v-deep thead th, td {
