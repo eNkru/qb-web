@@ -28,6 +28,13 @@ export default {
   trigger_application_shutdown: '退出qBittorrent',
   reannounce: '重新通告',
   recheck: '重新檢查',
+  priority: {
+    column: '優先級',
+    top: '最高優先級',
+    increase: '提高優先級',
+    decrease: '降低優先級',
+    bottom: '最低優先級',
+  },
 
   username: '使用者名稱',
   password: '密碼',
@@ -134,6 +141,7 @@ export default {
     set_category: '設定分類',
     edit_tracker: '編輯 Tracker',
     set_location: '修改檔案位置',
+    set_priority: '修改下載優先級',
     recheck_torrents: '重新檢查種子',
   },
 

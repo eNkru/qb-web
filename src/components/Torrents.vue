@@ -97,6 +97,38 @@
             </v-list-item>
           </v-list>
         </v-menu>
+        <v-btn
+          icon
+          @click="maximizeTorrentPriority"
+          :title="$t('priority.top')"
+          :disabled="!hasSelected"
+        >
+          <v-icon>mdi-chevron-double-up</v-icon>
+        </v-btn>
+        <v-btn
+          icon
+          @click="increaseTorrentPriority"
+          :title="$t('priority.increase')"
+          :disabled="!hasSelected"
+        >
+          <v-icon>mdi-chevron-up</v-icon>
+        </v-btn>
+        <v-btn
+          icon
+          @click="decreaseTorrentPriority"
+          :title="$t('priority.decrease')"
+          :disabled="!hasSelected"
+        >
+          <v-icon>mdi-chevron-down</v-icon>
+        </v-btn>
+        <v-btn
+          icon
+          @click="minimizeTorrentPriority"
+          :title="$t('priority.bottom')"
+          :disabled="!hasSelected"
+        >
+          <v-icon>mdi-chevron-double-down</v-icon>
+        </v-btn>
         <template v-if="!$vuetify.breakpoint.xsOnly">
           <v-divider
             vertical
@@ -220,6 +252,7 @@
               </v-progress-linear>
             </td>
             <td>{{ $t('torrent_state.' + row.item.state) }}</td>
+            <td>{{ formatTorrentPriority(row.item.priority) }}</td>
             <td>{{ row.item.num_seeds }}/{{ row.item.num_complete }}</td>
             <td>{{ row.item.num_leechs }}/{{ row.item.num_incomplete }}</td>
             <td>{{ row.item.dlspeed | formatNetworkSpeed }}</td>
@@ -450,6 +483,7 @@ export default class Torrents extends Vue {
     { text: tr('size'), value: 'size' },
     { text: tr('progress'), value: 'progress' },
     { text: tr('status'), value: 'state' },
+    { text: tr('priority.column'), value: 'priority' },
     { text: tr('seeds'), value: 'num_complete' },
     { text: tr('peers'), value: 'num_incomplete' },
     { text: tr('dl_speed'), value: 'dlspeed' },
@@ -562,6 +596,14 @@ export default class Torrents extends Vue {
     return `${color}--text`;
   }
 
+  formatTorrentPriority(priority: number) {
+    if (priority <= 0) {
+      return '-';
+    }
+
+    return priority;
+  }
+
   created() {
     this.pageOptions = this.$store.getters.config.pageOptions;
   }
@@ -644,6 +686,22 @@ export default class Torrents extends Vue {
   setTorrentsCategory(category: string) {
     this.categoryToSet = category;
     this.toSetCategory = this.selectedRows;
+  }
+
+  async maximizeTorrentPriority() {
+    await api.maximizeTorrentPriority(this.selectedHashes);
+  }
+
+  async increaseTorrentPriority() {
+    await api.increaseTorrentPriority(this.selectedHashes);
+  }
+
+  async decreaseTorrentPriority() {
+    await api.decreaseTorrentPriority(this.selectedHashes);
+  }
+
+  async minimizeTorrentPriority() {
+    await api.minimizeTorrentPriority(this.selectedHashes);
   }
 
   editTracker() {

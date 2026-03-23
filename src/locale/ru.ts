@@ -28,6 +28,13 @@ export default {
   trigger_application_shutdown: 'Выйти из qBittorrent',
   reannounce: 'Объявить повторно',
   recheck: 'Перепроверить',
+  priority: {
+    column: 'Приоритет',
+    top: 'Наивысший приоритет',
+    increase: 'Повысить приоритет',
+    decrease: 'Понизить приоритет',
+    bottom: 'Самый низкий приоритет',
+  },
 
   username: 'Имя пользователя',
   password: 'Пароль',
@@ -132,6 +139,7 @@ export default {
     set_category: 'Установить категорию',
     edit_tracker: 'Изменить трекер',
     set_location: 'Установить расположение',
+    set_priority: 'Изменить приоритет загрузки',
     recheck_torrents: 'Перепроверить торренты',
   },
 

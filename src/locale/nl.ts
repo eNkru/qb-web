@@ -29,6 +29,13 @@ export default {
     trigger_application_shutdown: 'qBittorrent afsluiten',
     reannounce: 'Opnieuw Aankondigen',
     recheck: 'Opnieuw Controleren',
+    priority: {
+      column: 'Prioriteit',
+      top: 'Hoogste prioriteit',
+      increase: 'Prioriteit verhogen',
+      decrease: 'Prioriteit verlagen',
+      bottom: 'Laagste prioriteit',
+    },
   
     username: 'Gebruikersnaam',
     password: 'Wachtwoord',
@@ -144,6 +151,7 @@ export default {
       set_category: 'Categorie Instellen',
       edit_tracker: 'Tracker Bewerken',
       set_location: 'Locatie Instellen',
+      set_priority: 'Downloadprioriteit wijzigen',
       recheck_torrents: 'Torrents Opnieuw Controleren',
     },
   

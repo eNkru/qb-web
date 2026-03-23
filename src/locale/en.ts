@@ -29,6 +29,13 @@ export default {
   trigger_application_shutdown: 'Exit qBittorrent',
   reannounce: 'Reannounce',
   recheck: 'Recheck',
+  priority: {
+    column: 'Priority',
+    top: 'Top Priority',
+    increase: 'Increase Priority',
+    decrease: 'Decrease Priority',
+    bottom: 'Bottom Priority',
+  },
 
   username: 'Username',
   password: 'Password',
@@ -144,6 +151,7 @@ export default {
     set_category: 'Set Category',
     edit_tracker: 'Edit Tracker',
     set_location: 'Set Location',
+    set_priority: 'Change Download Priority',
     recheck_torrents: 'Recheck Torrents',
   },
 

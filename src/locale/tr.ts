@@ -28,6 +28,13 @@ export default {
   trigger_application_shutdown: 'qBittorrent\'ten çık',
   reannounce: 'Yeniden Duyur',
   recheck: 'Yeniden Denetle',
+  priority: {
+    column: 'Öncelik',
+    top: 'En yüksek öncelik',
+    increase: 'Önceliği artır',
+    decrease: 'Önceliği azalt',
+    bottom: 'En düşük öncelik',
+  },
 
   username: 'Kullanıcı Adı',
   password: 'Parola',
@@ -74,6 +81,7 @@ export default {
     set_category: 'Kategtori ayarla',
     edit_tracker: 'İzleyicileri Düzenle',
     set_location: 'Yeri ayarla...',
+    set_priority: 'İndirme önceliğini değiştir',
     recheck_torrents: 'Torrent\'leri yeniden denetle',
   },
 

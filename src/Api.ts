@@ -178,6 +178,22 @@ class Api {
     return this.actionTorrents('setCategory', hashes, { category });
   }
 
+  public increaseTorrentPriority(hashes: string[]) {
+    return this.actionTorrents('increasePrio', hashes);
+  }
+
+  public decreaseTorrentPriority(hashes: string[]) {
+    return this.actionTorrents('decreasePrio', hashes);
+  }
+
+  public maximizeTorrentPriority(hashes: string[]) {
+    return this.actionTorrents('topPrio', hashes);
+  }
+
+  public minimizeTorrentPriority(hashes: string[]) {
+    return this.actionTorrents('bottomPrio', hashes);
+  }
+
   public getTorrentTracker(hash: string) {
     return this.actionTorrent('trackers', hash);
   }
