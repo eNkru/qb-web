@@ -6,18 +6,20 @@
   >
     <v-card>
       <v-toolbar
-        dark
         color="primary"
+        dark
+        flat
       >
-        <v-toolbar-title>{{ $t('login') }}</v-toolbar-title>
+        <v-toolbar-title class="pl-2">
+          {{ $t('login') }}
+        </v-toolbar-title>
       </v-toolbar>
-      <v-card-text>
+      <v-card-text class="px-6 pt-6 pb-0">
         <v-form
           ref="form"
           v-model="valid"
         >
           <div
-            class="pa-0"
             @keyup.enter.capture="submit"
             v-bind="{ [`grid-list-${$vuetify.breakpoint.name}`]: true }"
           >
@@ -52,7 +54,7 @@
           v-text="loginError"
         />
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions class="px-6 pb-6 pt-2">
         <v-spacer />
         <v-btn
           @click="submit"

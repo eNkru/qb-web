@@ -356,7 +356,7 @@ html {
       background-color: #ececec !important;
     }
     
-    .v-sheet {
+    .v-sheet:not(.v-toolbar) {
       background-color: #ececec !important;
     }
     
@@ -364,7 +364,7 @@ html {
       background-color: #ececec !important;
     }
     
-    .v-toolbar {
+    .v-app-bar.v-toolbar {
       background-color: #ececec !important;
     }
     
