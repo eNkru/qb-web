@@ -70,7 +70,7 @@ import FilterGroup from './drawer/FilterGroup.vue';
 import api from '../Api';
 import { formatSize } from '@/filters';
 import { StateType } from '@/consts';
-import SiteMap from '@/sites'
+import { getSiteByHostname } from '@/sites'
 import { getSiteAbbreviation } from '@/utils/siteMap'
 import Component from 'vue-class-component';
 import { Prop, Emit } from 'vue-property-decorator';
@@ -131,14 +131,6 @@ interface MenuItem {
 interface MenuChildrenItem extends MenuItem {
   key: string | null;
   append?: string;
-}
-
-function getTopDomain(host: string) {
-  const parts = host.split('.');
-  if (parts.length > 2) {
-    return parts.slice(-2).join('.');
-  }
-  return host;
 }
 
 @Component({
@@ -248,8 +240,7 @@ export default class Drawer extends Vue {
   buildSiteGroup(): MenuChildrenItem[] {
     return sortBy(Object.entries(this.torrentGroupBySite).map(([key, value]) => {
       const size = formatSize(sumBy(value, 'size'));
-      const domain = getTopDomain(key);
-      const site = SiteMap[key] || SiteMap[domain];
+      const site = getSiteByHostname(key);
       const siteName = key ? getSiteAbbreviation(key) : tr('others');
       const title = `${siteName} (${value.length})`;
       const icon = site?.icon ?? 'mdi-server';
