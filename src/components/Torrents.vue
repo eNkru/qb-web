@@ -228,7 +228,6 @@
                     v-bind="attrs"
                     small
                     label
-                    outlined
                     class="site-chip"
                     v-on="on"
                   >
@@ -238,7 +237,9 @@
                       :alt="getTrackerSiteName(row.item.tracker)"
                       class="site-chip__icon"
                     >
-                    {{ getTrackerSiteName(row.item.tracker) }}
+                    <span class="site-chip__label">
+                      {{ getTrackerSiteName(row.item.tracker) }}
+                    </span>
                   </v-chip>
                 </template>
                 <span>{{ getTrackerHostname(row.item.tracker) || row.item.tracker }}</span>
@@ -309,19 +310,11 @@ import InfoDialog from './dialogs/InfoDialog.vue'
 import api from '../Api'
 import { formatSize } from '@/filters'
 import { getSiteAbbreviation } from '@/utils/siteMap'
-import SiteMap from '@/sites'
+import { getSiteByHostname } from '@/sites'
 import { DialogType, TorrentFilter, ConfigPayload, DialogConfig, SnackBarConfig } from '@/store/types'
 import Component from 'vue-class-component'
 import { Torrent, Category, Tag } from '@/types'
 import { Watch } from 'vue-property-decorator'
-
-function getTopDomain(host: string) {
-  const parts = host.split('.');
-  if (parts.length > 2) {
-    return parts.slice(-2).join('.');
-  }
-  return host;
-}
 
 function getTrackerHostname(tracker: string) {
   if (!tracker) {
@@ -588,8 +581,7 @@ export default class Torrents extends Vue {
       return undefined;
     }
 
-    const domain = getTopDomain(hostname);
-    return (SiteMap[hostname] || SiteMap[domain])?.icon;
+    return getSiteByHostname(hostname)?.icon;
   }
 
   getTrackerHostname(tracker: string) {
@@ -878,13 +870,48 @@ export default class Torrents extends Vue {
 }
 
 .site-chip {
-  max-width: 100%;
+  width: 8.5rem;
+  max-width: 8.5rem;
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 999px;
+  background: rgba(241, 245, 249, 0.9);
+  box-shadow: none;
+  color: rgba(15, 23, 42, 0.82);
+
+  &::v-deep .v-chip__content {
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    gap: 6px;
+    overflow: hidden;
+  }
+}
+
+.theme--dark .site-chip {
+  border-color: rgba(100, 116, 139, 0.55);
+  background: rgba(30, 41, 59, 0.88);
+  box-shadow: none;
+  color: rgba(241, 245, 249, 0.9);
 }
 
 .site-chip__icon {
   width: 18px;
   height: 18px;
+  flex: 0 0 18px;
   object-fit: contain;
-  margin-right: 6px;
+}
+
+.site-chip__label {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
 }
 </style>

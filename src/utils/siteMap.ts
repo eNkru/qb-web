@@ -49,6 +49,9 @@ const SITE_MAP: Record<string, SiteEntry> = {
   'eastgame.org':     { en: 'EastGame',  zh: '东方' },
   'cnscg.club':       { en: 'CNSCG',     zh: '星空' },
   'rousi.zip':        { en: 'Rousi',     zh: '肉丝' },
+  'rousi.pro':        { en: 'Rousi',     zh: '肉丝' },
+  'pandapt.net':      { en: 'PandaPT',   zh: '熊猫' },
+  'pandapt.cc':       { en: 'PandaPT',   zh: '熊猫' },
 
   // --- International private trackers (English only) ---
   'redacted.ch':             'RED',
@@ -65,6 +68,9 @@ const SITE_MAP: Record<string, SiteEntry> = {
   'avistaz.to':              'AvistaZ',
   'cinemaz.to':              'CinemaZ',
   'excinema.me':             'ExCinema',
+  'exoticaz.to':             'Exoticaz',
+  'exoticaz.net':            'Exoticaz',
+  'cinefiles.info':          'CineFiles',
   'fearnopeer.com':          'FNP',
   'blutopia.cc':             'BLU',
   'aither.cc':               'Aither',
