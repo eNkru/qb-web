@@ -16,7 +16,7 @@ export interface Config {
   };
   locale: string | null;
   darkMode: string | null;
-  themeMode: 'light' | 'dark' | 'grey' | null;
+  themeMode: 'light' | 'dark' | 'grey' | 'luxury' | 'modern-dark' | 'crypto' | 'cyberpunk' | 'natural' | 'technology' | null;
   displaySpeedInTitle: boolean | null;
   fontScale: number | null;
 }

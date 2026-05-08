@@ -57,6 +57,12 @@ export default {
     light: 'Licht',
     dark: 'Donker',
     grey: 'Grijs',
+    luxury: 'Luxe',
+    modernDark: 'Modern Donker',
+    crypto: 'Crypto',
+    cyberpunk: 'Cyberpunk',
+    natural: 'Natuurlijk',
+    technology: 'Technologie',
   
     all: 'Alles',
     category: 'Categorie |||| Categoriën',

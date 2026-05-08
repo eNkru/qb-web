@@ -108,7 +108,7 @@ import AppFooter from '@/components/Footer.vue';
 const AUTO_KEY = 'auto';
 
 type AllLocaleKey = NonNullable<LocaleKey> | typeof AUTO_KEY;
-type ThemeModeKey = 'light' | 'dark' | 'grey' | null;
+type ThemeModeKey = 'light' | 'dark' | 'grey' | 'luxury' | 'modern-dark' | 'crypto' | 'cyberpunk' | 'natural' | 'technology' | null;
 
 @Component({
   components: {
@@ -134,6 +134,12 @@ export default class DrawerFooter extends Vue {
     ['light', tr('light')],
     ['dark', tr('dark')],
     ['grey', tr('grey')],
+    ['luxury', tr('luxury')],
+    ['modern-dark', tr('modernDark')],
+    ['crypto', tr('crypto')],
+    ['cyberpunk', tr('cyberpunk')],
+    ['natural', tr('natural')],
+    ['technology', tr('technology')],
     [AUTO_KEY, tr('auto')],
   ]
 

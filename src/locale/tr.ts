@@ -56,6 +56,12 @@ export default {
   light: 'Aydınlık',
   dark: 'Karanlık',
   grey: 'Gri',
+  luxury: 'Lüks',
+  modernDark: 'Modern Karanlık',
+  crypto: 'Kripto',
+  cyberpunk: 'Siberpunk',
+  natural: 'Doğal',
+  technology: 'Teknolojik',
 
   all: 'Tümü',
   category: 'Kategori |||| Kategoriler',

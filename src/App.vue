@@ -242,7 +242,7 @@ export default class App extends Vue {
   }
 
   @Watch('config.themeMode', {immediate: true})
-  onThemeMode(mode: 'light' | 'dark' | 'grey' | null) {
+  onThemeMode(mode: 'light' | 'dark' | 'grey' | 'luxury' | 'modern-dark' | 'crypto' | 'cyberpunk' | 'natural' | 'technology' | null) {
     const { theme } = this.$vuetify;
 
     // If user explicitly chose a theme
@@ -252,24 +252,114 @@ export default class App extends Vue {
         this.mql = undefined
       }
       
-      // Apply grey theme (soft light mode)
-      if (mode === 'grey') {
+      // Apply grey/luxury/natural/technology theme (light variants)
+      if (mode === 'grey' || mode === 'luxury' || mode === 'natural' || mode === 'technology') {
         theme.dark = false;
         
-        // Apply darker grey color scheme
-        theme.themes.light.primary = '#6b8fb5';
-        theme.themes.light.secondary = '#757575';
-        theme.themes.light.accent = '#90b4d4';
-        theme.themes.light.error = '#d32f2f';
-        theme.themes.light.info = '#5c9fd6';
-        theme.themes.light.success = '#66bb6a';
-        theme.themes.light.warning = '#ffa726';
+        if (mode === 'grey') {
+          // Apply darker grey color scheme
+          theme.themes.light.primary = '#6b8fb5';
+          theme.themes.light.secondary = '#757575';
+          theme.themes.light.accent = '#90b4d4';
+          theme.themes.light.error = '#d32f2f';
+          theme.themes.light.info = '#5c9fd6';
+          theme.themes.light.success = '#66bb6a';
+          theme.themes.light.warning = '#ffa726';
+        } else if (mode === 'luxury') {
+          // Apply luxury color scheme
+          theme.themes.light.primary = '#D4AF37';
+          theme.themes.light.secondary = '#6C6863';
+          theme.themes.light.accent = '#D4AF37';
+          theme.themes.light.error = '#FF5252';
+          theme.themes.light.info = '#2196F3';
+          theme.themes.light.success = '#4CAF50';
+          theme.themes.light.warning = '#FFC107';
+          theme.themes.light.background = '#F9F8F6';
+        } else if (mode === 'natural') {
+          // Apply natural color scheme
+          theme.themes.light.primary = '#5D7052';
+          theme.themes.light.secondary = '#C18C5D';
+          theme.themes.light.accent = '#E6DCCD';
+          theme.themes.light.error = '#A85448';
+          theme.themes.light.info = '#5D7052';
+          theme.themes.light.success = '#5D7052';
+          theme.themes.light.warning = '#C18C5D';
+          theme.themes.light.background = '#FDFCF8';
+        } else {
+          // Apply technology color scheme
+          theme.themes.light.primary = '#0052FF';
+          theme.themes.light.secondary = '#64748B';
+          theme.themes.light.accent = '#0052FF';
+          theme.themes.light.error = '#EF4444';
+          theme.themes.light.info = '#0052FF';
+          theme.themes.light.success = '#22C55E';
+          theme.themes.light.warning = '#F59E0B';
+          theme.themes.light.background = '#FAFAFA';
+        }
         
-        // Add grey theme class
+        // Add theme class
         this.$nextTick(() => {
           const app = (this.$refs.app as any)?.$el;
           if (app) {
-            app.classList.add('grey-theme');
+            app.classList.remove('grey-theme', 'luxury-theme', 'natural-theme', 'technology-theme', 'modern-dark-theme', 'crypto-theme', 'cyberpunk-theme');
+            if (mode === 'grey') app.classList.add('grey-theme');
+            else if (mode === 'luxury') app.classList.add('luxury-theme');
+            else if (mode === 'natural') app.classList.add('natural-theme');
+            else app.classList.add('technology-theme');
+          }
+        });
+      } else if (mode === 'modern-dark') {
+        // Apply modern dark theme
+        theme.dark = true;
+        theme.themes.dark.primary = '#5E6AD2';
+        theme.themes.dark.secondary = '#8A8F98';
+        theme.themes.dark.accent = '#5E6AD2';
+        theme.themes.dark.error = '#FF5252';
+        theme.themes.dark.info = '#2196F3';
+        theme.themes.dark.success = '#4CAF50';
+        theme.themes.dark.warning = '#FFC107';
+        
+        this.$nextTick(() => {
+          const app = (this.$refs.app as any)?.$el;
+          if (app) {
+            app.classList.remove('grey-theme', 'luxury-theme', 'natural-theme', 'technology-theme', 'modern-dark-theme', 'crypto-theme', 'cyberpunk-theme');
+            app.classList.add('modern-dark-theme');
+          }
+        });
+      } else if (mode === 'crypto') {
+        // Apply crypto theme
+        theme.dark = true;
+        theme.themes.dark.primary = '#F7931A';
+        theme.themes.dark.secondary = '#94A3B8';
+        theme.themes.dark.accent = '#F7931A';
+        theme.themes.dark.error = '#FF5252';
+        theme.themes.dark.info = '#2196F3';
+        theme.themes.dark.success = '#FFD600';
+        theme.themes.dark.warning = '#EA580C';
+        
+        this.$nextTick(() => {
+          const app = (this.$refs.app as any)?.$el;
+          if (app) {
+            app.classList.remove('grey-theme', 'luxury-theme', 'natural-theme', 'technology-theme', 'modern-dark-theme', 'crypto-theme', 'cyberpunk-theme');
+            app.classList.add('crypto-theme');
+          }
+        });
+      } else if (mode === 'cyberpunk') {
+        // Apply cyberpunk theme
+        theme.dark = true;
+        theme.themes.dark.primary = '#00ff88';
+        theme.themes.dark.secondary = '#6b7280';
+        theme.themes.dark.accent = '#00ff88';
+        theme.themes.dark.error = '#ff3366';
+        theme.themes.dark.info = '#00d4ff';
+        theme.themes.dark.success = '#00ff88';
+        theme.themes.dark.warning = '#ff00ff';
+        
+        this.$nextTick(() => {
+          const app = (this.$refs.app as any)?.$el;
+          if (app) {
+            app.classList.remove('grey-theme', 'luxury-theme', 'natural-theme', 'technology-theme', 'modern-dark-theme', 'crypto-theme', 'cyberpunk-theme');
+            app.classList.add('cyberpunk-theme');
           }
         });
       } else {
@@ -282,11 +372,11 @@ export default class App extends Vue {
         theme.themes.light.success = '#4CAF50';
         theme.themes.light.warning = '#FFC107';
         
-        // Remove grey theme class
+        // Remove theme classes
         this.$nextTick(() => {
           const app = (this.$refs.app as any)?.$el;
           if (app) {
-            app.classList.remove('grey-theme');
+            app.classList.remove('grey-theme', 'luxury-theme', 'natural-theme', 'technology-theme', 'modern-dark-theme', 'crypto-theme', 'cyberpunk-theme');
           }
         });
         
@@ -407,6 +497,844 @@ html {
     .v-list-item {
       &:hover {
         background-color: #d5d5d5 !important;
+      }
+    }
+  }
+}
+
+// Luxury theme - Sophisticated Monochrome
+.v-application.theme--light {
+  &.luxury-theme {
+    color: #1A1A1A !important;
+
+    .v-main {
+      background-color: #F9F8F6 !important;
+    }
+
+    .v-card {
+      background-color: #F0EEEB !important;
+      color: #1A1A1A !important;
+    }
+
+    .v-sheet:not(.v-toolbar) {
+      background-color: #F0EEEB !important;
+    }
+
+    .v-navigation-drawer {
+      background-color: #F9F8F6 !important;
+    }
+
+    .v-app-bar.v-toolbar {
+      background-color: #F9F8F6 !important;
+    }
+
+    .v-data-table {
+      background-color: #F9F8F6 !important;
+      color: #1A1A1A !important;
+
+      tbody tr {
+        background-color: #F9F8F6 !important;
+
+        &:hover {
+          background-color: #F0EEEB !important;
+        }
+      }
+
+      tbody tr:nth-child(2n) {
+        background-color: #F0EEEB !important;
+      }
+
+      thead {
+        background-color: #F0EEEB !important;
+
+        th {
+          background-color: #F0EEEB !important;
+          color: #1A1A1A !important;
+        }
+      }
+
+      .v-data-table-header {
+        background-color: #F0EEEB !important;
+
+        th {
+          background-color: #F0EEEB !important;
+          color: #1A1A1A !important;
+        }
+      }
+    }
+
+    .v-list {
+      background-color: #F9F8F6 !important;
+    }
+
+    .v-list-item {
+      &:hover {
+        background-color: #F0EEEB !important;
+      }
+    }
+
+    .text--secondary,
+    .v-label,
+    .v-messages {
+      color: #6C6863 !important;
+    }
+  }
+}
+
+// Modern Dark theme
+.v-application.theme--dark {
+  &.modern-dark-theme {
+    background-color: #050506 !important;
+    color: #EDEDEF !important;
+
+    .v-main {
+      background-color: #050506 !important;
+    }
+
+    .v-footer {
+      background-color: #020203 !important;
+    }
+
+    .v-card {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      color: #EDEDEF !important;
+      border: 1px solid rgba(255, 255, 255, 0.06) !important;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+        border-color: rgba(255, 255, 255, 0.10) !important;
+      }
+    }
+
+    .v-sheet:not(.v-toolbar) {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .v-navigation-drawer {
+      background-color: #0a0a0c !important;
+    }
+
+    .v-app-bar.v-toolbar {
+      background-color: #0a0a0c !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    }
+
+    .v-btn {
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+      }
+    }
+
+    .v-data-table {
+      background-color: #050506 !important;
+      color: #EDEDEF !important;
+
+      tbody tr {
+        background-color: #050506 !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.05) !important;
+        }
+      }
+
+      tbody tr:nth-child(2n) {
+        background-color: rgba(255, 255, 255, 0.03) !important;
+      }
+
+      thead {
+        background-color: #0a0a0c !important;
+
+        th {
+          background-color: #0a0a0c !important;
+          color: #8A8F98 !important;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+        }
+      }
+
+      .v-data-table-header {
+        background-color: #0a0a0c !important;
+
+        th {
+          background-color: #0a0a0c !important;
+          color: #8A8F98 !important;
+        }
+      }
+    }
+
+    .v-list {
+      background-color: #050506 !important;
+    }
+
+    .v-list-item {
+      color: #EDEDEF !important;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+      }
+    }
+
+    .text--secondary,
+    .v-label,
+    .v-messages {
+      color: #8A8F98 !important;
+    }
+
+    .v-divider {
+      border-color: rgba(255, 255, 255, 0.06) !important;
+    }
+
+    .v-input,
+    .v-select,
+    .v-textarea {
+      color: #EDEDEF !important;
+    }
+
+    .v-input__slot {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      border: 1px solid rgba(255, 255, 255, 0.06) !important;
+
+      &:hover {
+        border-color: rgba(255, 255, 255, 0.10) !important;
+      }
+    }
+
+    .v-chip {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      color: #EDEDEF !important;
+      border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    }
+  }
+}
+
+// Crypto theme - True Void with Bitcoin Fire
+.v-application.theme--dark {
+  &.crypto-theme {
+    background-color: #030304 !important;
+    color: #FFFFFF !important;
+
+    .v-main {
+      background-color: #030304 !important;
+    }
+
+    .v-footer {
+      background-color: #030304 !important;
+    }
+
+    .v-card {
+      background-color: #0F1115 !important;
+      color: #FFFFFF !important;
+      border: 1px solid #1E293B !important;
+
+      &:hover {
+        border-color: rgba(247, 147, 26, 0.3) !important;
+      }
+    }
+
+    .v-sheet:not(.v-toolbar) {
+      background-color: #0F1115 !important;
+    }
+
+    .v-navigation-drawer {
+      background-color: #0F1115 !important;
+    }
+
+    .v-app-bar.v-toolbar {
+      background-color: #0F1115 !important;
+      border-bottom: 1px solid #1E293B !important;
+    }
+
+    .v-btn {
+      &:hover {
+        background-color: rgba(247, 147, 26, 0.15) !important;
+      }
+    }
+
+    .v-data-table {
+      background-color: #030304 !important;
+      color: #FFFFFF !important;
+
+      tbody tr {
+        background-color: #030304 !important;
+        border-bottom: 1px solid #1E293B !important;
+
+        &:hover {
+          background-color: #0F1115 !important;
+        }
+      }
+
+      tbody tr:nth-child(2n) {
+        background-color: rgba(15, 17, 21, 0.5) !important;
+      }
+
+      thead {
+        background-color: #0F1115 !important;
+
+        th {
+          background-color: #0F1115 !important;
+          color: #94A3B8 !important;
+          border-bottom: 1px solid #1E293B !important;
+        }
+      }
+
+      .v-data-table-header {
+        background-color: #0F1115 !important;
+
+        th {
+          background-color: #0F1115 !important;
+          color: #94A3B8 !important;
+        }
+      }
+    }
+
+    .v-list {
+      background-color: #030304 !important;
+    }
+
+    .v-list-item {
+      color: #FFFFFF !important;
+
+      &:hover {
+        background-color: #0F1115 !important;
+      }
+    }
+
+    .text--secondary,
+    .v-label,
+    .v-messages {
+      color: #94A3B8 !important;
+    }
+
+    .v-divider {
+      border-color: #1E293B !important;
+    }
+
+    .v-input,
+    .v-select,
+    .v-textarea {
+      color: #FFFFFF !important;
+    }
+
+    .v-input__slot {
+      background-color: #0F1115 !important;
+      border: 1px solid #1E293B !important;
+
+      &:hover {
+        border-color: #F7931A !important;
+      }
+    }
+
+    .v-chip {
+      background-color: #0F1115 !important;
+      color: #FFFFFF !important;
+      border: 1px solid #1E293B !important;
+    }
+
+    .v-btn--active,
+    .v-btn--active::before {
+      color: #F7931A !important;
+    }
+
+    a {
+      color: #F7931A !important;
+
+      &:hover {
+        color: #EA580C !important;
+      }
+    }
+  }
+}
+
+// Cyberpunk theme - Neon-lit dark mode
+.v-application.theme--dark {
+  &.cyberpunk-theme {
+    background-color: #0a0a0f !important;
+    color: #e0e0e0 !important;
+
+    .v-main {
+      background-color: #0a0a0f !important;
+    }
+
+    .v-footer {
+      background-color: #0a0a0f !important;
+    }
+
+    .v-card {
+      background-color: #12121a !important;
+      color: #e0e0e0 !important;
+      border: 1px solid #2a2a3a !important;
+
+      &:hover {
+        border-color: #00ff88 !important;
+        box-shadow: 0 0 8px rgba(0, 255, 136, 0.15) !important;
+      }
+    }
+
+    .v-sheet:not(.v-toolbar) {
+      background-color: #12121a !important;
+    }
+
+    .v-navigation-drawer {
+      background-color: #1c1c2e !important;
+    }
+
+    .v-app-bar.v-toolbar {
+      background-color: #1c1c2e !important;
+      border-bottom: 1px solid #2a2a3a !important;
+    }
+
+    .v-btn {
+      &:hover {
+        background-color: rgba(0, 255, 136, 0.1) !important;
+        border-color: #00ff88 !important;
+      }
+    }
+
+    .v-data-table {
+      background-color: #0a0a0f !important;
+      color: #e0e0e0 !important;
+
+      tbody tr {
+        background-color: #0a0a0f !important;
+        border-bottom: 1px solid #2a2a3a !important;
+
+        &:hover {
+          background-color: #12121a !important;
+        }
+      }
+
+      tbody tr:nth-child(2n) {
+        background-color: rgba(18, 18, 26, 0.5) !important;
+      }
+
+      thead {
+        background-color: #1c1c2e !important;
+
+        th {
+          background-color: #1c1c2e !important;
+          color: #6b7280 !important;
+          border-bottom: 1px solid #2a2a3a !important;
+        }
+      }
+
+      .v-data-table-header {
+        background-color: #1c1c2e !important;
+
+        th {
+          background-color: #1c1c2e !important;
+          color: #6b7280 !important;
+        }
+      }
+    }
+
+    .v-list {
+      background-color: #0a0a0f !important;
+    }
+
+    .v-list-item {
+      color: #e0e0e0 !important;
+
+      &:hover {
+        background-color: #12121a !important;
+      }
+    }
+
+    .text--secondary,
+    .v-label,
+    .v-messages {
+      color: #6b7280 !important;
+    }
+
+    .v-divider {
+      border-color: #2a2a3a !important;
+    }
+
+    .v-input,
+    .v-select,
+    .v-textarea {
+      color: #e0e0e0 !important;
+    }
+
+    .v-input__slot {
+      background-color: #12121a !important;
+      border: 1px solid #2a2a3a !important;
+
+      &:hover {
+        border-color: #00ff88 !important;
+      }
+    }
+
+    .v-chip {
+      background-color: #12121a !important;
+      color: #e0e0e0 !important;
+      border: 1px solid #2a2a3a !important;
+    }
+
+    .v-btn--active,
+    .v-btn--active::before {
+      color: #00ff88 !important;
+    }
+
+    a {
+      color: #00ff88 !important;
+
+      &:hover {
+        color: #ff00ff !important;
+      }
+    }
+
+    .v-text-field--focused .v-input__slot,
+    .v-input--is-focused .v-input__slot {
+      border-color: #00ff88 !important;
+      box-shadow: 0 0 6px rgba(0, 255, 136, 0.25) !important;
+    }
+
+    .v-tabs {
+      .v-tab--active {
+        color: #00ff88 !important;
+      }
+
+      .v-tabs-slider {
+        background-color: #00ff88 !important;
+      }
+    }
+
+    .v-pagination__item--active {
+      background-color: #00ff88 !important;
+      color: #0a0a0f !important;
+    }
+
+    .v-progress-linear__determinate {
+      background-color: #00ff88 !important;
+    }
+  }
+}
+
+// Natural theme - Forest floor, clay, and unbleached paper
+.v-application.theme--light {
+  &.natural-theme {
+    background-color: #FDFCF8 !important;
+    color: #2C2C24 !important;
+
+    .v-main {
+      background-color: #FDFCF8 !important;
+    }
+
+    .v-card {
+      background-color: #F0EBE5 !important;
+      color: #2C2C24 !important;
+      border: 1px solid #DED8CF !important;
+
+      &:hover {
+        border-color: #5D7052 !important;
+      }
+    }
+
+    .v-sheet:not(.v-toolbar) {
+      background-color: #F0EBE5 !important;
+    }
+
+    .v-navigation-drawer {
+      background-color: #FDFCF8 !important;
+    }
+
+    .v-app-bar.v-toolbar {
+      background-color: #FDFCF8 !important;
+      border-bottom: 1px solid #DED8CF !important;
+    }
+
+    .v-btn {
+      &:hover {
+        background-color: #E6DCCD !important;
+      }
+    }
+
+    .v-data-table {
+      background-color: #FDFCF8 !important;
+      color: #2C2C24 !important;
+
+      tbody tr {
+        background-color: #FDFCF8 !important;
+        border-bottom: 1px solid #DED8CF !important;
+
+        &:hover {
+          background-color: #F0EBE5 !important;
+        }
+      }
+
+      tbody tr:nth-child(2n) {
+        background-color: #F0EBE5 !important;
+      }
+
+      thead {
+        background-color: #E6DCCD !important;
+
+        th {
+          background-color: #E6DCCD !important;
+          color: #4A4A40 !important;
+          border-bottom: 1px solid #DED8CF !important;
+        }
+      }
+
+      .v-data-table-header {
+        background-color: #E6DCCD !important;
+
+        th {
+          background-color: #E6DCCD !important;
+          color: #4A4A40 !important;
+        }
+      }
+    }
+
+    .v-list {
+      background-color: #FDFCF8 !important;
+    }
+
+    .v-list-item {
+      color: #2C2C24 !important;
+
+      &:hover {
+        background-color: #F0EBE5 !important;
+      }
+    }
+
+    .text--secondary,
+    .v-label,
+    .v-messages {
+      color: #78786C !important;
+    }
+
+    .v-divider {
+      border-color: #DED8CF !important;
+    }
+
+    .v-input,
+    .v-select,
+    .v-textarea {
+      color: #2C2C24 !important;
+    }
+
+    .v-input__slot {
+      background-color: #F0EBE5 !important;
+      border: 1px solid #DED8CF !important;
+
+      &:hover {
+        border-color: #5D7052 !important;
+      }
+    }
+
+    .v-chip {
+      background-color: #E6DCCD !important;
+      color: #4A4A40 !important;
+      border: 1px solid #DED8CF !important;
+    }
+
+    .v-btn--active,
+    .v-btn--active::before {
+      color: #5D7052 !important;
+    }
+
+    a {
+      color: #5D7052 !important;
+
+      &:hover {
+        color: #C18C5D !important;
+      }
+    }
+
+    .v-text-field--focused .v-input__slot,
+    .v-input--is-focused .v-input__slot {
+      border-color: #5D7052 !important;
+    }
+
+    .v-tabs {
+      .v-tab--active {
+        color: #5D7052 !important;
+      }
+
+      .v-tabs-slider {
+        background-color: #5D7052 !important;
+      }
+    }
+
+    .v-pagination__item--active {
+      background-color: #5D7052 !important;
+      color: #F3F4F1 !important;
+    }
+
+    .v-progress-linear__determinate {
+      background-color: #5D7052 !important;
+    }
+  }
+}
+
+// Technology theme - Electric Blue accent on warm off-white
+.v-application.theme--light {
+  &.technology-theme {
+    background-color: #FAFAFA !important;
+    color: #0F172A !important;
+
+    .v-main {
+      background-color: #FAFAFA !important;
+    }
+
+    .v-card {
+      background-color: #FFFFFF !important;
+      color: #0F172A !important;
+      border: 1px solid #E2E8F0 !important;
+
+      &:hover {
+        border-color: #0052FF !important;
+      }
+    }
+
+    .v-sheet:not(.v-toolbar) {
+      background-color: #F1F5F9 !important;
+    }
+
+    .v-navigation-drawer {
+      background-color: #FAFAFA !important;
+    }
+
+    .v-app-bar.v-toolbar {
+      background-color: #FFFFFF !important;
+      border-bottom: 1px solid #E2E8F0 !important;
+    }
+
+    .v-btn {
+      &:hover {
+        background-color: #F1F5F9 !important;
+      }
+    }
+
+    .v-data-table {
+      background-color: #FAFAFA !important;
+      color: #0F172A !important;
+
+      tbody tr {
+        background-color: #FAFAFA !important;
+        border-bottom: 1px solid #E2E8F0 !important;
+
+        &:hover {
+          background-color: #F1F5F9 !important;
+        }
+      }
+
+      tbody tr:nth-child(2n) {
+        background-color: #F1F5F9 !important;
+      }
+
+      thead {
+        background-color: #F1F5F9 !important;
+
+        th {
+          background-color: #F1F5F9 !important;
+          color: #64748B !important;
+          border-bottom: 1px solid #E2E8F0 !important;
+        }
+      }
+
+      .v-data-table-header {
+        background-color: #F1F5F9 !important;
+
+        th {
+          background-color: #F1F5F9 !important;
+          color: #64748B !important;
+        }
+      }
+    }
+
+    .v-list {
+      background-color: #FAFAFA !important;
+    }
+
+    .v-list-item {
+      color: #0F172A !important;
+
+      &:hover {
+        background-color: #F1F5F9 !important;
+      }
+    }
+
+    .text--secondary,
+    .v-label,
+    .v-messages {
+      color: #64748B !important;
+    }
+
+    .v-divider {
+      border-color: #E2E8F0 !important;
+    }
+
+    .v-input,
+    .v-select,
+    .v-textarea {
+      color: #0F172A !important;
+    }
+
+    .v-input__slot {
+      background-color: #FFFFFF !important;
+      border: 1px solid #E2E8F0 !important;
+
+      &:hover {
+        border-color: #0052FF !important;
+      }
+    }
+
+    .v-chip {
+      background-color: #F1F5F9 !important;
+      color: #0F172A !important;
+      border: 1px solid #E2E8F0 !important;
+    }
+
+    .v-btn--active,
+    .v-btn--active::before {
+      color: #0052FF !important;
+    }
+
+    a {
+      color: #0052FF !important;
+
+      &:hover {
+        color: #4D7CFF !important;
+      }
+    }
+
+    .v-text-field--focused .v-input__slot,
+    .v-input--is-focused .v-input__slot {
+      border-color: #0052FF !important;
+      box-shadow: 0 0 0 1px #0052FF !important;
+    }
+
+    .v-tabs {
+      .v-tab--active {
+        color: #0052FF !important;
+      }
+
+      .v-tabs-slider {
+        background: linear-gradient(to right, #0052FF, #4D7CFF) !important;
+      }
+    }
+
+    .v-pagination__item--active {
+      background: linear-gradient(to right, #0052FF, #4D7CFF) !important;
+      color: #FFFFFF !important;
+    }
+
+    .v-progress-linear__determinate {
+      background: linear-gradient(to right, #0052FF, #4D7CFF) !important;
+    }
+
+    .v-btn--contained {
+      &.primary,
+      &.v-btn--primary {
+        background: linear-gradient(to right, #0052FF, #4D7CFF) !important;
+        color: #FFFFFF !important;
+        border: none !important;
+
+        &:hover {
+          background: linear-gradient(to right, #0042DD, #3D6CE6) !important;
+        }
       }
     }
   }
