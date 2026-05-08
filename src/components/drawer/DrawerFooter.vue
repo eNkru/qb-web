@@ -201,7 +201,7 @@ export default class DrawerFooter extends Vue {
   }
 
   @Watch('currentLocale')
-  async onCurrentLocaleChanged(locale: AllLocaleKey, oldValue: AllLocaleKey) {
+  async onCurrentLocaleChanged(locale: AllLocaleKey, _oldValue: AllLocaleKey) {
     // Guard against undefined from v-list-item-group
     if (locale === undefined) {
       return;
@@ -248,7 +248,7 @@ export default class DrawerFooter extends Vue {
   }
 
   @Watch('currentThemeMode')
-  onThemeModeChanged(mode: ThemeModeKey | typeof AUTO_KEY) {
+  onThemeModeChanged(_mode: ThemeModeKey | typeof AUTO_KEY) {
     // Watcher kept for potential future use
   }
 
