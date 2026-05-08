@@ -57,6 +57,12 @@ export default {
   light: '亮色',
   dark: '暗色',
   grey: '灰色',
+  luxury: '奢华',
+  modernDark: '现代暗色',
+  crypto: '加密',
+  cyberpunk: '赛博朋克',
+  natural: '自然',
+  technology: '科技',
 
   all: '全部',
   category: '分类',

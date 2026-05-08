@@ -56,6 +56,12 @@ export default {
   light: 'Светлый',
   dark: 'Тёмный',
   grey: 'Серый',
+  luxury: 'Люкс',
+  modernDark: 'Современная Тёмная',
+  crypto: 'Крипто',
+  cyberpunk: 'Киберпанк',
+  natural: 'Природный',
+  technology: 'Технологичный',
 
   all: 'Все',
   category: 'Категория |||| Категории',

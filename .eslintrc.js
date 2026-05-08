@@ -13,6 +13,7 @@ module.exports = {
     '@vue/typescript/recommended',
   ],
   rules: {
+    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     'no-console': isProdEnv ? 'error' : 'warn',
     'no-debugger': isProdEnv ? 'error' : 'warn',
 
