@@ -28,6 +28,7 @@ export default {
   rename: 'Rename',
   trigger_application_shutdown: 'Exit qBittorrent',
   reannounce: 'Reannounce',
+  copy_save_path: 'Copy save path',
   recheck: 'Recheck',
   priority: {
     column: 'Priority',

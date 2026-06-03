@@ -28,6 +28,7 @@ export default {
   trigger_application_shutdown: 'Выйти из qBittorrent',
   reannounce: 'Объявить повторно',
   recheck: 'Перепроверить',
+  copy_save_path: 'Копировать путь сохранения',
   priority: {
     column: 'Приоритет',
     top: 'Наивысший приоритет',

@@ -8,7 +8,7 @@ This workspace contains qb-web, an alternative Web UI for qBittorrent.
 
 For detailed project information, architecture, and development guidelines, refer to:
 
-#[[file:../.kiro/PROJECT_REFERENCE.md]]
+#[[file:../../README.md]]
 
 When making changes to this project:
 - Follow the existing Vue 2 + TypeScript + Vuetify 2 patterns

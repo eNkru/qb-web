@@ -28,6 +28,7 @@ export default {
   trigger_application_shutdown: 'qBittorrent\'ten çık',
   reannounce: 'Yeniden Duyur',
   recheck: 'Yeniden Denetle',
+  copy_save_path: 'Kaydetme yolunu kopyala',
   priority: {
     column: 'Öncelik',
     top: 'En yüksek öncelik',

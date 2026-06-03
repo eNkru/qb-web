@@ -28,6 +28,7 @@ export default {
     rename: 'Hernoemen',
     trigger_application_shutdown: 'qBittorrent afsluiten',
     reannounce: 'Opnieuw Aankondigen',
+  copy_save_path: 'Opslagpad kopiëren',
     recheck: 'Opnieuw Controleren',
     priority: {
       column: 'Prioriteit',
