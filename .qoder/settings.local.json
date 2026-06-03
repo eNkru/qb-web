@@ -3,7 +3,12 @@
     "allow": [
       "Bash(git checkout:*)",
       "Bash(curl -s http://localhost:8000 | grep -o 'href=\"[^\"]*css[^\"]*\"')",
-      "Bash(cd /Users/hju/sources/qb-web && npx vue-cli-service build --no-clean 2>&1 | tail -5)"
+      "Bash(cd /Users/hju/sources/qb-web && npx vue-cli-service build --no-clean 2>&1 | tail -5)",
+      "Bash(npm audit 2>&1)",
+      "Bash(git:*)",
+      "Bash(yarn audit 2>&1)",
+      "Bash(yarn --version 2>&1)",
+      "Bash(yarn npm audit --all 2>&1)"
     ]
   }
 }

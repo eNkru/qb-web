@@ -11,7 +11,7 @@
   "dependencies": {
     "@mdi/font": "^5.0.45",
     "@types/node-polyglot": "^0.4.34",
-    "axios": "^0.27.2",
+    "axios": "^1.9.0",
     "core-js": "^3.6.5",
     "dayjs": "^1.8.23",
     "debug": "^4.1.1",
