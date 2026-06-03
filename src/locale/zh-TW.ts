@@ -27,6 +27,7 @@ export default {
   rename: '重新命名',
   trigger_application_shutdown: '退出qBittorrent',
   reannounce: '重新通告',
+  copy_save_path: '複製儲存路徑',
   recheck: '重新檢查',
   priority: {
     column: '優先級',

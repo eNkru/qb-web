@@ -16,7 +16,7 @@
     <main-toolbar v-model="drawer" />
 
     <v-main>
-      <torrents />
+      <torrents @torrent-contextmenu="onTorrentContextMenu" />
     </v-main>
 
     <add-form v-if="preferences" />
@@ -50,6 +50,13 @@
       <app-footer />
     </v-footer>
 
+    <ContextMenu
+      v-model="contextMenu.show"
+      :x="contextMenu.x"
+      :y="contextMenu.y"
+      :save-path="contextMenu.savePath"
+      @close="contextMenu.show = false"
+    />
     <GlobalDialog />
     <GlobalSnackBar />
   </v-app>
@@ -74,6 +81,7 @@ import RssDialog from './components/dialogs/RssDialog.vue';
 import SearchDialog from './components/dialogs/searchDialog/SearchDialog.vue';
 import SettingsDialog from './components/dialogs/settingsDialog/SettingsDialog.vue';
 import DrawerFooter from './components/drawer/DrawerFooter.vue';
+import ContextMenu from './components/ContextMenu.vue';
 
 
 import api from './Api';
@@ -101,6 +109,7 @@ let appWrapEl: HTMLElement;
     SearchDialog,
     DrawerFooter,
     SettingsDialog,
+    ContextMenu,
   },
   computed: {
     ...mapState([
@@ -126,6 +135,12 @@ export default class App extends Vue {
     showLogs: false,
     showRss: false,
     showSettings: false,
+  }
+  contextMenu = {
+    show: false,
+    x: 0,
+    y: 0,
+    savePath: '',
   }
   task = 0
   mql?: MediaQueryList
@@ -232,6 +247,16 @@ export default class App extends Vue {
         url: text,
       });
     }
+  }
+
+  onTorrentContextMenu(payload: { x: number; y: number; savePath: string }) {
+    this.contextMenu.show = false;
+    this.$nextTick(() => {
+      this.contextMenu.x = payload.x;
+      this.contextMenu.y = payload.y;
+      this.contextMenu.savePath = payload.savePath;
+      this.contextMenu.show = true;
+    });
   }
 
   @Watch('needAuth')
@@ -596,18 +621,18 @@ html {
     }
 
     .v-card {
-      background-color: rgba(255, 255, 255, 0.05) !important;
+      background-color: #141418 !important;
       color: #EDEDEF !important;
-      border: 1px solid rgba(255, 255, 255, 0.06) !important;
+      border: 1px solid #1e1e24 !important;
 
       &:hover {
-        background-color: rgba(255, 255, 255, 0.08) !important;
-        border-color: rgba(255, 255, 255, 0.10) !important;
+        background-color: #1a1a20 !important;
+        border-color: #2a2a32 !important;
       }
     }
 
     .v-sheet:not(.v-toolbar) {
-      background-color: rgba(255, 255, 255, 0.05) !important;
+      background-color: #141418 !important;
     }
 
     .v-navigation-drawer {
@@ -616,7 +641,7 @@ html {
 
     .v-app-bar.v-toolbar {
       background-color: #0a0a0c !important;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+      border-bottom: 1px solid #1e1e24 !important;
     }
 
     .v-btn {
@@ -631,15 +656,15 @@ html {
 
       tbody tr {
         background-color: #050506 !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+        border-bottom: 1px solid #1e1e24 !important;
 
         &:hover {
-          background-color: rgba(255, 255, 255, 0.05) !important;
+          background-color: #141418 !important;
         }
       }
 
       tbody tr:nth-child(2n) {
-        background-color: rgba(255, 255, 255, 0.03) !important;
+        background-color: rgba(20, 20, 24, 0.5) !important;
       }
 
       thead {
@@ -648,7 +673,7 @@ html {
         th {
           background-color: #0a0a0c !important;
           color: #8A8F98 !important;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+          border-bottom: 1px solid #1e1e24 !important;
         }
       }
 
@@ -670,7 +695,7 @@ html {
       color: #EDEDEF !important;
 
       &:hover {
-        background-color: rgba(255, 255, 255, 0.05) !important;
+        background-color: #141418 !important;
       }
     }
 
@@ -681,7 +706,7 @@ html {
     }
 
     .v-divider {
-      border-color: rgba(255, 255, 255, 0.06) !important;
+      border-color: #1e1e24 !important;
     }
 
     .v-input,
@@ -691,18 +716,45 @@ html {
     }
 
     .v-input__slot {
-      background-color: rgba(255, 255, 255, 0.05) !important;
-      border: 1px solid rgba(255, 255, 255, 0.06) !important;
+      background-color: #141418 !important;
+      border: 1px solid #1e1e24 !important;
 
       &:hover {
-        border-color: rgba(255, 255, 255, 0.10) !important;
+        border-color: #2a2a32 !important;
       }
     }
 
     .v-chip {
-      background-color: rgba(255, 255, 255, 0.05) !important;
+      background-color: #141418 !important;
       color: #EDEDEF !important;
-      border: 1px solid rgba(255, 255, 255, 0.06) !important;
+      border: 1px solid #1e1e24 !important;
+    }
+
+    .v-btn--active,
+    .v-btn--active::before {
+      color: #5E6AD2 !important;
+    }
+
+    a {
+      color: #5E6AD2 !important;
+
+      &:hover {
+        color: #7B84E0 !important;
+      }
+    }
+
+    .v-dialog {
+      .v-card {
+        background-color: #141418 !important;
+      }
+    }
+
+    .v-menu__content {
+      background-color: #141418 !important;
+    }
+
+    .v-snack__wrapper {
+      background-color: #141418 !important;
     }
   }
 }

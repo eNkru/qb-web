@@ -201,6 +201,7 @@
             }"
             @click="toggleRowSelection(row)"
             @dblclick.prevent="showInfo(row.item)"
+            @contextmenu.stop.prevent="onRowContextMenu($event, row.item)"
           >
             <td>
               <v-checkbox
@@ -604,6 +605,14 @@ export default class Torrents extends Vue {
 
   toggleRowSelection(row: any) {
     row.select(!row.isSelected);
+  }
+
+  onRowContextMenu(e: MouseEvent, torrent: Torrent) {
+    this.$emit('torrent-contextmenu', {
+      x: e.clientX,
+      y: e.clientY,
+      savePath: torrent.save_path,
+    });
   }
 
   created() {
