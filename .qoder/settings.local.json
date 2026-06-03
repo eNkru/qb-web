@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git checkout:*)",
+      "Bash(curl -s http://localhost:8000 | grep -o 'href=\"[^\"]*css[^\"]*\"')"
+    ]
+  }
+}

@@ -1339,4 +1339,13 @@ html {
     }
   }
 }
+
+.v-application.theme--light .v-navigation-drawer .v-navigation-drawer__content,
+.v-application.theme--light .v-navigation-drawer .v-sheet,
+.v-application.theme--light .v-navigation-drawer .v-list,
+.v-application.theme--dark .v-navigation-drawer .v-navigation-drawer__content,
+.v-application.theme--dark .v-navigation-drawer .v-sheet,
+.v-application.theme--dark .v-navigation-drawer .v-list {
+  background-color: transparent !important;
+}
 </style>

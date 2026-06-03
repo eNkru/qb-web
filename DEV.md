@@ -10,6 +10,11 @@ yarn install
 yarn run serve
 ```
 
+To connect the dev server to a running qBittorrent instance:
+```
+QB_WEBUI_URL=http://<your-qbittorrent-ip>:<port> yarn serve
+```
+
 ### Compiles and minifies for production
 ```
 yarn run build

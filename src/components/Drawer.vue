@@ -3,6 +3,7 @@
     dense
     expand
     class="drawer"
+    style="background-color: transparent !important;"
   >
     <template v-for="item in items">
       <v-list-group
