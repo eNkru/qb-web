@@ -1,6 +1,6 @@
 <template>
   <v-list
-    dense
+    density="compact"
     expand
     class="drawer"
     style="background-color: transparent !important;"
@@ -10,29 +10,29 @@
         v-if="item.children"
         :key="item.title"
         v-model="item.model"
-        :prepend-icon="item.model ? item.icon : item['icon-alt']"
         append-icon=""
       >
-        <template #activator>
-          <v-list-item-content>
+        <template #activator="{ props }">
+          <v-list-item v-bind="props">
+            <template #prepend>
+              <v-icon>{{ item.model ? item.icon : item['icon-alt'] }}</v-icon>
+            </template>
             <v-list-item-title>
               {{ item.title }}
             </v-list-item-title>
-          </v-list-item-content>
+          </v-list-item>
         </template>
         <v-list-item
           v-for="(child, i) in item.children"
           :key="i"
           @click="item.click ? item.click(child.value) : null"
         >
-          <v-list-item-icon v-if="child.icon">
+          <template #prepend>
             <v-icon>{{ child.icon }}</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title>
-              {{ child.title }}
-            </v-list-item-title>
-          </v-list-item-content>
+          </template>
+          <v-list-item-title>
+            {{ child.title }}
+          </v-list-item-title>
         </v-list-item>
       </v-list-group>
       <template v-else-if="item.filterGroups">
@@ -47,14 +47,12 @@
         :key="item.title"
         @click="item.click ? item.click() : null"
       >
-        <v-list-item-icon>
+        <template #prepend>
           <v-icon>{{ item.icon }}</v-icon>
-        </v-list-item-icon>
-        <v-list-item-content>
-          <v-list-item-title>
-            {{ item.title }}
-          </v-list-item-title>
-        </v-list-item-content>
+        </template>
+        <v-list-item-title>
+          {{ item.title }}
+        </v-list-item-title>
       </v-list-item>
     </template>
   </v-list>
@@ -62,8 +60,7 @@
 
 <script lang="ts">
 import { sortBy, sumBy, isUndefined } from 'lodash';
-import Vue from 'vue';
-import { mapGetters } from 'vuex';
+import { Vue, Component, Prop, Emit, toNative } from 'vue-facing-decorator';
 
 import { tr } from '@/locale';
 import { Torrent, Category, Tag } from '@/types';
@@ -73,8 +70,6 @@ import { formatSize } from '@/filters';
 import { StateType } from '@/consts';
 import { getSiteByHostname } from '@/sites'
 import { getSiteAbbreviation } from '@/utils/siteMap'
-import Component from 'vue-class-component';
-import { Prop, Emit } from 'vue-property-decorator';
 
 const stateList = [
   {
@@ -138,22 +133,10 @@ interface MenuChildrenItem extends MenuItem {
   components: {
     FilterGroup,
   },
-  computed: {
-    ...mapGetters([
-      'isDataReady',
-      'allTorrents',
-      'allCategories',
-      'allTags',
-      'torrentGroupByCategory',
-      'torrentGroupByTag',
-      'torrentGroupBySite',
-      'torrentGroupByState',
-    ]),
-  },
 })
-export default class Drawer extends Vue {
+class Drawer extends Vue {
   @Prop()
-  readonly value: any
+  readonly modelValue: any
 
   endItems: MenuItem[] = [
     { icon: 'mdi-delta', title: tr('logs'), click: () => this.updateOptions('showLogs', true) },
@@ -166,14 +149,30 @@ export default class Drawer extends Vue {
     { icon: 'mdi-history', title: tr('label.switch_to_old_ui'), click: this.switchUi },
   ]
 
-  isDataReady!: boolean
-  allTorrents!: Torrent[]
-  allCategories!: Category[]
-  allTags!: Tag[]
-  torrentGroupByCategory!: {[category: string]: Torrent[]}
-  torrentGroupByTag!: {[tag: string]: Torrent[]}
-  torrentGroupBySite!: {[site: string]: Torrent[]}
-  torrentGroupByState!: {[state: string]: Torrent[]}
+  get isDataReady(): boolean {
+    return this.$store.getters.isDataReady;
+  }
+  get allTorrents(): Torrent[] {
+    return this.$store.getters.allTorrents;
+  }
+  get allCategories(): Category[] {
+    return this.$store.getters.allCategories;
+  }
+  get allTags(): Tag[] {
+    return this.$store.getters.allTags;
+  }
+  get torrentGroupByCategory(): {[category: string]: Torrent[]} {
+    return this.$store.getters.torrentGroupByCategory;
+  }
+  get torrentGroupByTag(): {[tag: string]: Torrent[]} {
+    return this.$store.getters.torrentGroupByTag;
+  }
+  get torrentGroupBySite(): {[site: string]: Torrent[]} {
+    return this.$store.getters.torrentGroupBySite;
+  }
+  get torrentGroupByState(): {[state: string]: Torrent[]} {
+    return this.$store.getters.torrentGroupByState;
+  }
 
   created() {
    if (this.phoneLayout) {
@@ -184,7 +183,7 @@ export default class Drawer extends Vue {
   }
 
   get phoneLayout() {
-    return this.$vuetify.breakpoint.smAndDown;
+    return this.$vuetify.display.smAndDown;
   }
 
   buildStateGroup(): MenuChildrenItem[] {
@@ -325,15 +324,17 @@ export default class Drawer extends Vue {
     window.location.reload();
   }
 
-  @Emit('input')
+  @Emit('update:modelValue')
   updateOptions(key: string, value: any) {
-    return Object.assign({}, this.value, { [key]: value })
+    return Object.assign({}, this.modelValue, { [key]: value })
   }
 }
+
+export default toNative(Drawer)
 </script>
 
 <style lang="scss" scoped>
-.drawer .v-list-item__icon {
+.drawer :deep(.v-list-item__prepend) {
   margin-left: 8px;
 }
 </style>

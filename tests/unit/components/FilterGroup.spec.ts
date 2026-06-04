@@ -1,12 +1,9 @@
 import Vuex from 'vuex';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import '@/directives';
 import FilterGroup from '@/components/drawer/FilterGroup.vue';
 import * as types from '@/components/types';
 import { mock } from '../utils';
-
-const localVue = createLocalVue();
-localVue.use(Vuex);
 
 const userConfig = {
   filter: {
@@ -27,17 +24,18 @@ const store = new Vuex.Store({
 
 function mount(propsData: object) {
   return shallowMount(FilterGroup, {
-    localVue,
-    store,
-    propsData,
-    stubs: [
-      'v-list-group',
-      'v-list-item',
-      'v-list-item-icon',
-      'v-list-item-title',
-      'v-list-item-content',
-      'v-img',
-    ],
+    global: {
+      plugins: [store],
+      stubs: [
+        'v-list-group',
+        'v-list-item',
+        'v-list-item-icon',
+        'v-list-item-title',
+        'v-list-item-content',
+        'v-img',
+      ],
+    },
+    props: propsData,
   });
 }
 

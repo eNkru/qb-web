@@ -21,10 +21,10 @@
       </template>
       <template #append="row">
         <span>
-          [{{ row.item.size | size }}]
+          [{{ $formatSize(row.item.size) }}]
         </span>
         <span class="progress">
-          {{ row.item.progress | progress }}
+          {{ $progress(row.item.progress) }}
         </span>
       </template>
     </v-treeview>
@@ -35,8 +35,8 @@
 import { groupBy, xor, sumBy } from 'lodash';
 import api from '../../Api';
 import BaseTorrentInfo from './baseTorrentInfo'
-import Component from 'vue-class-component';
-import { Prop } from 'vue-property-decorator';
+
+import { Vue, Component, Prop, toNative } from 'vue-facing-decorator';
 
 enum EFilePriority {
   notDownload = 0,
@@ -72,8 +72,8 @@ const FILE_KEY = '/FILE/';
 const UNWANTED_FILE = '.unwanted';
 
 @Component
-export default class TorrentContent extends BaseTorrentInfo {
-  @Prop(String)
+class TorrentContent extends BaseTorrentInfo {
+  @Prop({ type: String })
   readonly hash!: string
 
   files: File[] = []
@@ -185,11 +185,13 @@ export default class TorrentContent extends BaseTorrentInfo {
     return this.getFiles()
   }
 }
+
+export default toNative(TorrentContent)
 </script>
 
 <style lang="scss" scoped>
 .torrent-content {
-  ::v-deep .v-treeview-node__root {
+  :deep(.v-treeview-node__root) {
     min-height: 0;
   }
 }

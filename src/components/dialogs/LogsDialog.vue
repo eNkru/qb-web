@@ -1,7 +1,6 @@
 <template>
   <v-dialog
-    :value="value"
-    @input="$emit('input', $event)"
+    v-model="showDialog"
     scrollable
     :fullscreen="phoneLayout"
     :width="dialogWidth"
@@ -22,9 +21,9 @@
             v-for="(row, i) in logs"
             :key="i"
             class="log-item"
-            :class="row.type | typeColor"
+            :class="typeColor(row.type)"
           >
-            <span class="tag">[{{ row.type | formatType }} {{ row.timestamp / 1000 | formatTimestamp }}]</span>
+            <span class="tag">[{{ formatType(row.type) }} {{ $formatTimestamp(row.timestamp / 1000) }}]</span>
             <span v-html="row.message" />
           </li>
         </ol>
@@ -44,46 +43,31 @@
 
 <script lang="ts">
 import api from '@/Api';
-import Component from 'vue-class-component';
+import { Vue, Component, Prop, Emit, toNative } from 'vue-facing-decorator';
 import HasTask from '../../mixins/hasTask';
-import { Prop, Emit } from 'vue-property-decorator';
 
-@Component({
-  filters: {
-    formatType(type: number) {
-      const map: any = {
-        1: 'N',
-        2: 'I',
-        4: 'W',
-        8: 'C',
-      };
-      return map[type];
-    },
-    typeColor(type: number) {
-      const map: any = {
-        1: null,
-        2: 'info--text',
-        4: 'warning--text',
-        8: 'error--text',
-      };
-      return map[type];
-    },
-  },
-})
-export default class LogsDialog extends HasTask {
-  @Prop(Boolean)
-  readonly value!: boolean
+@Component
+class LogsDialog extends HasTask {
+  @Prop({ type: Boolean })
+  readonly modelValue!: boolean
 
   logs: any[] = []
 
-  get dialogWidth() {
-    return this.$vuetify.breakpoint.smAndDown ? '100%' : '70%';
+  get showDialog() {
+    return this.modelValue;
   }
-  get phoneLayout() {
-    return this.$vuetify.breakpoint.xsOnly;
+  set showDialog(val: boolean) {
+    this.$emit('update:modelValue', val);
   }
 
-  @Emit('input')
+  get dialogWidth() {
+    return this.$vuetify.display.smAndDown ? '100%' : '70%';
+  }
+  get phoneLayout() {
+    return this.$vuetify.display.xs;
+  }
+
+  @Emit('update:modelValue')
   closeDialog() {
     return false
   }
@@ -108,7 +92,29 @@ export default class LogsDialog extends HasTask {
   created() {
     this.setTaskAndRun(this.getLogs)
   }
+
+  formatType(type: number) {
+    const map: any = {
+      1: 'N',
+      2: 'I',
+      4: 'W',
+      8: 'C',
+    };
+    return map[type];
+  }
+
+  typeColor(type: number) {
+    const map: any = {
+      1: null,
+      2: 'info--text',
+      4: 'warning--text',
+      8: 'error--text',
+    };
+    return map[type];
+  }
 }
+
+export default toNative(LogsDialog)
 </script>
 
 <style lang="scss" scoped>

@@ -1,10 +1,8 @@
-import Vue from 'vue';
+import { App } from 'vue';
 import { tr } from '@/locale';
 
-class I18n {
-  static install() {
-    Vue.prototype.$t = tr;
-  }
-}
-
-Vue.use(I18n);
+export default {
+  install(app: App) {
+    app.config.globalProperties.$t = tr;
+  },
+};

@@ -1,7 +1,7 @@
 <template>
   <v-dialog
-    :value="value"
-    @input="$emit('input', $event)"
+    :model-value="modelValue"
+    @update:model-value="$emit('update:modelValue', $event)"
     scrollable
     persistent
     max-width="720px"
@@ -23,13 +23,14 @@
           <v-tab
             v-for="item of tabList"
             :key="item"
+            :value="item"
           >
             {{ $t('preferences.' + item) }}
           </v-tab>
         </v-tabs>
         <v-fade-transition>
           <v-alert
-            dense
+            density="compact"
             text
             type="success"
             v-show="preferenceUpdated"
@@ -37,31 +38,29 @@
             {{ $t('preferences.change_applied') }}
           </v-alert>
         </v-fade-transition>
-        <v-tabs-items v-model="tab">
-          <v-tab-item key="downloads">
+        <v-window v-model="tab">
+          <v-window-item value="downloads">
             <download-settings />
-          </v-tab-item>
-          <v-tab-item key="speed">
+          </v-window-item>
+          <v-window-item value="speed">
             <speed-settings />
-          </v-tab-item>
-          <v-tab-item key="rss">
+          </v-window-item>
+          <v-window-item value="rss">
             <rss-settings />
-          </v-tab-item>
-          <v-tab-item key="webui">
+          </v-window-item>
+          <v-window-item value="webui">
             <web-u-i-settings />
-          </v-tab-item>
-        </v-tabs-items>
+          </v-window-item>
+        </v-window>
       </v-card-text>
     </v-card>
   </v-dialog>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import {Component, Emit, Prop, Watch} from 'vue-property-decorator'
+import { Vue, Component, Emit, Prop, Watch } from 'vue-facing-decorator'
 import DownloadSettings from './DownloadSettings.vue'
 import SpeedSettings from './SpeedSettings.vue'
-import {mapGetters} from 'vuex'
 import {Preferences} from '@/types'
 import WebUISettings from './WebUISettings.vue'
 import RssSettings from './RssSettings.vue'
@@ -75,23 +74,21 @@ import { timeout } from '@/utils'
     WebUISettings,
     RssSettings,
   },
-  computed: {
-    ...mapGetters({
-      config: 'config',
-      preferences: 'allPreferences',
-    }),
-  },
-  methods: {},
 })
 export default class SettingsDialog extends Vue {
-  @Prop(Boolean)
-  readonly value!: boolean
-  preferences!: Preferences
-  config!: Config
+  @Prop({ type: Boolean })
+  readonly modelValue!: boolean
+
+  get config(): Config {
+    return this.$store.getters.config;
+  }
+  get preferences(): Preferences {
+    return this.$store.getters.allPreferences;
+  }
 
   preferenceUpdated = false
   tabList = ['downloads', 'speed', 'rss', 'webui']
-  tab = 'download'
+  tab = 'downloads'
 
   @Watch('preferences')
   @Watch('config')
@@ -101,7 +98,7 @@ export default class SettingsDialog extends Vue {
     this.preferenceUpdated = false
   }
 
-  @Emit('input')
+  @Emit('update:modelValue')
   closeDialog() {
     return false
   }
@@ -113,6 +110,6 @@ export default class SettingsDialog extends Vue {
 
 @include dialog-title;
 
-::v-deep .v-card__text {
+:deep(.v-card__text) {
 }
 </style>

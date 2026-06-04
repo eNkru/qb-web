@@ -1,7 +1,6 @@
 <template>
   <v-app-bar
-    :clipped-left="$vuetify.breakpoint.lgAndUp"
-    :scroll-off-screen="!$vuetify.breakpoint.lgAndUp"
+    clipped-left
     app
     class="app-bar pl-2"
     :class="{'phone-layout': phoneLayout}"
@@ -40,42 +39,34 @@
 
 <script lang="ts">
 import { throttle } from 'lodash';
-import Vue from 'vue';
-import { mapMutations } from 'vuex';
+import { Vue, Component, Prop, Emit, toNative } from 'vue-facing-decorator';
 
-import Component from 'vue-class-component';
-import { Prop, Emit } from 'vue-property-decorator';
-
-@Component({
-  methods: {
-    ...mapMutations([
-      'setQuery',
-    ]),
-  },
-})
-export default class MainToolbar extends Vue {
-  @Prop(Boolean)
-  readonly value!: boolean
-
-  setQuery!: (_: string | null) => void
+@Component
+class MainToolbar extends Vue {
+  @Prop({ type: Boolean })
+  readonly modelValue!: boolean
 
   focusedSearch = false
+
+  setQuery(value: string | null) {
+    this.$store.commit('setQuery', value);
+  }
 
   get searchQuery() {
     return this.$store.state.query;
   }
 
   get phoneLayout() {
-    return this.$vuetify.breakpoint.smAndDown;
+    return this.$vuetify.display.smAndDown;
   }
 
   get searchBarExpanded() {
     return this.phoneLayout && (this.focusedSearch || !!this.searchQuery);
   }
 
-  @Emit('input')
+  @Emit('update:modelValue')
   toggle() {
-    return !this.value;
+    return !this.modelValue;
   }
 
   onSearch = throttle(async (v: string) => {
@@ -84,6 +75,8 @@ export default class MainToolbar extends Vue {
     this.setQuery(v || null);
   }, 400)
 }
+
+export default toNative(MainToolbar)
 </script>
 
 <style lang="scss" scoped>
@@ -91,11 +84,15 @@ export default class MainToolbar extends Vue {
   .bar-title {
     display: flex;
     align-items: center;
-    margin-left: -16px;
+
+    :deep(.v-toolbar-title__placeholder) {
+      display: flex;
+      align-items: center;
+    }
 
     .icon {
-      width: 40px;
-      height: 40px;
+      width: 28px;
+      height: 28px;
     }
   }
 

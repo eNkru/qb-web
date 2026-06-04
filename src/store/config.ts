@@ -1,5 +1,4 @@
 import { isPlainObject, merge } from 'lodash';
-import Vue from 'vue';
 import { Module } from 'vuex';
 import { ConfigState, ConfigPayload } from './types';
 
@@ -62,10 +61,9 @@ export const configStore: Module<ConfigState, any> = {
     updateConfig(state, payload: ConfigPayload) {
       const { key, value } = payload;
       if (isPlainObject(value)) {
-        const tmp = merge({}, state.userConfig[key], value);
-        Vue.set(state.userConfig, key, tmp);
+        state.userConfig[key] = merge({}, state.userConfig[key], value);
       } else {
-        Vue.set(state.userConfig, key, value);
+        state.userConfig[key] = value;
       }
 
       saveConfig(state.userConfig);

@@ -1,7 +1,6 @@
 <template>
   <v-dialog
-    :value="true"
-    @input="closeDialog"
+    v-model="showDialog"
     :fullscreen="phoneLayout"
     width="40em"
   >
@@ -56,25 +55,18 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import { mapGetters } from 'vuex';
+import { Vue, Component, Prop, Emit, toNative } from 'vue-facing-decorator';
 
 import api from '@/Api';
 import { findSameNamedTorrents } from '@/utils';
-import Component from 'vue-class-component';
-import { Prop, Emit } from 'vue-property-decorator';
 import { Torrent } from '../../types';
 
-@Component({
-  computed: {
-    ...mapGetters(['allTorrents']),
-  },
-})
-export default class ConfirmSetCategoryDialog extends Vue {
-  @Prop(Array)
-  readonly value!: Torrent[]
+@Component
+class ConfirmSetCategoryDialog extends Vue {
+  @Prop({ type: Array })
+  readonly modelValue!: Torrent[]
 
-  @Prop(String)
+  @Prop({ type: String })
   readonly category!: string
 
   moveSameNamed = false
@@ -82,18 +74,27 @@ export default class ConfirmSetCategoryDialog extends Vue {
   torrents: Torrent[] = []
   sameNamedTorrents: Torrent[] = []
 
-  allTorrents!: Torrent[]
+  get allTorrents(): Torrent[] {
+    return this.$store.getters.allTorrents;
+  }
+
+  get showDialog() {
+    return true;
+  }
+  set showDialog(_val: boolean) {
+    this.closeDialog();
+  }
 
   created() {
-    this.torrents = this.value;
+    this.torrents = this.modelValue;
     this.sameNamedTorrents = findSameNamedTorrents(this.allTorrents, this.torrents);
   }
 
   get phoneLayout() {
-    return this.$vuetify.breakpoint.xsOnly;
+    return this.$vuetify.display.xs;
   }
 
-  @Emit('input')
+  @Emit('update:modelValue')
   closeDialog() {
     return []
   }
@@ -117,6 +118,8 @@ export default class ConfirmSetCategoryDialog extends Vue {
     this.closeDialog();
   }
 }
+
+export default toNative(ConfirmSetCategoryDialog)
 </script>
 
 <style lang="scss" scoped>

@@ -1,6 +1,6 @@
 <template>
   <v-dialog
-    :value="true"
+    :model-value="true"
     persistent
     width="25em"
   >
@@ -15,14 +15,8 @@
         </v-toolbar-title>
       </v-toolbar>
       <v-card-text class="px-6 pt-6 pb-0">
-        <v-form
-          ref="form"
-          v-model="valid"
-        >
-          <div
-            @keyup.enter.capture="submit"
-            v-bind="{ [`grid-list-${$vuetify.breakpoint.name}`]: true }"
-          >
+        <v-form ref="form">
+          <div @keyup.enter.capture="submit">
             <v-text-field
               v-model="baseUrl"
               prepend-icon="mdi-network"
@@ -50,7 +44,7 @@
         </v-form>
         <v-alert
           type="warning"
-          :value="loginError"
+          :model-value="loginError"
           v-text="loginError"
         />
       </v-card-text>
@@ -59,7 +53,7 @@
         <v-btn
           @click="submit"
           color="primary"
-          :disabled="!valid || submitting"
+          :disabled="submitting"
           :loading="submitting"
         >
           {{ $t('submit') }}
@@ -79,7 +73,6 @@ export default defineComponent({
   setup(_, { emit }) {
     const store = useStore();
     const data = reactive({
-      valid: false,
       submitting: false,
       showPassword: false,
       loginError: null,

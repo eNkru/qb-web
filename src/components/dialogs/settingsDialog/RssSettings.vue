@@ -1,12 +1,12 @@
 <template>
   <v-container>
     <v-switch
-      :input-value="preferences.rss_processing_enabled"
+      :model-value="preferences.rss_processing_enabled"
       :label="$t('preferences.rss_processing_enabled')"
       @change="changeSettings('rss_processing_enabled', !preferences.rss_processing_enabled)"
     />
     <v-switch
-      :input-value="preferences.rss_auto_downloading_enabled"
+      :model-value="preferences.rss_auto_downloading_enabled"
       :label="$t('preferences.rss_auto_downloading_enabled')"
       @change="changeSettings('rss_auto_downloading_enabled', !preferences.rss_auto_downloading_enabled)"
     />
@@ -21,28 +21,20 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { Vue, Component } from 'vue-facing-decorator'
 import {Preferences} from '@/types'
-import {Component} from 'vue-property-decorator'
-import {mapActions, mapGetters} from 'vuex'
 
 @Component({
   components: {},
-  computed: {
-    ...mapGetters({
-      preferences: 'allPreferences',
-    }),
-  },
-  methods: {
-    ...mapActions({
-      updatePreferencesRequest: 'updatePreferencesRequest',
-    }),
-  },
 })
 export default class SpeedSettings extends Vue {
-  preferences!: Preferences
+  get preferences(): Preferences {
+    return this.$store.getters.allPreferences;
+  }
 
-  updatePreferencesRequest!: (_: any) => void
+  updatePreferencesRequest(data: any) {
+    return this.$store.dispatch('updatePreferencesRequest', data);
+  }
 
   changeSettings(property: string, value: string | boolean | number) {
     this.updatePreferencesRequest({[property]: value})
@@ -53,7 +45,7 @@ export default class SpeedSettings extends Vue {
 <style lang="scss" scoped>
 @import "~@/assets/styles.scss";
 
-.v-input--switch {
+:deep(.v-switch) {
   margin: 0
 }
 

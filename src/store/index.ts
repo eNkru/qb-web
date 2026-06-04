@@ -1,7 +1,6 @@
 import { merge, map, groupBy, sortBy } from 'lodash';
-import Vue from 'vue';
-import Vuex from 'vuex';
-import { computed, Ref } from 'vue';
+import { createStore } from 'vuex';
+import { computed, type Ref } from 'vue';
 
 import { configStore } from './config';
 import { dialogStore } from './dialog';
@@ -13,11 +12,9 @@ import searchEngineStore from './searchEngine';
 import { RootState } from './types';
 import stateMerge from '@/utils/vue-object-merge';
 import api from '@/Api';
-import { Torrent } from '@/types'
+import { Torrent } from '@/types';
 
-Vue.use(Vuex);
-
-const store = new Vuex.Store<RootState>({
+const store = createStore<RootState>({
   modules: {
     config: configStore,
     dialog: dialogStore,
@@ -45,19 +42,19 @@ const store = new Vuex.Store<RootState>({
         const mainData = state.mainData!;
         if (payload.torrents_removed) {
           for (const hash of payload.torrents_removed) {
-            Vue.delete(mainData.torrents, hash);
+            delete mainData.torrents[hash];
           }
           delete payload.torrents_removed;
         }
         if (payload.categories_removed) {
           for (const key of payload.categories_removed) {
-            Vue.delete(mainData, key);
+            delete (mainData as any)[key];
           }
           delete payload.categories_removed;
         }
         if (payload.tags_removed) {
           for (const key of payload.tags_removed) {
-            Vue.delete(mainData, key);
+            delete (mainData as any)[key];
           }
           delete payload.categories_removed;
         }
@@ -178,7 +175,6 @@ const store = new Vuex.Store<RootState>({
     async updatePreferencesRequest({ dispatch }, preferences) {
       try {
         await api.setPreferences(preferences);
-        //setPreference api return a empty response. Need to update preference by another request.
         const preferenceRes = await api.getAppPreferences();
         dispatch("updatePreferencesRequestSuccess", preferenceRes.data);
       } catch {
@@ -211,13 +207,22 @@ export function useMutations(mutations: [string], namespace?: string) {
   return result;
 }
 
-export function useState(states: [string], namespace?: string) {
-  const state = namespace ? (store.state as any)[namespace] : store.state;
+export function useState(keys: string[], namespace?: string) {
+  const result: Record<string, Ref<any>> = {};
 
-  const result: {[key: string]: Readonly<Ref<Readonly<any>>>} = {};
-
-  states.forEach((s) => {
-    result[s] = computed(() => state[s]);
+  keys.forEach((k) => {
+    const path = namespace ? `${namespace}/${k}` : k;
+    result[k] = computed(() => {
+      const parts = path.split('/');
+      let s: any = store.state;
+      for (const p of parts) {
+        if (s == null) {
+          return undefined;
+        }
+        s = s[p];
+      }
+      return s;
+    });
   });
 
   return result;

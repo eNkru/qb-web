@@ -1,7 +1,6 @@
 <template>
   <v-dialog
-    :value="true"
-    @input="closeDialog"
+    v-model="showDialog"
     :fullscreen="phoneLayout"
     width="40em"
   >
@@ -56,23 +55,16 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import { mapGetters } from 'vuex';
+import { Vue, Component, Emit, Prop, toNative } from 'vue-facing-decorator';
 
 import api from '@/Api';
 import { findSameNamedTorrents } from '@/utils';
 import { Torrent } from '../../types';
-import Component from 'vue-class-component';
-import { Emit, Prop } from 'vue-property-decorator';
 
-@Component({
-  computed: {
-    ...mapGetters(['allTorrents']),
-  },
-})
-export default class ConfirmDeleteDialog extends Vue {
-  @Prop(Array)
-  readonly value!: Torrent[]
+@Component
+class ConfirmDeleteDialog extends Vue {
+  @Prop({ type: Array })
+  readonly modelValue!: Torrent[]
 
   deleteFiles = false
   deleteSameNamed = false
@@ -81,18 +73,27 @@ export default class ConfirmDeleteDialog extends Vue {
   torrents: Torrent[] = []
   sameNamedTorrents: Torrent[] = []
 
-  allTorrents!: Torrent[]
+  get allTorrents(): Torrent[] {
+    return this.$store.getters.allTorrents;
+  }
+
+  get showDialog() {
+    return true;
+  }
+  set showDialog(_val: boolean) {
+    this.closeDialog();
+  }
 
   created() {
-    this.torrents = this.value;
+    this.torrents = this.modelValue;
     this.sameNamedTorrents = findSameNamedTorrents(this.allTorrents, this.torrents);
   }
 
   get phoneLayout() {
-    return this.$vuetify.breakpoint.xsOnly;
+    return this.$vuetify.display.xs;
   }
 
-  @Emit('input')
+  @Emit('update:modelValue')
   closeDialog() {
     return []
   }
@@ -116,6 +117,8 @@ export default class ConfirmDeleteDialog extends Vue {
     this.closeDialog();
   }
 }
+
+export default toNative(ConfirmDeleteDialog)
 </script>
 
 <style lang="scss" scoped>

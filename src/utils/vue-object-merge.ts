@@ -1,7 +1,4 @@
-import Vue from 'vue';
 import { isPlainObject } from 'lodash';
-
-// based on https://github.com/richardtallent/vue-object-merge/blob/main/index.js
 
 export const stateMerge = function(state: any, value: any, propName?: string, ignoreNull?: boolean) {
 	if (isPlainObject(state) && (propName == null || propName in state)) {
@@ -13,9 +10,13 @@ export const stateMerge = function(state: any, value: any, propName?: string, ig
 			return;
 		}
 	}
-	if (!ignoreNull || value !== null) Vue.set(state, propName!, value);
+	if (!ignoreNull || value !== null) {
+		if (propName != null) {
+			state[propName] = value;
+		}
+	}
 
-    return state;
+  return state;
 };
 
 export default stateMerge;

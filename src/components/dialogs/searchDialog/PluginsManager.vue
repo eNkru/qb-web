@@ -10,7 +10,7 @@
         <v-switch
           v-for="(plugin, key) in searchEngineState.searchPlugins"
           :key="key"
-          :input-value="plugin.enabled"
+          :model-value="plugin.enabled"
           :label="plugin.fullName"
           @change="togglePluginAvailability(plugin)"
         />
@@ -30,27 +30,20 @@
 <script lang="ts">
 import { SearchEnginePage } from "@/store/types";
 import { SearchPlugin } from "@/types";
-import Vue from "vue";
-import Component from "vue-class-component";
-import { mapActions, mapState } from "vuex";
+import { Vue, Component } from "vue-facing-decorator";
 
-@Component({
-  computed: {
-    ...mapState({
-      searchEngineState: "searchEngine",
-    }),
-  },
-  methods: {
-    ...mapActions({
-      togglePluginAvailabilityAction: "togglePluginAvailability",
-      updatePluginsRequest: "updatePluginsRequest",
-    }),
-  },
-})
+@Component
 export default class PluginsManager extends Vue {
-  searchEngineState!: SearchEnginePage;
-  togglePluginAvailabilityAction!: (_: any) => void;
-  updatePluginsRequest!: () => void;
+  get searchEngineState(): SearchEnginePage {
+    return this.$store.state.searchEngine;
+  }
+
+  togglePluginAvailabilityAction(plugin: SearchPlugin) {
+    return this.$store.dispatch('togglePluginAvailability', plugin);
+  }
+  updatePluginsRequest() {
+    return this.$store.dispatch('updatePluginsRequest');
+  }
 
   togglePluginAvailability(plugin: SearchPlugin) {
     this.togglePluginAvailabilityAction(plugin);

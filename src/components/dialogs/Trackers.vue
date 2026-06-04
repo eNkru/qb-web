@@ -2,18 +2,18 @@
   <v-data-table
     :headers="headers"
     :items="trackers"
-    :items-per-page="-1"
-    :hide-default-footer="true"
+    :items-per-page="99999"
   >
+    <template #bottom />
     <template #item="row">
       <tr>
         <td>{{ row.item.tier }}</td>
         <td>{{ row.item.url }}</td>
-        <td>{{ row.item.status | formatTrackerStatus }}</td>
-        <td>{{ row.item.num_peers | formatTrackerNum }}</td>
-        <td>{{ row.item.num_seeds | formatTrackerNum }}</td>
-        <td>{{ row.item.num_leeches | formatTrackerNum }}</td>
-        <td>{{ row.item.num_downloaded | formatTrackerNum }}</td>
+        <td>{{ formatTrackerStatus(row.item.status) }}</td>
+        <td>{{ formatTrackerNum(row.item.num_peers) }}</td>
+        <td>{{ formatTrackerNum(row.item.num_seeds) }}</td>
+        <td>{{ formatTrackerNum(row.item.num_leeches) }}</td>
+        <td>{{ formatTrackerNum(row.item.num_downloaded) }}</td>
         <td>{{ row.item.msg }}</td>
       </tr>
     </template>
@@ -22,35 +22,14 @@
 
 <script lang="ts">
 import api from '../../Api';
-import Component from 'vue-class-component';
-import { Prop } from 'vue-property-decorator';
+
+import { Vue, Component, Prop, toNative } from 'vue-facing-decorator';
 import BaseTorrentInfo from './baseTorrentInfo';
 import { tr } from '@/locale'
 
-@Component({
-  filters: {
-    formatTrackerStatus(status: number) {
-      const map = [
-        tr('properties_widget.disabled'),
-        tr('properties_widget.notContracted'),
-        tr('properties_widget.working'),
-        tr('properties_widget.updating'),
-        tr('properties_widget.notWorking'),
-      ];
-
-      return map[status];
-    },
-    formatTrackerNum(num: number) {
-      if (num === -1) {
-        return 'N/A';
-      }
-
-      return num.toString();
-    },
-  },
-})
-export default class Trackers extends BaseTorrentInfo {
-  @Prop(String)
+@Component
+class Trackers extends BaseTorrentInfo {
+  @Prop({ type: String })
   readonly hash!: string
 
   readonly headers = [
@@ -73,5 +52,27 @@ export default class Trackers extends BaseTorrentInfo {
   fetchInfo() {
     return this.getTracker()
   }
+
+  formatTrackerStatus(status: number) {
+    const map = [
+      tr('properties_widget.disabled'),
+      tr('properties_widget.notContracted'),
+      tr('properties_widget.working'),
+      tr('properties_widget.updating'),
+      tr('properties_widget.notWorking'),
+    ];
+
+    return map[status];
+  }
+
+  formatTrackerNum(num: number) {
+    if (num === -1) {
+      return 'N/A';
+    }
+
+    return num.toString();
+  }
 }
+
+export default toNative(Trackers)
 </script>

@@ -1,10 +1,5 @@
 import Vuex from 'vuex';
-import { createLocalVue } from '@vue/test-utils';
 import { configStore } from '@/store/config';
-
-
-const localVue = createLocalVue();
-localVue.use(Vuex);
 
 const store = new Vuex.Store({
   modules: {

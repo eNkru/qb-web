@@ -1,5 +1,4 @@
-import Vue from 'vue'
-import Component from 'vue-class-component'
+import { Vue, Component } from 'vue-facing-decorator'
 
 @Component
 export default class HasTask extends Vue {
@@ -40,7 +39,7 @@ export default class HasTask extends Vue {
     }
   }
 
-  beforeDestroy() {
+  beforeUnmount() {
     this.destroy = true;
     this.cancelTask();
   }

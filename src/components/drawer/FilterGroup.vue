@@ -1,23 +1,25 @@
 <template>
   <v-list-group
     v-model="model"
-    :prepend-icon="model ? group.icon : group['icon-alt']"
     class="filter-group"
   >
-    <template #activator>
-      <v-list-item-content>
-        <v-list-item-title v-class:primary--text="selected !== null">
+    <template #activator="{ props }">
+      <v-list-item v-bind="props">
+        <template #prepend>
+          <v-icon>{{ model ? group.icon : group['icon-alt'] }}</v-icon>
+        </template>
+        <v-list-item-title :class="{'text-primary': selected !== null}">
           {{ group.title }}
         </v-list-item-title>
-      </v-list-item-content>
+      </v-list-item>
     </template>
     <v-list-item
       v-for="(child, i) in group.children"
       :key="i"
-      v-class:v-list-item--active="selected === child.key"
+      :active="selected === child.key"
       @click.stop="select(child.key)"
     >
-      <v-list-item-icon>
+      <template #prepend>
         <v-icon v-if="isFontIcon(child.icon)">
           {{ child.icon }}
         </v-icon>
@@ -28,29 +30,25 @@
             height="20px"
           />
         </div>
-      </v-list-item-icon>
-      <v-list-item-content>
-        <v-list-item-title>
-          <template v-if="child.append">
-            <div class="d-flex">
-              {{ child.title }}
-              <v-spacer />
-              {{ child.append }}
-            </div>
-          </template>
-          <template v-else>
+      </template>
+      <v-list-item-title>
+        <template v-if="child.append">
+          <div class="d-flex">
             {{ child.title }}
-          </template>
-        </v-list-item-title>
-      </v-list-item-content>
+            <v-spacer />
+            {{ child.append }}
+          </div>
+        </template>
+        <template v-else>
+          {{ child.title }}
+        </template>
+      </v-list-item-title>
     </v-list-item>
   </v-list-group>
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import Component from 'vue-class-component';
-import { Prop } from 'vue-property-decorator';
+import { Vue, Component, Prop } from 'vue-facing-decorator';
 import { Group } from '../types'
 
 @Component
@@ -92,8 +90,8 @@ export default class FilterGroup extends Vue {
 
 <style lang="scss" scoped>
 .filter-group {
-  ::v-deep .v-list-group__header {
-    .v-list-item__icon {
+  :deep(.v-list-group__header) {
+    .v-list-item__prepend {
       margin-left: 8px;
     }
   }
@@ -101,12 +99,16 @@ export default class FilterGroup extends Vue {
   .v-list-item {
     min-height: 0;
 
-    .v-list-item__icon {
-      margin: 2px 30px 2px 10px;
+    :deep(.v-list-item__prepend) {
+      margin: 2px 8px 2px 10px;
 
       .v-icon {
         font-size: 20px;
       }
+    }
+
+    :deep(.v-list-item__spacer) {
+      display: none;
     }
 
     .v-list-item__content {

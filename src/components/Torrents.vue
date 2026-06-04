@@ -1,7 +1,7 @@
 <template>
   <div
     class="torrents"
-    v-class:phone-layout="$vuetify.breakpoint.xsOnly"
+    :class="{'phone-layout': $vuetify.display.xs}"
   >
     <div class="toolbar-wrapper">
       <div class="toolbar">
@@ -13,10 +13,7 @@
         >
           <v-icon>mdi-delete</v-icon>
         </v-btn>
-        <v-divider
-          vertical
-          inset
-        />
+        <div class="toolbar-divider" />
         <v-btn
           icon
           @click="resumeTorrents"
@@ -43,10 +40,7 @@
           <v-icon>mdi-play-speed</v-icon>
         </v-btn>
 
-        <v-divider
-          vertical
-          inset
-        />
+        <div class="toolbar-divider" />
         <v-btn
           icon
           @click="showInfo()"
@@ -55,11 +49,11 @@
         >
           <v-icon>mdi-alert-circle</v-icon>
         </v-btn>
-        <v-menu offset-y>
-          <template #activator="{ on }">
+        <v-menu>
+          <template #activator="{ props: menuProps }">
             <v-btn
               icon
-              v-on="on"
+              v-bind="menuProps"
               :title="$t('title.set_category')"
               :disabled="!hasSelected"
             >
@@ -67,33 +61,29 @@
             </v-btn>
           </template>
           <v-list class="category-actions">
-            <v-subheader @click.stop="">
+            <v-list-subheader @click.stop="">
               {{ $t('title.set_category') }}
-            </v-subheader>
+            </v-list-subheader>
             <v-list-item
               v-for="(item, i) in allCategories"
               :key="i"
               @click="setTorrentsCategory(item.key)"
             >
-              <v-list-item-action>
+              <template #prepend>
                 <v-icon>mdi-folder</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title>
-                  {{ item.name }}
-                </v-list-item-title>
-              </v-list-item-content>
+              </template>
+              <v-list-item-title>
+                {{ item.name }}
+              </v-list-item-title>
             </v-list-item>
             <v-divider />
             <v-list-item @click="setTorrentsCategory('')">
-              <v-list-item-action>
+              <template #prepend>
                 <v-icon>mdi-folder-remove</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title>
-                  {{ $t('reset') }}
-                </v-list-item-title>
-              </v-list-item-content>
+              </template>
+              <v-list-item-title>
+                {{ $t('reset') }}
+              </v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -129,11 +119,8 @@
         >
           <v-icon>mdi-chevron-double-down</v-icon>
         </v-btn>
-        <template v-if="!$vuetify.breakpoint.xsOnly">
-          <v-divider
-            vertical
-            inset
-          />
+        <template v-if="!$vuetify.display.xs">
+          <div class="toolbar-divider" />
           <v-btn
             icon
             @click="toggleSequentialTorrents"
@@ -182,94 +169,91 @@
         :headers="headers"
         :items="torrents"
         item-key="hash"
+        item-value="hash"
         fixed-header
-        v-class:hide-headers="hasSelected"
+        :class="{'hide-headers': hasSelected}"
         show-select
-        :options.sync="pageOptions"
-        v-model="selectedRows"
+        v-model:options="pageOptions"
+        v-model:selected="selectedRows"
         :loading="loading"
-        dense
-        :footer-props="footerProps"
-        :mobile-breakpoint="0"
+        density="compact"
+        :items-per-page-options="[10, 20, 50, -1]"
       >
-        <template #item="row">
+        <template #item="{ item, internalItem, isSelected, toggleSelect }">
           <tr
-            :key="row.item.hash"
+            :key="item.hash"
             :class="{
               'torrent-row': true,
-              'torrent-row--selected': row.isSelected,
+              'torrent-row--selected': isSelected(internalItem),
             }"
-            @click="toggleRowSelection(row)"
-            @dblclick.prevent="showInfo(row.item)"
-            @contextmenu.stop.prevent="onRowContextMenu($event, row.item)"
+            @click="toggleSelect(internalItem)"
+            @dblclick.prevent="showInfo(item)"
+            @contextmenu.stop.prevent="onRowContextMenu($event, item)"
           >
             <td>
-              <v-checkbox
-                :value="row.isSelected"
-                @change="row.select"
-                @click.stop=""
-                hide-details
+              <v-checkbox-btn
+                :model-value="isSelected(internalItem)"
+                @click.stop="toggleSelect(internalItem)"
               />
             </td>
             <td
-              :title="row.item.name"
+              :title="item.name"
               class="icon-label"
             >
-              <v-icon :color="row.item.state | stateColor">
-                {{ row.item.state | stateIcon }}
+              <v-icon :color="stateColor(item.state)">
+                {{ stateIcon(item.state) }}
               </v-icon>
               <span class="torrent-title">
-                {{ row.item.name }}
+                {{ item.name }}
               </span>
             </td>
             <td>
               <v-tooltip bottom>
-                <template #activator="{ on, attrs }">
+                <template #activator="{ props: tooltipProps }">
                   <v-chip
-                    v-bind="attrs"
+                    v-bind="tooltipProps"
                     small
                     label
                     class="site-chip"
-                    v-on="on"
                   >
                     <img
-                      v-if="getTrackerSiteIcon(row.item.tracker)"
-                      :src="getTrackerSiteIcon(row.item.tracker)"
-                      :alt="getTrackerSiteName(row.item.tracker)"
+                      v-if="getTrackerSiteIcon(item.tracker)"
+                      :src="getTrackerSiteIcon(item.tracker)"
+                      :alt="getTrackerSiteName(item.tracker)"
                       class="site-chip__icon"
                     >
                     <span class="site-chip__label">
-                      {{ getTrackerSiteName(row.item.tracker) }}
+                      {{ getTrackerSiteName(item.tracker) }}
                     </span>
                   </v-chip>
                 </template>
-                <span>{{ getTrackerHostname(row.item.tracker) || row.item.tracker }}</span>
+                <span>{{ getTrackerHostname(item.tracker) || item.tracker }}</span>
               </v-tooltip>
             </td>
-            <td>{{ row.item.size | formatSize }}</td>
+            <td>{{ $formatSize(item.size) }}</td>
             <td>
               <v-progress-linear
                 height="1.4em"
-                :value="row.item.progress * 100"
-                :color="row.item.state | stateColor(true, row.item.seq_dl)"
+                :model-value="item.progress * 100"
+                :color="stateColor(item.state, true, item.seq_dl)"
                 class="text-center ma-0"
               >
-                <span :class="getProgressColorClass(row.item.progress)">
-                  {{ row.item.progress | progress }}
+                <span :class="getProgressColorClass(item.progress)">
+                  {{ $progress(item.progress) }}
                 </span>
               </v-progress-linear>
             </td>
-            <td>{{ $t('torrent_state.' + row.item.state) }}</td>
-            <td>{{ formatTorrentPriority(row.item.priority) }}</td>
-            <td>{{ row.item.num_seeds }}/{{ row.item.num_complete }}</td>
-            <td>{{ row.item.num_leechs }}/{{ row.item.num_incomplete }}</td>
-            <td>{{ row.item.dlspeed | formatNetworkSpeed }}</td>
-            <td>{{ row.item.upspeed | formatNetworkSpeed }}</td>
-            <td>{{ row.item.eta | formatDuration({dayLimit: 100}) }}</td>
-            <td>{{ row.item.ratio.toFixed(2) }}</td>
+            <td>{{ $t('torrent_state.' + item.state) }}</td>
+            <td>{{ formatTorrentPriority(item.priority) }}</td>
+            <td>{{ item.num_seeds }}/{{ item.num_complete }}</td>
+            <td>{{ item.num_leechs }}/{{ item.num_incomplete }}</td>
+            <td>{{ formatNetworkSpeed(item.dlspeed) }}</td>
+            <td>{{ formatNetworkSpeed(item.upspeed) }}</td>
+            <td>{{ $formatDuration(item.eta, {dayLimit: 100}) }}</td>
+            <td>{{ item.ratio.toFixed(2) }}</td>
             <td>
-              <span :title="row.item.added_on | formatTimestamp">
-                {{ row.item.added_on | formatAsDuration }} ago
+              <span :title="$formatTimestamp(item.added_on)">
+                {{ $formatAsDuration(item.added_on) }} ago
               </span>
             </td>
           </tr>
@@ -293,14 +277,13 @@
     <info-dialog
       v-if="toShowInfo.length"
       v-model="toShowInfo"
-      :tab.sync="infoTab"
+      v-model:tab="infoTab"
     />
   </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
+import { Vue, Component, Watch, toNative } from 'vue-facing-decorator'
 import { intersection, difference, uniqBy } from 'lodash'
 
 import { tr } from '@/locale'
@@ -313,9 +296,7 @@ import { formatSize } from '@/filters'
 import { getSiteAbbreviation } from '@/utils/siteMap'
 import { getSiteByHostname } from '@/sites'
 import { DialogType, TorrentFilter, ConfigPayload, DialogConfig, SnackBarConfig } from '@/store/types'
-import Component from 'vue-class-component'
 import { Torrent, Category, Tag } from '@/types'
-import { Watch } from 'vue-property-decorator'
 
 function getTrackerHostname(tracker: string) {
   if (!tracker) {
@@ -411,72 +392,9 @@ function getStateInfo(state: string) {
     EditTrackerDialog,
     InfoDialog,
   },
-  computed: {
-    ...mapGetters([
-      'isDataReady',
-      'allTorrents',
-      'allTags',
-      'allCategories',
-      'torrentGroupByCategory',
-      'torrentGroupByTag',
-      'torrentGroupBySite',
-      'torrentGroupByState',
-    ]),
-    ...mapState({
-      filter(state, getters) {
-        return getters.config.filter;
-      },
-      query(state: any) {
-        return state.query;
-      },
-    }),
-  },
-  filters: {
-    formatNetworkSpeed(speed: number) {
-      if (speed === 0) {
-        return null;
-      }
-
-      return `${formatSize(speed)}/s`;
-    },
-    trackerSite(tracker: string) {
-      if (!tracker) {
-        return '';
-      }
-      try {
-        const hostname = new URL(tracker).hostname;
-        return getSiteAbbreviation(hostname);
-      } catch {
-        return tracker;
-      }
-    },
-    stateIcon(state: string) {
-      const item = getStateInfo(state);
-      return `mdi-${item.icon}`;
-    },
-    stateColor(state: string, isProgress?: boolean, isSeqDL?: boolean) {
-      const item = getStateInfo(state);
-      if (!isProgress) {
-        return item.color;
-      }
-      if (isSeqDL) {
-        return '#e33371' // icon.color.secondary;
-      }
-
-      return item.color || '#0008';
-    },
-  },
-  methods: {
-    ...mapMutations([
-      'updateConfig',
-      'showSnackBar',
-    ]),
-    ...mapActions([
-      'asyncShowDialog',
-    ]),
-  },
+  emits: ['torrent-contextmenu'],
 })
-export default class Torrents extends Vue {
+class Torrents extends Vue {
   readonly headers = [
     { text: tr('name'), value: 'name' },
     { text: tr('sites'), value: 'tracker' },
@@ -493,10 +411,6 @@ export default class Torrents extends Vue {
     { text: tr('added_on'), value: 'added_on' },
   ]
 
-  readonly footerProps = {
-    'items-per-page-options': [10, 20, 50, -1],
-  }
-
   selectedRows: Torrent[] = []
   toDelete: Torrent[] = []
   toSetCategory: Torrent[] = []
@@ -506,20 +420,46 @@ export default class Torrents extends Vue {
   infoTab = null
   pageOptions: any = null
 
-  isDataReady!: boolean
-  allTorrents!: Torrent[]
-  allCategories!: Category[]
-  allTags!: Tag[]
-  torrentGroupByCategory!: {[category: string]: Torrent[]}
-  torrentGroupByTag!: {[tag: string]: Torrent[]}
-  torrentGroupBySite!: {[site: string]: Torrent[]}
-  torrentGroupByState!: {[state: string]: Torrent[]}
-  filter!: TorrentFilter
-  query!: string | null
+  get isDataReady(): boolean {
+    return this.$store.getters.isDataReady;
+  }
+  get allTorrents(): Torrent[] {
+    return this.$store.getters.allTorrents;
+  }
+  get allCategories(): Category[] {
+    return this.$store.getters.allCategories;
+  }
+  get allTags(): Tag[] {
+    return this.$store.getters.allTags;
+  }
+  get torrentGroupByCategory(): {[category: string]: Torrent[]} {
+    return this.$store.getters.torrentGroupByCategory;
+  }
+  get torrentGroupByTag(): {[tag: string]: Torrent[]} {
+    return this.$store.getters.torrentGroupByTag;
+  }
+  get torrentGroupBySite(): {[site: string]: Torrent[]} {
+    return this.$store.getters.torrentGroupBySite;
+  }
+  get torrentGroupByState(): {[state: string]: Torrent[]} {
+    return this.$store.getters.torrentGroupByState;
+  }
+  get filter(): TorrentFilter {
+    return this.$store.getters.config.filter;
+  }
+  get query(): string | null {
+    return this.$store.state.query;
+  }
 
-  updateConfig!: (_: ConfigPayload) => void
-  showSnackBar!: (_: SnackBarConfig) => void
-  asyncShowDialog!: (_: DialogConfig) => Promise<string | undefined>
+  updateConfig(payload: ConfigPayload) {
+    this.$store.commit('updateConfig', payload);
+  }
+  showSnackBar(config: SnackBarConfig) {
+    this.$store.commit('showSnackBar', config);
+  }
+  async asyncShowDialog(config: DialogConfig): Promise<string | undefined> {
+    return this.$store.dispatch('asyncShowDialog', config);
+  }
 
   get loading() {
     return !this.isDataReady;
@@ -564,7 +504,32 @@ export default class Torrents extends Vue {
 
   get hasSelectedAll() {
     return this.hasSelected && this.selectedRows.length
-      === Math.min(this.torrents.length, this.pageOptions.rowsPerPage);
+      === Math.min(this.torrents.length, this.pageOptions?.itemsPerPage);
+  }
+
+  stateIcon(state: string) {
+    const item = getStateInfo(state);
+    return `mdi-${item.icon}`;
+  }
+
+  stateColor(state: string, isProgress?: boolean, isSeqDL?: boolean) {
+    const item = getStateInfo(state);
+    if (!isProgress) {
+      return item.color;
+    }
+    if (isSeqDL) {
+      return '#e33371';
+    }
+
+    return item.color || '#0008';
+  }
+
+  formatNetworkSpeed(speed: number) {
+    if (speed === 0) {
+      return null;
+    }
+
+    return `${formatSize(speed)}/s`;
   }
 
   getTrackerSiteName(tracker: string) {
@@ -590,7 +555,7 @@ export default class Torrents extends Vue {
   }
 
   getProgressColorClass(progress: number) {
-    const color = (progress >= 0.5 || (this as any).$vuetify.theme.dark)
+    const color = (progress >= 0.5 || (this.$vuetify.theme as any).global.current.dark)
       ? 'white' : 'black';
     return `${color}--text`;
   }
@@ -601,10 +566,6 @@ export default class Torrents extends Vue {
     }
 
     return priority;
-  }
-
-  toggleRowSelection(row: any) {
-    row.select(!row.isSelected);
   }
 
   onRowContextMenu(e: MouseEvent, torrent: Torrent) {
@@ -750,6 +711,8 @@ export default class Torrents extends Vue {
     this.selectedRows = this.selectedRows.filter(r => !toRemove.includes(r.hash));
   }
 }
+
+export default toNative(Torrents)
 </script>
 
 <style lang="scss" scoped>
@@ -757,7 +720,19 @@ export default class Torrents extends Vue {
 
 .toolbar {
   display: flex;
+  align-items: center;
   margin-left: 2px;
+  gap: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 0 4px;
+  flex-shrink: 0;
 }
 
 .torrents {
@@ -769,72 +744,58 @@ export default class Torrents extends Vue {
 
 .table-wrapper {
   flex: 1;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 
   .v-data-table {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-
+    flex: 1;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 
-    ::v-deep .v-data-table__wrapper {
+    :deep(.v-data-table__wrapper) {
       flex: 1;
+      overflow-y: auto;
     }
 
-    ::v-deep .torrent-row {
+    :deep(.torrent-row) {
       cursor: pointer;
     }
 
-    ::v-deep .torrent-row--selected > td {
+    :deep(.torrent-row--selected > td) {
       background-color: rgba(25, 118, 210, 0.12);
     }
 
-    ::v-deep .torrent-row--selected:hover > td {
+    :deep(.torrent-row--selected:hover > td) {
       background-color: rgba(25, 118, 210, 0.18);
     }
 
-    ::v-deep thead th, td {
+    :deep(thead th), td {
       white-space: nowrap;
       padding: 0 4px;
       overflow: hidden;
     }
 
-    ::v-deep thead th .v-data-table__checkbox {
+    :deep(thead th .v-data-table__checkbox) {
       padding-left: 4px;
     }
 
-    ::v-deep .v-data-table__wrapper table {
+    :deep(.v-data-table__wrapper table) {
       border-collapse: separate;
       border-spacing: 0 6px;
     }
 
-    @include dark-mode-value(
-      map-deep-get($material-light, 'table', 'hover'),
-      map-get($material-dark-elevation-colors, '4'),
-    ) using ($color) {
-      tr:nth-child(2n) {
-        background-color: $color;
-      }
-    }
-
     td {
-      font-size: 0.8125rem;
       height: auto;
+      vertical-align: middle;
       border-bottom: none !important;
       padding-top: 8px !important;
       padding-bottom: 8px !important;
       background-color: inherit;
 
-      .v-input--checkbox {
-        margin-top: 0;
-        padding-top: 0;
-
-        ::v-deep .v-input--selection-controls__input {
-          margin: 0 4px;
-        }
+      .v-checkbox-btn {
+        margin: 0 4px;
       }
 
       .torrent-title {
@@ -844,10 +805,10 @@ export default class Torrents extends Vue {
       }
     }
 
-    &::v-deep .v-data-footer {
+    :deep(.v-data-table-footer) {
       margin-right: 4em;
 
-      .v-data-footer__select .v-select {
+      .v-data-table-footer__items-per-page .v-select {
         margin: {
           top: 10px;
           bottom: 10px;
@@ -858,24 +819,32 @@ export default class Torrents extends Vue {
 }
 
 .phone-layout {
-  .v-data-table::v-deep .v-data-footer {
+  .v-data-table :deep(.v-data-table-footer) {
     justify-content: flex-start;
     flex-wrap: nowrap;
     margin-right: 0;
 
-    .v-data-footer__select {
+    .v-data-table-footer__items-per-page {
       display: none;
     }
 
-    .v-data-footer__pagination {
+    .v-data-table-footer__pagination {
       margin-left: 0;
     }
   }
 }
 
 .icon-label {
-  display: flex;
-  align-items: center;
+  white-space: nowrap;
+}
+
+.icon-label :deep(.v-icon) {
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.icon-label .torrent-title {
+  vertical-align: middle;
 }
 
 .site-chip {
@@ -889,7 +858,7 @@ export default class Torrents extends Vue {
   box-shadow: none;
   color: rgba(15, 23, 42, 0.82);
 
-  &::v-deep .v-chip__content {
+  :deep(.v-chip__content) {
     display: inline-flex;
     align-items: center;
     width: 100%;
@@ -899,7 +868,7 @@ export default class Torrents extends Vue {
   }
 }
 
-.theme--dark .site-chip {
+.v-theme--dark .site-chip {
   border-color: rgba(100, 116, 139, 0.55);
   background: rgba(30, 41, 59, 0.88);
   box-shadow: none;
@@ -919,7 +888,6 @@ export default class Torrents extends Vue {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.01em;
 }
