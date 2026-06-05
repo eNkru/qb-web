@@ -421,7 +421,8 @@ export default toNative(App)
 </style>
 
 <style lang="scss">
-html {
+html, body, #app {
+  height: 100%;
   overflow-y: hidden;
 }
 
@@ -446,8 +447,17 @@ html {
   width: 100% !important;
 }
 
+.v-application__wrap {
+  min-height: auto !important;
+  height: 100%;
+}
+
 .v-main {
   padding-top: 64px !important;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow: hidden;
 }
 
 // Grey theme background colors

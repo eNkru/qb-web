@@ -13,7 +13,7 @@
     <v-text-field
       suffix="min"
       type="number"
-      :value="preferences.rss_refresh_interval"
+      :model-value="preferences.rss_refresh_interval"
       :label="$t('preferences.rss_refresh_interval')"
       @change="changeSettings('rss_refresh_interval', $event)"
     />

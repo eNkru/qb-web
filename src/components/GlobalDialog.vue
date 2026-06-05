@@ -28,7 +28,7 @@
           v-for="(btn, index) in btns"
           :key="index"
           color="info"
-          text
+          variant="text"
           @click="clickBtn(btn[1])"
         >
           {{ btn[0] }}

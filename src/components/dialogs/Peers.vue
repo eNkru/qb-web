@@ -21,7 +21,7 @@
             </template>
           </template>
           {{ row.item.ip }}
-          <span class="grey--text">
+          <span class="text-grey">
             :{{ row.item.port }}
           </span>
         </td>
@@ -58,17 +58,17 @@ class Peers extends BaseTorrentInfo {
   readonly hash!: string
 
   headers = [
-    { text: tr('properties_widget.ip'), value: 'ip' },
-    { text: tr('properties_widget.connection'), value: 'connection' },
-    { text: tr('properties_widget.flags'), value: 'flags' },
-    { text: tr('properties_widget.client'), value: 'client' },
-    { text: tr('properties_widget.progress'), value: 'progress' },
-    { text: tr('properties_widget.downloadSpeed'), value: 'dl_speed' },
-    { text: tr('properties_widget.downloaded'), value: 'downloaded' },
-    { text: tr('properties_widget.uploadSpeed'), value: 'up_speed' },
-    { text: tr('properties_widget.uploaded'), value: 'uploaded' },
-    { text: tr('properties_widget.relevance'), value: 'relevance' },
-    { text: tr('properties_widget.files'), value: 'files' },
+    { title: tr('properties_widget.ip'), key: 'ip' },
+    { title: tr('properties_widget.connection'), key: 'connection' },
+    { title: tr('properties_widget.flags'), key: 'flags' },
+    { title: tr('properties_widget.client'), key: 'client' },
+    { title: tr('properties_widget.progress'), key: 'progress' },
+    { title: tr('properties_widget.downloadSpeed'), key: 'dl_speed' },
+    { title: tr('properties_widget.downloaded'), key: 'downloaded' },
+    { title: tr('properties_widget.uploadSpeed'), key: 'up_speed' },
+    { title: tr('properties_widget.uploaded'), key: 'uploaded' },
+    { title: tr('properties_widget.relevance'), key: 'relevance' },
+    { title: tr('properties_widget.files'), key: 'files' },
   ]
 
   peersObj: any = null

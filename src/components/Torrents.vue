@@ -45,7 +45,7 @@
           icon
           @click="showInfo()"
           :title="$t('info')"
-          :disabled="!hasSelected || selectedRows.length > 5"
+          :disabled="!hasSelected || selectedHashes.length > 5"
         >
           <v-icon>mdi-alert-circle</v-icon>
         </v-btn>
@@ -133,7 +133,7 @@
             icon
             @click="setTorrentLocation"
             :title="$t('title.set_location')"
-            :disabled="selectedRows.length === 0"
+            :disabled="!hasSelected"
           >
             <v-icon>mdi-folder-marker</v-icon>
           </v-btn>
@@ -155,7 +155,7 @@
             icon
             @click="recheckTorrents"
             :title="$t('recheck')"
-            :disabled="selectedRows.length === 0"
+            :disabled="!hasSelected"
           >
             <v-icon>mdi-backup-restore</v-icon>
           </v-btn>
@@ -168,32 +168,39 @@
       <v-data-table
         :headers="headers"
         :items="torrents"
-        item-key="hash"
         item-value="hash"
         fixed-header
         :class="{'hide-headers': hasSelected}"
-        show-select
-        v-model:options="pageOptions"
-        v-model:selected="selectedRows"
+        v-model:page="currentPage"
+        v-model:items-per-page="itemsPerPage"
+        v-model:sort-by="sortBy"
         :loading="loading"
         density="compact"
         :items-per-page-options="[10, 20, 50, -1]"
       >
-        <template #item="{ item, internalItem, isSelected, toggleSelect }">
+        <template #[`header.data-table-select`]="">
+          <v-checkbox-btn
+            :model-value="isAllSelected"
+            :indeterminate="isIndeterminate"
+            @update:model-value="toggleSelectAll"
+          />
+        </template>
+
+        <template #item="{ item }">
           <tr
             :key="item.hash"
             :class="{
               'torrent-row': true,
-              'torrent-row--selected': isSelected(internalItem),
+              'torrent-row--selected': isSelected(item.hash),
             }"
-            @click="toggleSelect(internalItem)"
+            @click="toggleSelection(item.hash)"
             @dblclick.prevent="showInfo(item)"
             @contextmenu.stop.prevent="onRowContextMenu($event, item)"
           >
             <td>
               <v-checkbox-btn
-                :model-value="isSelected(internalItem)"
-                @click.stop="toggleSelect(internalItem)"
+                :model-value="isSelected(item.hash)"
+                @click.stop="toggleSelection(item.hash)"
               />
             </td>
             <td
@@ -207,40 +214,51 @@
                 {{ item.name }}
               </span>
             </td>
-            <td>
-              <v-tooltip bottom>
+            <td class="site-cell">
+              <v-tooltip location="bottom">
                 <template #activator="{ props: tooltipProps }">
-                  <v-chip
+                  <span
                     v-bind="tooltipProps"
-                    small
-                    label
-                    class="site-chip"
+                    class="site-badge"
                   >
                     <img
                       v-if="getTrackerSiteIcon(item.tracker)"
                       :src="getTrackerSiteIcon(item.tracker)"
                       :alt="getTrackerSiteName(item.tracker)"
-                      class="site-chip__icon"
+                      class="site-badge__icon"
                     >
-                    <span class="site-chip__label">
+                    <span
+                      v-else
+                      class="site-badge__fallback"
+                    >
+                      {{ (getTrackerSiteName(item.tracker) || '?').charAt(0).toUpperCase() }}
+                    </span>
+                    <span class="site-badge__label">
                       {{ getTrackerSiteName(item.tracker) }}
                     </span>
-                  </v-chip>
+                  </span>
                 </template>
                 <span>{{ getTrackerHostname(item.tracker) || item.tracker }}</span>
               </v-tooltip>
             </td>
             <td>{{ $formatSize(item.size) }}</td>
-            <td>
+            <td class="progress-cell">
               <v-progress-linear
-                height="1.4em"
                 :model-value="item.progress * 100"
                 :color="stateColor(item.state, true, item.seq_dl)"
-                class="text-center ma-0"
+                :bg-color="$vuetify.theme.current.dark ? 'grey-darken-3' : 'grey-lighten-3'"
+                bg-opacity="0.5"
+                height="22"
+                rounded
               >
-                <span :class="getProgressColorClass(item.progress)">
-                  {{ $progress(item.progress) }}
-                </span>
+                <template #default>
+                  <span
+                    class="progress-label"
+                    :class="getProgressColorClass(item.progress)"
+                  >
+                    {{ $progress(item.progress) }}
+                  </span>
+                </template>
               </v-progress-linear>
             </td>
             <td>{{ $t('torrent_state.' + item.state) }}</td>
@@ -284,7 +302,7 @@
 
 <script lang="ts">
 import { Vue, Component, Watch, toNative } from 'vue-facing-decorator'
-import { intersection, difference, uniqBy } from 'lodash'
+import { intersection, uniqBy } from 'lodash'
 
 import { tr } from '@/locale'
 import ConfirmDeleteDialog from './dialogs/ConfirmDeleteDialog.vue'
@@ -393,32 +411,36 @@ function getStateInfo(state: string) {
     InfoDialog,
   },
   emits: ['torrent-contextmenu'],
+
 })
 class Torrents extends Vue {
   readonly headers = [
-    { text: tr('name'), value: 'name' },
-    { text: tr('sites'), value: 'tracker' },
-    { text: tr('size'), value: 'size' },
-    { text: tr('progress'), value: 'progress' },
-    { text: tr('status'), value: 'state' },
-    { text: tr('priority.column'), value: 'priority' },
-    { text: tr('seeds'), value: 'num_complete' },
-    { text: tr('peers'), value: 'num_incomplete' },
-    { text: tr('dl_speed'), value: 'dlspeed' },
-    { text: tr('up_speed'), value: 'upspeed' },
-    { text: tr('eta'), value: 'eta' },
-    { text: tr('ratio'), value: 'ratio' },
-    { text: tr('added_on'), value: 'added_on' },
+    { title: '', key: 'data-table-select', sortable: false, width: '48px' },
+    { title: tr('name'), key: 'name' },
+    { title: tr('sites'), key: 'tracker' },
+    { title: tr('size'), key: 'size' },
+    { title: tr('progress'), key: 'progress' },
+    { title: tr('status'), key: 'state' },
+    { title: tr('priority.column'), key: 'priority' },
+    { title: tr('seeds'), key: 'num_complete' },
+    { title: tr('peers'), key: 'num_incomplete' },
+    { title: tr('dl_speed'), key: 'dlspeed' },
+    { title: tr('up_speed'), key: 'upspeed' },
+    { title: tr('eta'), key: 'eta' },
+    { title: tr('ratio'), key: 'ratio' },
+    { title: tr('added_on'), key: 'added_on' },
   ]
 
-  selectedRows: Torrent[] = []
+  sortBy: any = []
+  selectedRows: string[] = []
   toDelete: Torrent[] = []
   toSetCategory: Torrent[] = []
   categoryToSet: string | null = null
   toShowInfo: Torrent[] = []
   toEditTracker: Torrent[] = []
   infoTab = null
-  pageOptions: any = null
+  itemsPerPage = 50
+  currentPage = 1
 
   get isDataReady(): boolean {
     return this.$store.getters.isDataReady;
@@ -467,8 +489,13 @@ class Torrents extends Vue {
   get hasSelected() {
     return !!this.selectedRows.length;
   }
-  get selectedHashes() {
-    return this.selectedRows.map(r => r.hash);
+  get selectedHashes(): string[] {
+    return this.selectedRows;
+  }
+
+  get selectedTorrents(): Torrent[] {
+    const hashSet = new Set(this.selectedRows);
+    return this.allTorrents.filter(t => hashSet.has(t.hash));
   }
 
   get torrents() {
@@ -504,7 +531,24 @@ class Torrents extends Vue {
 
   get hasSelectedAll() {
     return this.hasSelected && this.selectedRows.length
-      === Math.min(this.torrents.length, this.pageOptions?.itemsPerPage);
+      === Math.min(this.torrents.length, this.itemsPerPage);
+  }
+
+  get isAllSelected(): boolean {
+    const visible = this.torrents;
+    return visible.length > 0 && visible.every(t => this.selectedRows.includes(t.hash));
+  }
+
+  get isIndeterminate(): boolean {
+    return this.hasSelected && !this.isAllSelected;
+  }
+
+  toggleSelectAll() {
+    if (this.isAllSelected) {
+      this.selectedRows = [];
+    } else {
+      this.selectedRows = this.torrents.map(t => t.hash);
+    }
   }
 
   stateIcon(state: string) {
@@ -521,7 +565,7 @@ class Torrents extends Vue {
       return '#e33371';
     }
 
-    return item.color || '#0008';
+    return item.color || 'grey-lighten-1';
   }
 
   formatNetworkSpeed(speed: number) {
@@ -556,8 +600,8 @@ class Torrents extends Vue {
 
   getProgressColorClass(progress: number) {
     const color = (progress >= 0.5 || (this.$vuetify.theme as any).global.current.dark)
-      ? 'white' : 'black';
-    return `${color}--text`;
+      ? 'text-white' : 'text-black';
+    return color;
   }
 
   formatTorrentPriority(priority: number) {
@@ -577,15 +621,19 @@ class Torrents extends Vue {
   }
 
   created() {
-    this.pageOptions = this.$store.getters.config.pageOptions;
+    const savedItemsPerPage = this.$store.getters.config.pageOptions?.itemsPerPage;
+    if (savedItemsPerPage != null) {
+      this.itemsPerPage = savedItemsPerPage;
+    }
+    this.sortBy = this.$store.getters.config.sortBy ?? [];
   }
 
   confirmDelete() {
-    this.toDelete = this.selectedRows;
+    this.toDelete = this.selectedTorrents;
   }
 
   showInfo(row?: any) {
-    this.toShowInfo = row ? [row] : this.selectedRows;
+    this.toShowInfo = row ? [row] : this.selectedTorrents;
   }
 
   async resumeTorrents() {
@@ -605,7 +653,7 @@ class Torrents extends Vue {
 
   async reannounceTorrents() {
     if (!this.hasSelected) {
-      this.selectedRows = this.allTorrents;
+      this.selectedRows = this.allTorrents.map(t => t.hash);
     }
 
     await api.reannounceTorrents(this.selectedHashes);
@@ -629,7 +677,7 @@ class Torrents extends Vue {
   }
 
   async setTorrentLocation() {
-    const savePaths = uniqBy(this.selectedRows, 'save_path');
+    const savePaths = uniqBy(this.selectedTorrents, 'save_path');
 
     const oldPath = savePaths.length > 1 ? '' : savePaths[0].save_path
     const v = await this.asyncShowDialog({
@@ -657,7 +705,7 @@ class Torrents extends Vue {
 
   setTorrentsCategory(category: string) {
     this.categoryToSet = category;
-    this.toSetCategory = this.selectedRows;
+    this.toSetCategory = this.selectedTorrents;
   }
 
   async maximizeTorrentPriority() {
@@ -677,18 +725,39 @@ class Torrents extends Vue {
   }
 
   editTracker() {
-    if (this.hasSelected) {
-      this.selectedRows = this.allTorrents;
+    if (!this.hasSelected) {
+      this.selectedRows = this.allTorrents.map(t => t.hash);
     }
-    this.toEditTracker = this.selectedRows;
+    this.toEditTracker = this.selectedTorrents;
   }
 
-  @Watch('pageOptions', { deep: true})
-  onPageOptionsChanged() {
+  @Watch('itemsPerPage')
+  onItemsPerPageChanged() {
     this.updateConfig({
       key: 'pageOptions',
-      value: this.pageOptions,
+      value: { itemsPerPage: this.itemsPerPage },
     })
+  }
+
+  @Watch('sortBy', { deep: true})
+  onSortByChanged() {
+    this.updateConfig({
+      key: 'sortBy',
+      value: this.sortBy,
+    })
+  }
+
+  isSelected(hash: string): boolean {
+    return this.selectedRows.includes(hash);
+  }
+
+  toggleSelection(hash: string) {
+    const idx = this.selectedRows.indexOf(hash);
+    if (idx === -1) {
+      this.selectedRows = [...this.selectedRows, hash];
+    } else {
+      this.selectedRows = this.selectedRows.filter(h => h !== hash);
+    }
   }
 
   @Watch('filter')
@@ -702,13 +771,11 @@ class Torrents extends Vue {
       return;
     }
 
-    const torrentHashs = v.map(t => t.hash);
-    const toRemove = difference(this.selectedHashes, torrentHashs);
-    if (!toRemove) {
-      return;
+    const visibleHashes = new Set(v.map(t => t.hash));
+    const newSelected = this.selectedRows.filter(hash => visibleHashes.has(hash));
+    if (newSelected.length !== this.selectedRows.length) {
+      this.selectedRows = newSelected;
     }
-
-    this.selectedRows = this.selectedRows.filter(r => !toRemove.includes(r.hash));
   }
 }
 
@@ -739,25 +806,21 @@ export default toNative(Torrents)
   display: flex;
   flex-direction: column;
   padding: 0;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
 }
 
 .table-wrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  min-height: 0;
 
   .v-data-table {
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-
-    :deep(.v-data-table__wrapper) {
-      flex: 1;
-      overflow-y: auto;
-    }
+    min-height: 0;
 
     :deep(.torrent-row) {
       cursor: pointer;
@@ -771,10 +834,19 @@ export default toNative(Torrents)
       background-color: rgba(25, 118, 210, 0.18);
     }
 
-    :deep(thead th), td {
+    :deep(thead th), :deep(tbody td) {
       white-space: nowrap;
       padding: 0 4px;
       overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    :deep(thead th) {
+      overflow: visible;
+    }
+
+    :deep(thead th) {
+      position: relative;
     }
 
     :deep(thead th .v-data-table__checkbox) {
@@ -799,19 +871,23 @@ export default toNative(Torrents)
       }
 
       .torrent-title {
-        text-overflow: ellipsis;
-        overflow: hidden;
-        max-width: 32em;
+        display: inline-block;
+        max-width: calc(100% - 24px);
+        vertical-align: middle;
       }
     }
 
     :deep(.v-data-table-footer) {
       margin-right: 4em;
+      height: 52px;
+      padding-top: 0;
+      padding-bottom: 0;
+      box-sizing: border-box;
 
       .v-data-table-footer__items-per-page .v-select {
         margin: {
-          top: 10px;
-          bottom: 10px;
+          top: 0;
+          bottom: 0;
         }
       }
     }
@@ -823,6 +899,10 @@ export default toNative(Torrents)
     justify-content: flex-start;
     flex-wrap: nowrap;
     margin-right: 0;
+    height: 52px;
+    padding-top: 0;
+    padding-bottom: 0;
+    box-sizing: border-box;
 
     .v-data-table-footer__items-per-page {
       display: none;
@@ -847,48 +927,94 @@ export default toNative(Torrents)
   vertical-align: middle;
 }
 
-.site-chip {
-  width: 8.5rem;
-  max-width: 8.5rem;
-  min-height: 28px;
-  padding: 0 10px;
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  border-radius: 999px;
-  background: rgba(241, 245, 249, 0.9);
-  box-shadow: none;
-  color: rgba(15, 23, 42, 0.82);
+.site-cell {
+  white-space: nowrap;
+}
 
-  :deep(.v-chip__content) {
-    display: inline-flex;
-    align-items: center;
-    width: 100%;
-    min-width: 0;
-    gap: 6px;
-    overflow: hidden;
+.site-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  padding: 0 11px;
+  border-radius: 999px;
+  background: rgba(241, 245, 249, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  color: rgba(15, 23, 42, 0.85);
+  cursor: default;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  max-width: 9rem;
+
+  &:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
+    border-color: rgba(100, 116, 139, 0.45);
+    transform: translateY(-1px);
   }
 }
 
-.v-theme--dark .site-chip {
-  border-color: rgba(100, 116, 139, 0.55);
-  background: rgba(30, 41, 59, 0.88);
-  box-shadow: none;
-  color: rgba(241, 245, 249, 0.9);
+.v-theme--dark .site-badge {
+  background: rgba(30, 41, 59, 0.92);
+  border-color: rgba(100, 116, 139, 0.4);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.12);
+  color: rgba(241, 245, 249, 0.92);
+
+  &:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+    border-color: rgba(148, 163, 184, 0.5);
+  }
 }
 
-.site-chip__icon {
+.site-badge__icon {
   width: 18px;
   height: 18px;
   flex: 0 0 18px;
   object-fit: contain;
+  border-radius: 3px;
 }
 
-.site-chip__label {
+.site-badge__fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.site-badge__label {
   display: block;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-weight: 700;
+  font-size: 0.78rem;
+  font-weight: 600;
   letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+.progress-cell {
+  min-width: 110px;
+  padding-right: 12px !important;
+
+  .v-progress-linear {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  .progress-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+  }
 }
 </style>

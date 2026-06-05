@@ -22,16 +22,14 @@
     <v-text-field
       class="search-bar"
       :flat="!focusedSearch"
-      :solo="focusedSearch"
-      :solo-inverted="!focusedSearch"
+      :variant="focusedSearch ? 'solo' : 'solo-inverted'"
       hide-details
       :clearable="!phoneLayout || searchBarExpanded"
       prepend-inner-icon="mdi-magnify"
       :label="$t('search')"
       @focus="focusedSearch = true"
       @blur="focusedSearch = false"
-      @input="onSearch"
-      :value="searchQuery"
+      v-model="searchInput"
     />
     <v-spacer v-if="!phoneLayout" />
   </v-app-bar>
@@ -39,7 +37,7 @@
 
 <script lang="ts">
 import { throttle } from 'lodash';
-import { Vue, Component, Prop, Emit, toNative } from 'vue-facing-decorator';
+import { Vue, Component, Prop, Emit, Watch, toNative } from 'vue-facing-decorator';
 
 @Component
 class MainToolbar extends Vue {
@@ -47,6 +45,7 @@ class MainToolbar extends Vue {
   readonly modelValue!: boolean
 
   focusedSearch = false
+  searchInput = ''
 
   setQuery(value: string | null) {
     this.$store.commit('setQuery', value);
@@ -69,9 +68,23 @@ class MainToolbar extends Vue {
     return !this.modelValue;
   }
 
-  onSearch = throttle(async (v: string) => {
-    // avoid input lag
-    await this.$nextTick();
+  mounted() {
+    this.searchInput = this.searchQuery || '';
+  }
+
+  @Watch('searchInput')
+  onSearchInputChanged(v: string) {
+    this.onSearch(v);
+  }
+
+  @Watch('searchQuery')
+  onSearchQueryChanged(v: string | null) {
+    if (v !== this.searchInput) {
+      this.searchInput = v || '';
+    }
+  }
+
+  onSearch = throttle((v: string) => {
     this.setQuery(v || null);
   }, 400)
 }

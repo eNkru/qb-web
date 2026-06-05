@@ -48,55 +48,53 @@
         <v-select
           density="compact"
           :items="torrentMode"
-          :value="preferences.auto_tmm_enabled ? torrentMode[0] : torrentMode[1]"
-          @change="changeSettings('auto_tmm_enabled', $event == torrentMode[0])"
+          :model-value="preferences.auto_tmm_enabled ? torrentMode[0] : torrentMode[1]"
+          @update:model-value="changeSettings('auto_tmm_enabled', $event == torrentMode[0])"
         />
       </preference-row>
       <preference-row i18n-key="torrent_changed_tmm_enabled">
         <v-select
           density="compact"
           :items="torrentAction"
-          :value="preferences.category_changed_tmm_enabled ? torrentAction[1] : torrentAction[0]"
-          @change="changeSettings('torrent_changed_tmm_enabled', $event == torrentAction[1])"
+          :model-value="preferences.category_changed_tmm_enabled ? torrentAction[1] : torrentAction[0]"
+          @update:model-value="changeSettings('torrent_changed_tmm_enabled', $event == torrentAction[1])"
         />
       </preference-row>
       <preference-row i18n-key="save_path_changed_tmm_enabled">
         <v-select
           density="compact"
           :items="torrentAction"
-          :value="preferences.category_changed_tmm_enabled ? torrentAction[1] : torrentAction[0]"
-          @change="changeSettings('save_path_changed_tmm_enabled', $event == torrentAction[1])"
+          :model-value="preferences.category_changed_tmm_enabled ? torrentAction[1] : torrentAction[0]"
+          @update:model-value="changeSettings('save_path_changed_tmm_enabled', $event == torrentAction[1])"
         />
       </preference-row>
       <preference-row i18n-key="category_changed_tmm_enabled">
         <v-select
           density="compact"
           :items="torrentAction"
-          :value="preferences.category_changed_tmm_enabled ? torrentAction[1] : torrentAction[0]"
-          @change="changeSettings('category_changed_tmm_enabled', $event == torrentAction[1])"
+          :model-value="preferences.category_changed_tmm_enabled ? torrentAction[1] : torrentAction[0]"
+          @update:model-value="changeSettings('category_changed_tmm_enabled', $event == torrentAction[1])"
         />
       </preference-row>
       <preference-row i18n-key="save_path">
         <v-text-field
           density="compact"
-          :value="preferences.save_path"
+          :model-value="preferences.save_path"
           @change="changeSettings('save_path', $event)"
-          lazy
         />
       </preference-row>
       <preference-row i18n-key="temp_path">
         <template #header>
           <v-checkbox
             density="compact"
-            :value="preferences.temp_path_enabled"
-            @change="changeSettings('temp_path_enabled', $event)"
+            :model-value="preferences.temp_path_enabled"
+            @update:model-value="changeSettings('temp_path_enabled', $event)"
           />
         </template>
         <v-text-field
           :disabled="!preferences.temp_path_enabled"
-          :value="preferences.temp_path"
+          :model-value="preferences.temp_path"
           @change="changeSettings('temp_path', $event)"
-          lazy
           density="compact"
         />
       </preference-row>
@@ -105,9 +103,8 @@
         can-be-enabled="true"
       >
         <v-text-field
-          :value="preferences.export_dir"
+          :model-value="preferences.export_dir"
           @change="changeSettings('export_dir', $event)"
-          lazy
           clearable
         />
       </preference-row>
@@ -116,9 +113,8 @@
         can-be-enabled="true"
       >
         <v-text-field
-          :value="preferences.export_dir_fin"
+          :model-value="preferences.export_dir_fin"
           @change="changeSettings('export_dir_fin', $event)"
-          lazy
           clearable
         />
       </preference-row>

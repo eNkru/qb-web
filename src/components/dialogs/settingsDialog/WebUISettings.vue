@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h4>{{ $t("preferences.webui_remote_control") }}}</h4>
+    <h4>{{ $t("preferences.webui_remote_control") }}</h4>
     <v-divider />
     <v-row
       dense
@@ -11,9 +11,8 @@
       </v-col>
       <v-col cols="4">
         <v-text-field
-          :value="config.updateInterval"
+          :model-value="config.updateInterval"
           type="number"
-          lazy
           @change="updateConfig({key: 'updateInterval', value: $event})"
         />
       </v-col>
@@ -27,9 +26,8 @@
       </v-col>
       <v-col cols="4">
         <v-text-field
-          :value="preferences.web_ui_address"
+          :model-value="preferences.web_ui_address"
           @change="changeSettings('web_ui_address', $event)"
-          lazy
         />
       </v-col>
       <v-col cols="1">
@@ -37,9 +35,8 @@
       </v-col>
       <v-col cols="1">
         <v-text-field
-          :value="preferences.web_ui_port"
+          :model-value="preferences.web_ui_port"
           @change="changeSettings('web_ui_port', $event)"
-          lazy
         />
       </v-col>
     </v-row>
@@ -56,17 +53,15 @@
     <v-divider />
     <preference-row i18n-key="web_ui_username">
       <v-text-field
-        :value="preferences.web_ui_username"
+        :model-value="preferences.web_ui_username"
         @change="changeSettings('web_ui_username', $event)"
-        lazy
       />
     </preference-row>
     <preference-row i18n-key="web_ui_password">
       <v-text-field
-        :value="preferences.web_ui_password"
+        :model-value="preferences.web_ui_password"
         @change="changeSettings('web_ui_password', $event)"
         :placeholder="$t('preferences.new_password')"
-        lazy
       />
     </preference-row>
     <v-row dense>
@@ -75,9 +70,8 @@
       </v-col>
       <v-col cols="1">
         <v-text-field
-          :value="preferences.web_ui_max_auth_fail_count"
+          :model-value="preferences.web_ui_max_auth_fail_count"
           @change="changeSettings('web_ui_max_auth_fail_count', $event)"
-          lazy
         />
       </v-col>
       <v-col cols="auto">
@@ -85,9 +79,8 @@
       </v-col>
       <v-col cols="1">
         <v-text-field
-          :value="preferences.web_ui_ban_duration"
+          :model-value="preferences.web_ui_ban_duration"
           @change="changeSettings('web_ui_ban_duration', $event)"
-          lazy
         />
       </v-col>
       <v-col cols="auto">
@@ -113,9 +106,8 @@
     <v-row dense>
       <v-col cols="4">
         <v-textarea
-          :value="preferences.bypass_auth_subnet_whitelist"
+          :model-value="preferences.bypass_auth_subnet_whitelist"
           @change="changeSettings('bypass_auth_subnet_whitelist', $event)"
-          lazy
         />
       </v-col>
     </v-row>

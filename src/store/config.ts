@@ -8,6 +8,8 @@ export interface Config {
   baseUrl: string | null;
   updateInterval: number;
   pageOptions: any;
+  sortBy: any;
+  columnWidths: Record<string, number> | null;
   filter: {
     state: string | null;
     category: string | null;
@@ -26,6 +28,8 @@ const defaultConfig = {
   pageOptions: {
     itemsPerPage: 50,
   },
+  sortBy: [],
+  columnWidths: null,
   filter: {
     state: null,
     category: null,

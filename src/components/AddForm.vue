@@ -47,9 +47,9 @@
                     :rows="$vuetify.display.xs ? 1 : 3"
                     required
                     :autofocus="!phoneLayout"
-                    :value="params.urls"
+                    :model-value="params.urls"
                     :readonly="state.downloadItem !== null"
-                    @input="setParams('urls', $event)"
+                    @update:model-value="setParams('urls', $event)"
                     @click:append-outer="selectFiles"
                   />
                 </v-col>
@@ -63,7 +63,7 @@
                     <v-checkbox
                       prepend-icon="mdi-file-tree"
                       :label="$t('label.create_subfolder')"
-                      :input-value="true"
+                      :model-value="true"
                       @change="setParams('root_path', $event)"
                     />
                   </v-col>
@@ -74,7 +74,7 @@
                     <v-checkbox
                       prepend-icon="mdi-car-shift-pattern"
                       :label="$t('label.auto_tmm')"
-                      :input-value="params.autoTMM"
+                      :model-value="params.autoTMM"
                       @change="setParams('autoTMM', $event)"
                     />
                   </v-col>
@@ -89,9 +89,9 @@
                     clearable
                     hide-no-data
                     :items="categoryItems"
-                    :value="params.category"
+                    :model-value="params.category"
                     :return-object="false"
-                    @input="setParams('category', $event)"
+                    @update:model-value="setParams('category', $event)"
                   />
                 </v-col>
                 <v-col
@@ -105,8 +105,8 @@
                     clearable
                     :disabled="params.autoTMM"
                     :placeholder="defaultPath"
-                    :value="params.autoTMM ? null : userParams.savepath"
-                    @change="setParams('savepath', $event)"
+                    :model-value="params.autoTMM ? null : userParams.savepath"
+                    @update:model-value="setParams('savepath', $event)"
                   />
                 </v-col>
                 <v-col
@@ -116,7 +116,7 @@
                   <v-checkbox
                     :label="$t('label.start_torrent')"
                     prepend-icon="mdi-play-pause"
-                    :input-value="!params.paused"
+                    :model-value="!params.paused"
                     @change="setParams('paused', !$event)"
                   />
                 </v-col>
@@ -128,7 +128,7 @@
                   <v-checkbox
                     prepend-icon="mdi-progress-check"
                     :label="$t('label.skip_hash_check')"
-                    :input-value="params.skip_checking"
+                    :model-value="params.skip_checking"
                     @change="setParams('skip_checking', $event)"
                   />
                 </v-col>
@@ -140,7 +140,7 @@
                     <v-checkbox
                       :label="$t('label.in_sequential_order')"
                       prepend-icon="mdi-sort-descending"
-                      :ipnut-value="params.sequentialDownload"
+                      :model-value="params.sequentialDownload"
                       @change="setParams('sequentialDownload', $event)"
                     />
                   </v-col>
@@ -151,7 +151,7 @@
                     <v-checkbox
                       prepend-icon="mdi-ray-start-end"
                       :label="$t('label.first_and_last_pieces_first')"
-                      :input-value="params.firstLastPiecePrio"
+                      :model-value="params.firstLastPiecePrio"
                       @change="setParams('firstLastPiecePrio', $event)"
                     />
                   </v-col>
@@ -161,26 +161,26 @@
           </v-form>
           <v-alert
             type="warning"
-            :value="error"
+            :model-value="error"
             v-text="error"
           />
         </v-card-text>
         <v-card-actions>
           <v-btn
-            text
+            variant="text"
             @click="showMore = !showMore"
           >
             {{ showMore ? $t('less') : $t('more') }}
           </v-btn>
           <v-spacer />
           <v-btn
-            text
+            variant="text"
             @click="closeAddForm"
           >
             {{ $t('cancel') }}
           </v-btn>
           <v-btn
-            text
+            variant="text"
             @click="submit"
             color="primary"
             :disabled="submitting"
@@ -396,7 +396,7 @@ export default toNative(AddForm)
 }
 
 .btn-add.with-footer {
-  margin-bottom: 27.5px;
+  bottom: 32px;
 }
 
 .container {

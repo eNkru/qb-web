@@ -32,7 +32,7 @@
       <v-card-actions>
         <v-spacer />
         <v-btn
-          text
+          variant="text"
           @click="closeDialog"
           v-text="$t('close')"
         />
@@ -106,9 +106,9 @@ class LogsDialog extends HasTask {
   typeColor(type: number) {
     const map: any = {
       1: null,
-      2: 'info--text',
-      4: 'warning--text',
-      8: 'error--text',
+      2: 'text-info',
+      4: 'text-warning',
+      8: 'text-error',
     };
     return map[type];
   }

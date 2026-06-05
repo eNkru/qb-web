@@ -82,21 +82,21 @@
                   density="compact"
                   :label="$t('dialog.rss_rule.must_contain')"
                   :disabled="!selectedRule.enabled"
-                  :value="selectedRule.mustContain"
+                  :model-value="selectedRule.mustContain"
                   @change="editRule('mustContain', $event)"
                 />
                 <v-text-field
                   density="compact"
                   :label="$t('dialog.rss_rule.must_not_contain')"
                   :disabled="!selectedRule.enabled"
-                  :value="selectedRule.mustNotContain"
+                  :model-value="selectedRule.mustNotContain"
                   @change="editRule('mustNotContain', $event)"
                 />
                 <v-text-field
                   density="compact"
                   :label="$t('dialog.rss_rule.episode_filter')"
                   :disabled="!selectedRule.enabled"
-                  :value="selectedRule.episodeFilter"
+                  :model-value="selectedRule.episodeFilter"
                   @change="editRule('episodeFilter', $event)"
                 />
                 <v-checkbox
@@ -112,14 +112,14 @@
                   :label="$t('dialog.rss_rule.assign_category')"
                   :items="categoryItems"
                   :disabled="!selectedRule.enabled"
-                  :value="selectedRule.assignedCategory"
+                  :model-value="selectedRule.assignedCategory"
                   @change="editRule('assignedCategory', $event)"
                 />
                 <v-text-field
                   density="compact"
                   :label="$t('location')"
                   :disabled="!selectedRule.enabled"
-                  :value="selectedRule.savePath"
+                  :model-value="selectedRule.savePath"
                   @change="editRule('savePath', $event)"
                 />
               </v-form>

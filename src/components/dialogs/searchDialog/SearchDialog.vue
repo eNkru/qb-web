@@ -122,12 +122,12 @@ export default class SearchDialog extends HasTask {
       siteUrl: "",
     },
     headers: [
-      { text: tr("name"), value: "fileName" },
-      { text: tr("size"), value: "fileSize" },
-      { text: tr("seeds"), value: "nbSeeders" },
-      { text: tr("peers"), value: "nbLeechers" },
-      { text: tr("search_engine"), value: "siteUrl" },
-      { text: tr("action", 2), value: "actions", sortable: false },
+        { title: tr("name"), key: "fileName" },
+        { title: tr("size"), key: "fileSize" },
+        { title: tr("seeds"), key: "nbSeeders" },
+        { title: tr("peers"), key: "nbLeechers" },
+        { title: tr("search_engine"), key: "siteUrl" },
+        { title: tr("action", 2), key: "actions", sortable: false },
     ],
   };
 

@@ -33,14 +33,14 @@ class Trackers extends BaseTorrentInfo {
   readonly hash!: string
 
   readonly headers = [
-    { text: tr('properties_widget.tier'), value: 'tier' },
-    { text: tr('properties_widget.url'), value: 'url' },
-    { text: tr('properties_widget.status'), value: 'status' },
-    { text: tr('properties_widget.numPeers'), value: 'num_peers' },
-    { text: tr('properties_widget.numSeeds'), value: 'num_seeds' },
-    { text: tr('properties_widget.numLeeches'), value: 'num_leeches' },
-    { text: tr('properties_widget.numDownloaded'), value: 'num_downloaded' },
-    { text: tr('properties_widget.msg'), value: 'msg' },
+    { title: tr('properties_widget.tier'), key: 'tier' },
+    { title: tr('properties_widget.url'), key: 'url' },
+    { title: tr('properties_widget.status'), key: 'status' },
+    { title: tr('properties_widget.numPeers'), key: 'num_peers' },
+    { title: tr('properties_widget.numSeeds'), key: 'num_seeds' },
+    { title: tr('properties_widget.numLeeches'), key: 'num_leeches' },
+    { title: tr('properties_widget.numDownloaded'), key: 'num_downloaded' },
+    { title: tr('properties_widget.msg'), key: 'msg' },
   ]
 
   trackers = []
