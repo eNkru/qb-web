@@ -272,16 +272,37 @@ export default toNative(DrawerFooter)
   padding: 0 8px;
   align-items: center;
   height: 52px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.v-theme--dark .button-bar {
+  border-top-color: rgba(255, 255, 255, 0.08);
 }
 
 .button-bar :deep(.v-btn) {
-  min-width: 40px;
-  width: 40px;
-  height: 40px;
+  min-width: 36px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+  }
+
+  .v-theme--dark &:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
 }
 
 .button-bar :deep(.v-icon) {
-  font-size: 22px;
+  font-size: 20px;
+  opacity: 0.7;
+  transition: opacity 0.15s ease;
+}
+
+.button-bar :deep(.v-btn:hover .v-icon) {
+  opacity: 1;
 }
 
 .footer {

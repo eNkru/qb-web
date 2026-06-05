@@ -428,7 +428,12 @@ html, body, #app {
 
 html {
   font-size: calc(16px * var(--app-font-scale, 1)) !important;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans CJK SC', 'Noto Sans CJK TC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-weight: 500;
+}
+
+.v-list-item-title {
+  font-weight: inherit;
 }
 
 .v-navigation-drawer {
@@ -1385,6 +1390,57 @@ html {
   }
 }
 
+// ===== Dialog Styling =====
+.v-dialog .v-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.v-dialog .v-card-title.headline {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  gap: 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background-color: rgba(0, 0, 0, 0.02);
+
+  .v-icon {
+    opacity: 0.7;
+  }
+
+  .v-btn {
+    margin-left: auto;
+  }
+}
+
+.v-theme--dark .v-dialog .v-card-title.headline {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.v-dialog .v-card-text {
+  padding: 16px 20px;
+}
+
+.v-dialog .v-card-actions {
+  padding: 8px 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.v-theme--dark .v-dialog .v-card-actions {
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+.v-dialog .v-card-actions .v-btn {
+  border-radius: 8px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+// ===== Navigation Drawer =====
 .v-theme--light .v-navigation-drawer .v-navigation-drawer__content,
 .v-theme--light .v-navigation-drawer .v-sheet,
 .v-theme--light .v-navigation-drawer .v-list,

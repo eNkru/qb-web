@@ -57,7 +57,7 @@
                   :key="key"
                   v-model="searchForm.plugins"
                   :label="plugin.fullName"
-                  :value="plugin"
+                  :model-value="plugin"
                 />
               </v-card-text>
             </v-card>
@@ -88,7 +88,7 @@
                     :key="key"
                     v-model="searchForm.plugins"
                     :label="plugin.fullName"
-                    :value="plugin"
+                    :model-value="plugin"
                   />
                 </v-card-text>
               </v-card>

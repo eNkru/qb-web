@@ -23,7 +23,7 @@
           <v-tab
             v-for="item of tabList"
             :key="item"
-            :value="item"
+            :model-value="item"
           >
             {{ $t('preferences.' + item) }}
           </v-tab>

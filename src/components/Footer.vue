@@ -10,7 +10,7 @@
       v-if="app"
     >
       <div v-if="!phoneLayout">
-        <v-tooltip top>
+        <v-tooltip location="top">
           <template #activator="{ props }">
             <span v-bind="props">
               qBittorrent {{ app.version }}
@@ -39,7 +39,7 @@
         class="mx-2"
         v-if="!phoneLayout"
       />
-      <v-tooltip top>
+      <v-tooltip location="top">
         <template #activator="{ props }">
           <div
             class="icon-label"
@@ -92,7 +92,7 @@
         v-if="!phoneLayout"
       />
       <div class="icon-label">
-        <v-tooltip top>
+        <v-tooltip location="top">
           <template #activator="{ props }">
             <v-icon
               v-bind="props"
@@ -132,7 +132,7 @@
           </template>
         </v-switch>
         <v-tooltip
-          top
+          location="top"
           v-else
         >
           <template #activator="{ props }">
@@ -316,14 +316,28 @@ export default toNative(Footer)
 .footer {
   font-size: 14px;
   width: 100%;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 4px 0;
+}
+
+.v-theme--dark .footer {
+  border-top-color: rgba(255, 255, 255, 0.08);
 }
 
 .icon-label {
   display: flex;
   align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
 
   .v-icon {
-    //margin-right: 4px;
+    opacity: 0.7;
   }
 }
 

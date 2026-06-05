@@ -3,9 +3,9 @@
     <v-treeview
       open-on-click
       :items="fileTree"
-      :value="selected"
+      :model-value="selected"
       selectable
-      @input="selectChanged"
+      @update:model-value="selectChanged"
     >
       <template #prepend="row">
         <v-progress-circular

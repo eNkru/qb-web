@@ -94,9 +94,30 @@ export default toNative(MainToolbar)
 
 <style lang="scss" scoped>
 .app-bar {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(8px);
+
+  .v-theme--dark & {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+
+    .v-app-bar-nav-icon:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+  }
+
+  .v-app-bar-nav-icon {
+    transition: background-color 0.2s ease;
+    border-radius: 8px;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.06);
+    }
+  }
+
   .bar-title {
     display: flex;
     align-items: center;
+    gap: 10px;
 
     :deep(.v-toolbar-title__placeholder) {
       display: flex;
@@ -106,11 +127,68 @@ export default toNative(MainToolbar)
     .icon {
       width: 28px;
       height: 28px;
+      border-radius: 6px;
+      transition: transform 0.2s ease;
+
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+
+    .title {
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      opacity: 0.85;
     }
   }
 
   .search-bar {
-    transition: width 0.4s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 420px;
+
+    :deep(.v-field) {
+      border-radius: 24px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    :deep(.v-field--variant-solo) {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+      &:hover {
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+      }
+    }
+
+    :deep(.v-field--variant-solo-inverted) {
+      box-shadow: none;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.12);
+      }
+    }
+
+    :deep(.v-field--focused) {
+      box-shadow: 0 2px 12px rgba(25, 118, 210, 0.18);
+    }
+
+    :deep(.v-field__prepend-inner) {
+      opacity: 0.6;
+      transition: opacity 0.2s ease;
+    }
+
+    :deep(.v-field--focused .v-field__prepend-inner) {
+      opacity: 1;
+    }
+
+    :deep(.v-field__clearable) {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    &:hover :deep(.v-field__clearable),
+    &:focus-within :deep(.v-field__clearable) {
+      opacity: 1;
+    }
   }
 
   &.phone-layout {

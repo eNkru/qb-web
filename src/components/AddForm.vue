@@ -33,7 +33,7 @@
                     ref="file"
                     multiple
                     chips
-                    outlined
+                    variant="outlined"
                     :label="$t('files')"
                   />
                   <v-textarea
@@ -396,7 +396,7 @@ export default toNative(AddForm)
 }
 
 .btn-add.with-footer {
-  bottom: 32px;
+  bottom: 44px;
 }
 
 .container {

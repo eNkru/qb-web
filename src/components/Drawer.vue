@@ -334,7 +334,40 @@ export default toNative(Drawer)
 </script>
 
 <style lang="scss" scoped>
-.drawer :deep(.v-list-item__prepend) {
-  margin-left: 8px;
+.drawer {
+  :deep(.v-list-item) {
+    border-radius: 8px;
+    margin: 1px 4px;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+
+    .v-theme--dark &:hover {
+      background-color: rgba(255, 255, 255, 0.06);
+    }
+
+    &.v-list-item--active {
+      background-color: rgba(25, 118, 210, 0.08);
+    }
+  }
+
+  :deep(.v-list-item__prepend) {
+    margin-left: 4px;
+
+    .v-icon {
+      opacity: 0.7;
+      transition: opacity 0.15s ease;
+    }
+  }
+
+  :deep(.v-list-item:hover .v-list-item__prepend .v-icon) {
+    opacity: 1;
+  }
+
+  :deep(.v-list-group__items .v-list-item) {
+    padding-left: 12px;
+  }
 }
 </style>

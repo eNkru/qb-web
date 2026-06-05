@@ -7,10 +7,12 @@
     <v-card>
       <v-toolbar
         color="primary"
-        dark
         flat
       >
-        <v-toolbar-title class="pl-2">
+        <v-toolbar-title
+          class="pl-2"
+          style="font-weight: 600; letter-spacing: 0.01em;"
+        >
           {{ $t('login') }}
         </v-toolbar-title>
       </v-toolbar>
