@@ -10,6 +10,7 @@ export interface Config {
   pageOptions: any;
   sortBy: any;
   columnWidths: Record<string, number> | null;
+  hiddenColumns: string[] | null;
   filter: {
     state: string | null;
     category: string | null;
@@ -30,6 +31,7 @@ const defaultConfig = {
   },
   sortBy: [],
   columnWidths: null,
+  hiddenColumns: null,
   filter: {
     state: null,
     category: null,

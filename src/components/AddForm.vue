@@ -1,15 +1,21 @@
 <template>
   <div class="add-form">
-    <v-btn
-      icon
-      color="primary"
-      size="large"
-      @click="openAddForm"
-      class="btn-add"
-      :class="{'with-footer': $vuetify.display.smAndUp}"
+    <div
+      class="btn-add-tab"
+      :class="{'with-footer': $vuetify.display.smAndUp, 'phone-layout': phoneLayout}"
     >
-      <v-icon>mdi-link-plus</v-icon>
-    </v-btn>
+      <v-btn
+        color="primary"
+        variant="flat"
+        elevation="0"
+        @click="openAddForm"
+        class="btn-add"
+        :title="$t('title.add_torrents')"
+      >
+        <v-icon size="22">mdi-plus</v-icon>
+        <span class="btn-add-label">{{ $t('title.add_torrents') }}</span>
+      </v-btn>
+    </div>
     <v-dialog
       v-model="state.isOpen"
       eager
@@ -469,15 +475,70 @@ export default toNative(AddForm)
 
 @include dialog-title;
 
-.btn-add {
+.btn-add-tab {
   position: fixed;
-  bottom: 16px;
-  right: 16px;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 100;
-}
+  padding: 12px 0;
 
-.btn-add.with-footer {
-  bottom: 44px;
+  .btn-add {
+    height: 44px;
+    min-width: 44px;
+    padding: 0 18px;
+    border-radius: 22px 0 0 22px;
+    white-space: nowrap;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    // Peek out showing the full icon
+    transform: translateX(calc(100% - 44px));
+    box-shadow: 0 3px 12px rgba(var(--v-theme-primary), 0.3);
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+                padding 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+
+    .btn-add-label {
+      max-width: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-width 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+                  opacity 0.15s ease 0.1s;
+    }
+
+    &:hover {
+      transform: translateX(0);
+      padding: 0 24px 0 20px;
+      box-shadow: 0 6px 20px rgba(var(--v-theme-primary), 0.4);
+    }
+
+    &:hover .btn-add-label {
+      max-width: 180px;
+      opacity: 1;
+    }
+
+    &:active {
+      transform: translateX(2px);
+      box-shadow: 0 2px 8px rgba(var(--v-theme-primary), 0.3);
+    }
+  }
+
+  // Mobile: bottom-right
+  &.phone-layout {
+    top: auto;
+    bottom: 20px;
+    right: 0;
+    transform: none;
+    padding: 0;
+
+    &.with-footer {
+      bottom: 56px;
+    }
+
+    .btn-add {
+      transform: translateX(calc(100% - 44px));
+    }
+  }
 }
 
 .add-form-card {

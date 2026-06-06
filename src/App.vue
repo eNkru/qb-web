@@ -2,15 +2,13 @@
   <v-app ref="app">
     <v-navigation-drawer
       app
+      floating
       v-model="drawer"
       :class="{'phone-layout': phoneLayout}"
-      width="300"
+      width="280"
     >
       <drawer v-model="drawerOptions" />
-
-      <template #append>
-        <DrawerFooter />
-      </template>
+      <DrawerFooter />
     </v-navigation-drawer>
     <main-toolbar v-model="drawer" />
 
@@ -482,7 +480,7 @@ html {
       background-color: #ececec !important;
     }
     
-    .v-navigation-drawer {
+    .v-navigation-drawer .v-navigation-drawer__content {
       background-color: #ececec !important;
     }
     
@@ -552,7 +550,7 @@ html {
       background-color: #F0EEEB !important;
     }
 
-    .v-navigation-drawer {
+    .v-navigation-drawer .v-navigation-drawer__content {
       background-color: #F9F8F6 !important;
     }
 
@@ -642,7 +640,7 @@ html {
       background-color: #141418 !important;
     }
 
-    .v-navigation-drawer {
+    .v-navigation-drawer .v-navigation-drawer__content {
       background-color: #0a0a0c !important;
     }
 
@@ -793,7 +791,7 @@ html {
       background-color: #0F1115 !important;
     }
 
-    .v-navigation-drawer {
+    .v-navigation-drawer .v-navigation-drawer__content {
       background-color: #0F1115 !important;
     }
 
@@ -931,7 +929,7 @@ html {
       background-color: #12121a !important;
     }
 
-    .v-navigation-drawer {
+    .v-navigation-drawer .v-navigation-drawer__content {
       background-color: #1c1c2e !important;
     }
 
@@ -1089,7 +1087,7 @@ html {
       background-color: #F0EBE5 !important;
     }
 
-    .v-navigation-drawer {
+    .v-navigation-drawer .v-navigation-drawer__content {
       background-color: #FDFCF8 !important;
     }
 
@@ -1245,7 +1243,7 @@ html {
       background-color: #F1F5F9 !important;
     }
 
-    .v-navigation-drawer {
+    .v-navigation-drawer .v-navigation-drawer__content {
       background-color: #FAFAFA !important;
     }
 
@@ -1440,13 +1438,42 @@ html {
   letter-spacing: 0.01em;
 }
 
-// ===== Navigation Drawer =====
-.v-theme--light .v-navigation-drawer .v-navigation-drawer__content,
-.v-theme--light .v-navigation-drawer .v-sheet,
-.v-theme--light .v-navigation-drawer .v-list,
-.v-theme--dark .v-navigation-drawer .v-navigation-drawer__content,
-.v-theme--dark .v-navigation-drawer .v-sheet,
-.v-theme--dark .v-navigation-drawer .v-list {
+// ===== Floating Navigation Drawer =====
+.v-navigation-drawer {
+  border-right: none !important;
   background-color: transparent !important;
+
+  .v-navigation-drawer__content {
+    margin: 10px 0 10px 10px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.06);
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(var(--v-theme-surface)) !important;
+
+    // Drawer list scrolls, footer stays pinned
+    > .drawer {
+      flex: 1 1 auto;
+      overflow-y: auto;
+    }
+
+    > .drawer-footer {
+      flex-shrink: 0;
+      margin-top: auto;
+    }
+  }
+
+  @media (min-width: 960px) {
+    .v-navigation-drawer__scrim {
+      display: none;
+    }
+  }
+}
+
+.v-theme--dark .v-navigation-drawer .v-navigation-drawer__content {
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3), 0 0 1px rgba(255, 255, 255, 0.06);
 }
 </style>

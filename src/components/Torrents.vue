@@ -150,8 +150,7 @@
             :title="$t('title.edit_tracker')"
           >
             <v-icon>mdi-server</v-icon>
-          </v-btn>
-          <v-btn
+          </v-btn>          <v-btn
             icon
             @click="recheckTorrents"
             :title="$t('recheck')"
@@ -160,6 +159,39 @@
             <v-icon>mdi-backup-restore</v-icon>
           </v-btn>
         </template>
+        <div class="toolbar-divider" />
+        <v-menu
+          :close-on-content-click="false"
+        >
+          <template #activator="{ props: menuProps }">
+            <v-btn
+              icon
+              v-bind="menuProps"
+              title="Toggle columns"
+            >
+              <v-icon>mdi-cog-outline</v-icon>
+            </v-btn>
+          </template>
+          <v-list
+            density="compact"
+            class="column-toggle-list"
+          >
+            <v-list-subheader>Visible Columns</v-list-subheader>
+            <v-list-item
+              v-for="col in toggleableColumns"
+              :key="col.key"
+              @click="toggleColumn(col.key)"
+            >
+              <template #prepend>
+                <v-checkbox-btn
+                  :model-value="!isColumnHidden(col.key)"
+                  @click.stop="toggleColumn(col.key)"
+                />
+              </template>
+              <v-list-item-title>{{ col.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </div>
       <v-divider />
     </div>
@@ -204,6 +236,7 @@
               />
             </td>
             <td
+              v-if="!isColumnHidden('name')"
               :title="item.name"
               class="icon-label"
             >
@@ -214,7 +247,10 @@
                 {{ item.name }}
               </span>
             </td>
-            <td class="site-cell">
+            <td
+              v-if="!isColumnHidden('tracker')"
+              class="site-cell"
+            >
               <v-tooltip location="bottom">
                 <template #activator="{ props: tooltipProps }">
                   <span
@@ -241,8 +277,13 @@
                 <span>{{ getTrackerHostname(item.tracker) || item.tracker }}</span>
               </v-tooltip>
             </td>
-            <td>{{ $formatSize(item.size) }}</td>
-            <td class="progress-cell">
+            <td v-if="!isColumnHidden('size')">
+              {{ $formatSize(item.size) }}
+            </td>
+            <td
+              v-if="!isColumnHidden('progress')"
+              class="progress-cell"
+            >
               <v-progress-linear
                 :model-value="item.progress * 100"
                 :color="stateColor(item.state, true, item.seq_dl)"
@@ -261,15 +302,31 @@
                 </template>
               </v-progress-linear>
             </td>
-            <td>{{ $t('torrent_state.' + item.state) }}</td>
-            <td>{{ formatTorrentPriority(item.priority) }}</td>
-            <td>{{ item.num_seeds }}/{{ item.num_complete }}</td>
-            <td>{{ item.num_leechs }}/{{ item.num_incomplete }}</td>
-            <td>{{ formatNetworkSpeed(item.dlspeed) }}</td>
-            <td>{{ formatNetworkSpeed(item.upspeed) }}</td>
-            <td>{{ $formatDuration(item.eta, {dayLimit: 100}) }}</td>
-            <td>{{ item.ratio.toFixed(2) }}</td>
-            <td>
+            <td v-if="!isColumnHidden('state')">
+              {{ $t('torrent_state.' + item.state) }}
+            </td>
+            <td v-if="!isColumnHidden('priority')">
+              {{ formatTorrentPriority(item.priority) }}
+            </td>
+            <td v-if="!isColumnHidden('num_complete')">
+              {{ item.num_seeds }}/{{ item.num_complete }}
+            </td>
+            <td v-if="!isColumnHidden('num_incomplete')">
+              {{ item.num_leechs }}/{{ item.num_incomplete }}
+            </td>
+            <td v-if="!isColumnHidden('dlspeed')">
+              {{ formatNetworkSpeed(item.dlspeed) }}
+            </td>
+            <td v-if="!isColumnHidden('upspeed')">
+              {{ formatNetworkSpeed(item.upspeed) }}
+            </td>
+            <td v-if="!isColumnHidden('eta')">
+              {{ $formatDuration(item.eta, {dayLimit: 100}) }}
+            </td>
+            <td v-if="!isColumnHidden('ratio')">
+              {{ item.ratio.toFixed(2) }}
+            </td>
+            <td v-if="!isColumnHidden('added_on')">
               <span :title="$formatTimestamp(item.added_on)">
                 {{ $formatAsDuration(item.added_on) }} ago
               </span>
@@ -414,8 +471,7 @@ function getStateInfo(state: string) {
 
 })
 class Torrents extends Vue {
-  readonly headers = [
-    { title: '', key: 'data-table-select', sortable: false, width: '48px' },
+  readonly allColumns = [
     { title: tr('name'), key: 'name' },
     { title: tr('sites'), key: 'tracker' },
     { title: tr('size'), key: 'size' },
@@ -430,6 +486,17 @@ class Torrents extends Vue {
     { title: tr('ratio'), key: 'ratio' },
     { title: tr('added_on'), key: 'added_on' },
   ]
+
+  get headers() {
+    const selectCol = { title: '', key: 'data-table-select', sortable: false, width: '48px' };
+    const hidden = this.$store.getters.config.hiddenColumns || [];
+    const visible = this.allColumns.filter(c => !hidden.includes(c.key));
+    return [selectCol, ...visible];
+  }
+
+  get toggleableColumns() {
+    return this.allColumns;
+  }
 
   sortBy: any = []
   selectedRows: string[] = []
@@ -475,6 +542,22 @@ class Torrents extends Vue {
 
   updateConfig(payload: ConfigPayload) {
     this.$store.commit('updateConfig', payload);
+  }
+
+  isColumnHidden(key: string): boolean {
+    const hidden = this.$store.getters.config.hiddenColumns || [];
+    return hidden.includes(key);
+  }
+
+  toggleColumn(key: string) {
+    const hidden = [...(this.$store.getters.config.hiddenColumns || [])];
+    const idx = hidden.indexOf(key);
+    if (idx === -1) {
+      hidden.push(key);
+    } else {
+      hidden.splice(idx, 1);
+    }
+    this.updateConfig({ key: 'hiddenColumns', value: hidden.length ? hidden : null });
   }
   showSnackBar(config: SnackBarConfig) {
     this.$store.commit('showSnackBar', config);
@@ -1016,5 +1099,11 @@ export default toNative(Torrents)
     line-height: 1;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
   }
+}
+
+.column-toggle-list {
+  min-width: 200px;
+  max-height: 400px;
+  overflow-y: auto;
 }
 </style>
