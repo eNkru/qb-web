@@ -11,6 +11,8 @@
       @change="changeSettings('rss_auto_downloading_enabled', !preferences.rss_auto_downloading_enabled)"
     />
     <v-text-field
+      variant="outlined"
+      density="compact"
       suffix="min"
       type="number"
       :model-value="preferences.rss_refresh_interval"

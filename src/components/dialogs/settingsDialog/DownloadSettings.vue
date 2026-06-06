@@ -46,6 +46,7 @@
     >
       <preference-row i18n-key="auto_tmm_enabled">
         <v-select
+          variant="outlined"
           density="compact"
           :items="torrentMode"
           :model-value="preferences.auto_tmm_enabled ? torrentMode[0] : torrentMode[1]"
@@ -54,6 +55,7 @@
       </preference-row>
       <preference-row i18n-key="torrent_changed_tmm_enabled">
         <v-select
+          variant="outlined"
           density="compact"
           :items="torrentAction"
           :model-value="preferences.category_changed_tmm_enabled ? torrentAction[1] : torrentAction[0]"
@@ -62,6 +64,7 @@
       </preference-row>
       <preference-row i18n-key="save_path_changed_tmm_enabled">
         <v-select
+          variant="outlined"
           density="compact"
           :items="torrentAction"
           :model-value="preferences.category_changed_tmm_enabled ? torrentAction[1] : torrentAction[0]"
@@ -70,6 +73,7 @@
       </preference-row>
       <preference-row i18n-key="category_changed_tmm_enabled">
         <v-select
+          variant="outlined"
           density="compact"
           :items="torrentAction"
           :model-value="preferences.category_changed_tmm_enabled ? torrentAction[1] : torrentAction[0]"
@@ -79,6 +83,7 @@
       <preference-row i18n-key="save_path">
         <v-text-field
           density="compact"
+          variant="outlined"
           :model-value="preferences.save_path"
           @change="changeSettings('save_path', $event)"
         />
@@ -96,6 +101,7 @@
           :model-value="preferences.temp_path"
           @change="changeSettings('temp_path', $event)"
           density="compact"
+          variant="outlined"
         />
       </preference-row>
       <preference-row
@@ -105,6 +111,8 @@
         <v-text-field
           :model-value="preferences.export_dir"
           @change="changeSettings('export_dir', $event)"
+          variant="outlined"
+          density="compact"
           clearable
         />
       </preference-row>
@@ -115,6 +123,8 @@
         <v-text-field
           :model-value="preferences.export_dir_fin"
           @change="changeSettings('export_dir_fin', $event)"
+          variant="outlined"
+          density="compact"
           clearable
         />
       </preference-row>
@@ -154,8 +164,12 @@ export default class DownloadSettings extends Vue {
 @import "~@/assets/styles.scss";
 
 h4 {
-  margin-top: 8px;
-  padding-left: 4px
+  margin-top: 16px;
+  margin-bottom: 4px;
+  padding-left: 4px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: rgba(var(--v-theme-on-surface), 0.7);
 }
 
 :deep(.v-switch) {

@@ -131,6 +131,10 @@ export default {
     add_torrents: {
       placeholder: 'Torrentleri yüklemek için\nlinkleri buraya girin\nveya sağdaki ataç butonuna tıklayıp seçim yapın.',
       hint: 'Her satıra sadece bir bağlantı',
+      source_label: 'Kaynak',
+      options_label: 'Seçenekler',
+      advanced_label: 'Gelişmiş',
+      attach_files: 'Torrent dosyası ekle',
     },
     delete_torrents: {
       msg: 'Seçilen torrent\'leri aktarım listesinden silmek istediğinize emin misiniz?',

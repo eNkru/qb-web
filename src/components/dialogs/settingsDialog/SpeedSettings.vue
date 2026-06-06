@@ -11,12 +11,16 @@
           >
             <h4> {{ $t('preferences.global_rate_limits') }}</h4>
             <v-text-field
+              variant="outlined"
+              density="compact"
               @change="changeSettings('dl_limit', convertToBytes($event))"
               :label="$t('preferences.dl_limit')"
               :placeholder="convertToKB(preferences.dl_limit)"
               lazy
             />
             <v-text-field
+              variant="outlined"
+              density="compact"
               @change="changeSettings('up_limit', convertToBytes($event))"
               :label="$t('preferences.up_limit')"
               :placeholder="convertToKB(preferences.up_limit)"
@@ -29,6 +33,8 @@
           >
             <h4> {{ $t('preferences.alternate_rate_limits') }}</h4>
             <v-text-field
+              variant="outlined"
+              density="compact"
               type="number"
               @change="changeSettings('alt_dl_limit', convertToBytes($event))"
               :label="$t('preferences.dl_limit')"
@@ -36,6 +42,8 @@
               lazy
             />
             <v-text-field
+              variant="outlined"
+              density="compact"
               type="number"
               @change="changeSettings('alt_up_limit', convertToBytes($event))"
               :label="$t('preferences.up_limit')"
@@ -144,6 +152,15 @@ export default class SpeedSettings extends Vue {
 
 :deep(.v-switch) {
   margin: 0
+}
+
+h4 {
+  margin-top: 16px;
+  margin-bottom: 4px;
+  padding-left: 4px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: rgba(var(--v-theme-on-surface), 0.7);
 }
 
 @include dialog-title;

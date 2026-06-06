@@ -11,6 +11,8 @@
       </v-col>
       <v-col cols="4">
         <v-text-field
+          variant="outlined"
+          density="compact"
           :model-value="config.updateInterval"
           type="number"
           @change="updateConfig({key: 'updateInterval', value: $event})"
@@ -26,6 +28,8 @@
       </v-col>
       <v-col cols="4">
         <v-text-field
+          variant="outlined"
+          density="compact"
           :model-value="preferences.web_ui_address"
           @change="changeSettings('web_ui_address', $event)"
         />
@@ -35,6 +39,8 @@
       </v-col>
       <v-col cols="1">
         <v-text-field
+          variant="outlined"
+          density="compact"
           :model-value="preferences.web_ui_port"
           @change="changeSettings('web_ui_port', $event)"
         />
@@ -53,12 +59,16 @@
     <v-divider />
     <preference-row i18n-key="web_ui_username">
       <v-text-field
+        variant="outlined"
+        density="compact"
         :model-value="preferences.web_ui_username"
         @change="changeSettings('web_ui_username', $event)"
       />
     </preference-row>
     <preference-row i18n-key="web_ui_password">
       <v-text-field
+        variant="outlined"
+        density="compact"
         :model-value="preferences.web_ui_password"
         @change="changeSettings('web_ui_password', $event)"
         :placeholder="$t('preferences.new_password')"
@@ -70,6 +80,8 @@
       </v-col>
       <v-col cols="1">
         <v-text-field
+          variant="outlined"
+          density="compact"
           :model-value="preferences.web_ui_max_auth_fail_count"
           @change="changeSettings('web_ui_max_auth_fail_count', $event)"
         />
@@ -79,6 +91,8 @@
       </v-col>
       <v-col cols="1">
         <v-text-field
+          variant="outlined"
+          density="compact"
           :model-value="preferences.web_ui_ban_duration"
           @change="changeSettings('web_ui_ban_duration', $event)"
         />
@@ -106,6 +120,8 @@
     <v-row dense>
       <v-col cols="4">
         <v-textarea
+          variant="outlined"
+          density="compact"
           :model-value="preferences.bypass_auth_subnet_whitelist"
           @change="changeSettings('bypass_auth_subnet_whitelist', $event)"
         />

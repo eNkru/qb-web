@@ -4,6 +4,7 @@
     @update:model-value="$emit('update:modelValue', $event)"
     scrollable
     persistent
+    :fullscreen="phoneLayout"
     max-width="720px"
   >
     <v-card>
@@ -13,6 +14,8 @@
         <v-spacer />
         <v-btn
           icon
+          variant="text"
+          size="small"
           @click="closeDialog"
         >
           <v-icon>mdi-close</v-icon>
@@ -23,17 +26,19 @@
           <v-tab
             v-for="item of tabList"
             :key="item"
-            :model-value="item"
+            :value="item"
           >
             {{ $t('preferences.' + item) }}
           </v-tab>
         </v-tabs>
         <v-fade-transition>
           <v-alert
-            density="compact"
-            text
-            type="success"
             v-show="preferenceUpdated"
+            type="success"
+            variant="tonal"
+            density="compact"
+            closable
+            class="mt-2"
           >
             {{ $t('preferences.change_applied') }}
           </v-alert>
@@ -90,6 +95,10 @@ export default class SettingsDialog extends Vue {
   tabList = ['downloads', 'speed', 'rss', 'webui']
   tab = 'downloads'
 
+  get phoneLayout() {
+    return this.$vuetify.display.xs;
+  }
+
   @Watch('preferences')
   @Watch('config')
   async onPreferenceUpdate() {
@@ -110,6 +119,17 @@ export default class SettingsDialog extends Vue {
 
 @include dialog-title;
 
-:deep(.v-card__text) {
+:deep(.v-card-text) {
+  padding: 20px 24px;
+}
+
+:deep(.v-tabs) {
+  margin-bottom: 16px;
+}
+
+.v-dialog--fullscreen {
+  .v-card__text {
+    padding-bottom: 68px;
+  }
 }
 </style>

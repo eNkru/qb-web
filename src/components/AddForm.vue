@@ -15,70 +15,82 @@
       eager
       persistent
       scrollable
-      :width="phoneLayout ? '100%' : '40em'"
+      :fullscreen="phoneLayout"
+      :width="phoneLayout ? '100%' : '42em'"
     >
-      <v-card>
+      <v-card class="add-form-card">
         <v-card-title class="headline">
           <v-icon class="mr-2">mdi-link-plus</v-icon>
           <span>{{ state.downloadItem && state.downloadItem.title || $t('title.add_torrents') }}</span>
+          <v-spacer />
+          <v-btn
+            icon
+            variant="text"
+            size="small"
+            @click="closeAddForm"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
         </v-card-title>
-        <v-card-text class="pb-0">
+        <v-card-text>
           <v-form ref="form">
-            <v-container>
-              <v-row no-gutters>
-                <v-col ref="fileZone">
-                  <v-file-input
-                    v-show="files.length"
-                    v-model="files"
-                    ref="file"
-                    multiple
-                    chips
-                    variant="outlined"
-                    :label="$t('files')"
-                  />
-                  <v-textarea
-                    v-show="!files.length"
-                    label="URL"
-                    :hint="$t('dialog.add_torrents.hint')"
-                    :placeholder="$t('dialog.add_torrents.placeholder')"
-                    prepend-icon="mdi-link"
-                    append-outer-icon="mdi-attachment"
-                    :rules="[v => (!!files.length || !!v || $t('msg.item_is_required', { item: 'URL' }))]"
-                    :rows="$vuetify.display.xs ? 1 : 3"
-                    required
-                    :autofocus="!phoneLayout"
-                    :model-value="params.urls"
-                    :readonly="state.downloadItem !== null"
-                    @update:model-value="setParams('urls', $event)"
-                    @click:append-outer="selectFiles"
-                  />
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <template v-if="showMore">
-                  <v-col
-                    cols="12"
-                    sm="6"
-                  >
-                    <v-checkbox
-                      prepend-icon="mdi-file-tree"
-                      :label="$t('label.create_subfolder')"
-                      :model-value="true"
-                      @change="setParams('root_path', $event)"
-                    />
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                  >
-                    <v-checkbox
-                      prepend-icon="mdi-car-shift-pattern"
-                      :label="$t('label.auto_tmm')"
-                      :model-value="params.autoTMM"
-                      @change="setParams('autoTMM', $event)"
-                    />
-                  </v-col>
-                </template>
+            <!-- Source section -->
+            <div class="form-section">
+              <div class="section-label">
+                {{ $t('dialog.add_torrents.source_label') }}
+              </div>
+              <div
+                ref="fileZone"
+                class="file-zone"
+                :class="{ 'has-files': files.length }"
+              >
+                <v-file-input
+                  v-show="files.length"
+                  v-model="files"
+                  ref="file"
+                  multiple
+                  chips
+                  variant="outlined"
+                  density="compact"
+                  :label="$t('files')"
+                />
+                <v-textarea
+                  v-show="!files.length"
+                  label="URL"
+                  :hint="$t('dialog.add_torrents.hint')"
+                  :placeholder="$t('dialog.add_torrents.placeholder')"
+                  prepend-icon="mdi-link"
+                  variant="outlined"
+                  density="compact"
+                  :rules="[v => (!!files.length || !!v || $t('msg.item_is_required', { item: 'URL' }))]"
+                  :rows="$vuetify.display.xs ? 1 : 3"
+                  required
+                  :autofocus="!phoneLayout"
+                  :model-value="params.urls"
+                  :readonly="state.downloadItem !== null"
+                  @update:model-value="setParams('urls', $event)"
+                >
+                  <template #append>
+                    <v-btn
+                      icon
+                      variant="text"
+                      size="small"
+                      @click="selectFiles"
+                      :title="$t('dialog.add_torrents.attach_files')"
+                    >
+                      <v-icon>mdi-attachment</v-icon>
+                    </v-btn>
+                  </template>
+                </v-textarea>
+              </div>
+            </div>
+
+            <!-- Options section -->
+            <div class="form-section">
+              <div class="section-label">
+                {{ $t('dialog.add_torrents.options_label') }}
+              </div>
+              <v-row dense>
                 <v-col
                   cols="12"
                   sm="6"
@@ -86,6 +98,8 @@
                   <v-combobox
                     :label="$t('category', 1)"
                     prepend-icon="mdi-folder"
+                    variant="outlined"
+                    density="compact"
                     clearable
                     hide-no-data
                     :items="categoryItems"
@@ -102,6 +116,8 @@
                   <v-text-field
                     :label="$t('location')"
                     prepend-icon="mdi-folder-marker"
+                    variant="outlined"
+                    density="compact"
                     clearable
                     :disabled="params.autoTMM"
                     :placeholder="defaultPath"
@@ -116,6 +132,8 @@
                   <v-checkbox
                     :label="$t('label.start_torrent')"
                     prepend-icon="mdi-play-pause"
+                    density="compact"
+                    hide-details
                     :model-value="!params.paused"
                     @change="setParams('paused', !$event)"
                   />
@@ -127,12 +145,52 @@
                 >
                   <v-checkbox
                     prepend-icon="mdi-progress-check"
+                    density="compact"
+                    hide-details
                     :label="$t('label.skip_hash_check')"
                     :model-value="params.skip_checking"
                     @change="setParams('skip_checking', $event)"
                   />
                 </v-col>
-                <template v-if="showMore">
+              </v-row>
+            </div>
+
+            <!-- Advanced options -->
+            <v-expand-transition>
+              <div
+                v-if="showMore"
+                class="form-section advanced-section"
+              >
+                <div class="section-label">
+                  {{ $t('dialog.add_torrents.advanced_label') }}
+                </div>
+                <v-row dense>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                  >
+                    <v-checkbox
+                      prepend-icon="mdi-file-tree"
+                      density="compact"
+                      hide-details
+                      :label="$t('label.create_subfolder')"
+                      :model-value="true"
+                      @change="setParams('root_path', $event)"
+                    />
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                  >
+                    <v-checkbox
+                      prepend-icon="mdi-car-shift-pattern"
+                      density="compact"
+                      hide-details
+                      :label="$t('label.auto_tmm')"
+                      :model-value="params.autoTMM"
+                      @change="setParams('autoTMM', $event)"
+                    />
+                  </v-col>
                   <v-col
                     cols="12"
                     sm="6"
@@ -140,6 +198,8 @@
                     <v-checkbox
                       :label="$t('label.in_sequential_order')"
                       prepend-icon="mdi-sort-descending"
+                      density="compact"
+                      hide-details
                       :model-value="params.sequentialDownload"
                       @change="setParams('sequentialDownload', $event)"
                     />
@@ -150,26 +210,41 @@
                   >
                     <v-checkbox
                       prepend-icon="mdi-ray-start-end"
+                      density="compact"
+                      hide-details
                       :label="$t('label.first_and_last_pieces_first')"
                       :model-value="params.firstLastPiecePrio"
                       @change="setParams('firstLastPiecePrio', $event)"
                     />
                   </v-col>
-                </template>
-              </v-row>
-            </v-container>
+                </v-row>
+              </div>
+            </v-expand-transition>
           </v-form>
           <v-alert
+            v-if="error"
             type="warning"
-            :model-value="error"
-            v-text="error"
-          />
+            variant="tonal"
+            density="compact"
+            class="mt-3"
+            closable
+            @click:close="error = null"
+          >
+            {{ error }}
+          </v-alert>
         </v-card-text>
         <v-card-actions>
           <v-btn
             variant="text"
+            size="small"
             @click="showMore = !showMore"
           >
+            <v-icon
+              start
+              size="small"
+            >
+              {{ showMore ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+            </v-icon>
             {{ showMore ? $t('less') : $t('more') }}
           </v-btn>
           <v-spacer />
@@ -180,7 +255,7 @@
             {{ $t('cancel') }}
           </v-btn>
           <v-btn
-            variant="text"
+            variant="flat"
             @click="submit"
             color="primary"
             :disabled="submitting"
@@ -285,7 +360,10 @@ class AddForm extends Vue {
   }
 
   mounted() {
-    this.$refs.fileZone.$el.addEventListener('drop', this.onDrop, true);
+    const el = this.$refs.fileZone instanceof HTMLElement
+      ? this.$refs.fileZone
+      : this.$refs.fileZone.$el;
+    el.addEventListener('drop', this.onDrop, true);
   }
 
   @Watch('state', {deep: true})
@@ -296,7 +374,10 @@ class AddForm extends Vue {
   }
 
   beforeUnmount() {
-    this.$refs.fileZone.$el.removeEventListener('drop', this.onDrop, true);
+    const el = this.$refs.fileZone instanceof HTMLElement
+      ? this.$refs.fileZone
+      : this.$refs.fileZone.$el;
+    el.removeEventListener('drop', this.onDrop, true);
   }
 
   setParams(key: keyof typeof defaultParams, value: any) {
@@ -399,11 +480,63 @@ export default toNative(AddForm)
   bottom: 44px;
 }
 
-.container {
-  padding: 12px 0 0;
-
-  .col, [class*=col-] {
-    padding: 0 0.5em;
+.add-form-card {
+  :deep(.v-card-text) {
+    padding: 20px 24px;
   }
+}
+
+.form-section {
+  margin-bottom: 20px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(var(--v-theme-on-surface), 0.6);
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(var(--v-border-color), 0.12);
+  }
+}
+
+.file-zone {
+  position: relative;
+}
+
+.advanced-section {
+  padding-top: 4px;
+}
+
+.v-dialog--fullscreen {
+  .v-card__text {
+    padding-bottom: 68px;
+  }
+
+  .v-card__actions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgb(var(--v-theme-surface));
+    border-top: 1px solid rgba(var(--v-border-color), 0.12);
+  }
+}
+
+:deep(.v-row.dense) {
+  margin: -4px;
+
+  > .v-col {
+    padding: 4px;
+  }
+}
+
+:deep(.v-checkbox) {
+  margin-top: 2px;
 }
 </style>

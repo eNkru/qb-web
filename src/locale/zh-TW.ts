@@ -190,6 +190,10 @@ export default {
     add_torrents: {
       placeholder: '將種子拖到這裡上傳，\n或者點擊右邊的附件圖示來選擇。',
       hint: '每行一個連結',
+      source_label: '來源',
+      options_label: '選項',
+      advanced_label: '進階',
+      attach_files: '附加種子文件',
     },
     delete_torrents: {
       msg: '確定要刪除選中的種子嗎？',
