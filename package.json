@@ -60,5 +60,10 @@
       "vue-cli-service lint"
     ]
   },
-  "packageManager": "yarn@3.5.0"
+  "packageManager": "yarn@3.5.0",
+  "resolutions": {
+    "cross-spawn": "^7.0.6",
+    "postcss": "^8.4.31",
+    "@tootallnate/once": "^2.0.1"
+  }
 }
