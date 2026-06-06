@@ -1,12 +1,8 @@
 import Vuex from 'vuex';
-import { createLocalVue } from '@vue/test-utils';
 import store from '@/store';
 import { RootState } from '@/store/types';
 import { mock, mockBaseTorrent } from '../utils';
 
-
-const localVue = createLocalVue();
-localVue.use(Vuex);
 
 const emtpyState: RootState = {
   rid: 0,

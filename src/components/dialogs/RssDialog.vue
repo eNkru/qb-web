@@ -1,7 +1,6 @@
 <template>
   <v-dialog
-    :value="value"
-    @input="$emit('input', $event)"
+    v-model="showDialog"
     fullscreen
     persistent
   >
@@ -54,14 +53,14 @@
           <v-spacer />
           <v-divider vertical />
           <v-switch
-            :input-value="preferences.rss_processing_enabled"
+            :model-value="preferences.rss_processing_enabled"
             @change="changePreference('rss_processing_enabled', $event)"
             :label="$t('dialog.rss.auto_refresh')"
             hide-details
           />
           <v-divider vertical />
           <v-switch
-            :input-value="preferences.rss_auto_downloading_enabled"
+            :model-value="preferences.rss_auto_downloading_enabled"
             @change="changePreference('rss_auto_downloading_enabled', $event)"
             :label="$t('dialog.rss.auto_download')"
             hide-details
@@ -78,7 +77,7 @@
         <v-divider />
         <div
           class="content"
-          :class="{phone: $vuetify.breakpoint.smAndDown}"
+          :class="{phone: $vuetify.display.smAndDown}"
         >
           <div
             v-if="!rssNode"
@@ -94,7 +93,7 @@
                 :items="rssTree"
                 item-key="path"
                 activatable
-                dense
+                density="compact"
                 @update:active="selectNode = $event[0]"
               >
                 <template #prepend="row">
@@ -128,41 +127,35 @@
                     :href="selectItem.url"
                   >{{ selectItem.title }}</a>
                 </p>
-                <p>{{ $t('date') }}: {{ (selectItem ? selectItem.lastBuildDate : null) | date }}</p>
+                <p>{{ $t('date') }}: {{ formatDate(selectItem ? selectItem.lastBuildDate : null) }}</p>
               </div>
               <v-divider />
               <div class="list-wrapper">
                 <v-list
                   v-if="selectItem"
-                  dense
+                  density="compact"
                 >
-                  <v-list-item-group
-                    v-model="selectArticle"
-                    color="primary"
+                  <v-list-item
+                    v-for="article in sortArticles(selectItem.articles)"
+                    :key="article.id"
+                    :active="selectArticle === article"
+                    @click="selectArticle = article"
                   >
-                    <v-list-item
-                      v-for="article in sortArticles(selectItem.articles)"
-                      :key="article.id"
-                      :value="article"
-                    >
-                      <v-list-item-content>
-                        <v-list-item-title>
-                          <span
-                            :title="article.title"
-                            v-text="article.title"
-                          />
-                        </v-list-item-title>
-                      </v-list-item-content>
-                      <v-list-item-action>
-                        <v-btn
-                          icon
-                          @click.stop="downloadTorrent(article)"
-                        >
-                          <v-icon>mdi-download</v-icon>
-                        </v-btn>
-                      </v-list-item-action>
-                    </v-list-item>
-                  </v-list-item-group>
+                    <v-list-item-title>
+                      <span
+                        :title="article.title"
+                        v-text="article.title"
+                      />
+                    </v-list-item-title>
+                    <template #prepend>
+                      <v-btn
+                        icon
+                        @click.stop="downloadTorrent(article)"
+                      >
+                        <v-icon>mdi-download</v-icon>
+                      </v-btn>
+                    </template>
+                  </v-list-item>
                 </v-list>
               </div>
             </div>
@@ -178,7 +171,7 @@
                   >{{ selectArticle.title }}</a>
                 </p>
                 <p>{{ `${$t('category', 1)}: ${selectArticle ? selectArticle.category: ''}` }}</p>
-                <p>{{ $t('date') }}: {{ (selectArticle ? selectArticle.date: null) | date }}</p>
+                <p>{{ $t('date') }}: {{ formatDate(selectArticle ? selectArticle.date : null) }}</p>
               </div>
               <v-divider />
               <iframe
@@ -203,9 +196,7 @@
 
 <script lang="ts">
 import { get, toPath, sortBy } from 'lodash'
-import { mapActions, mapMutations, mapState } from 'vuex'
-import Component from 'vue-class-component'
-import { Prop, Watch, Emit } from 'vue-property-decorator'
+import { Vue, Component, Prop, Watch, Emit, toNative } from 'vue-facing-decorator'
 
 import HasTask from '@/mixins/hasTask'
 import api from '@/Api';
@@ -221,34 +212,9 @@ let darkMode: boolean;
   components: {
     RssRulesDialog,
   },
-  computed: mapState([
-    'preferences',
-  ]),
-  methods: {
-    ...mapActions([
-      'asyncShowDialog',
-    ]),
-    ...mapMutations([
-      'showSnackBar',
-      'closeSnackBar',
-    ]),
-  },
-  filters: {
-    date(str: string) {
-      if (!str) {
-        return null
-      }
-
-      const time = parseDate(str)!
-      return tr('dialog.rss.date_format', {
-        date: formatTimestamp(time),
-        duration: formatAsDuration(time, {minUnit: 1}),
-      })
-    },
-  },
   directives: {
     body: {
-      inserted(el, binding) {
+      mounted(el: HTMLElement, binding: any) {
         const doc = (el as HTMLIFrameElement).contentDocument!
 
         const darkCss = darkMode ? 'body{color: #fff}' : null;
@@ -262,7 +228,7 @@ let darkMode: boolean;
         doc.head.insertAdjacentHTML('beforeend', css)
         doc.body.innerHTML = binding.value
       },
-      update(el, binding) {
+      updated(el: HTMLElement, binding: any) {
         if (binding.oldValue === binding.value) {
           return
         }
@@ -276,22 +242,37 @@ let darkMode: boolean;
     },
   },
 })
-export default class RssDialog extends HasTask {
-  @Prop(Boolean)
-  readonly value!: boolean
+class RssDialog extends HasTask {
+  @Prop({ type: Boolean })
+  readonly modelValue!: boolean
+
+  get showDialog() {
+    return this.modelValue;
+  }
+  set showDialog(val: boolean) {
+    this.$emit('update:modelValue', val);
+  }
 
   rssNode: RssNode | null = null
   selectNode: string | null = null
   selectArticle: RssTorrent | null = null
   showRulesDialog = false
 
-  preferences!: any
-  asyncShowDialog!: (_: DialogConfig) => Promise<string | undefined>
-  showSnackBar!: (_: SnackBarConfig) => void
-  closeSnackBar!: () => void
+  get preferences(): any {
+    return this.$store.state.preferences;
+  }
+  async asyncShowDialog(config: DialogConfig): Promise<string | undefined> {
+    return this.$store.dispatch('asyncShowDialog', config);
+  }
+  showSnackBar(config: SnackBarConfig) {
+    this.$store.commit('showSnackBar', config);
+  }
+  closeSnackBar() {
+    this.$store.commit('closeSnackBar');
+  }
 
   get phoneLayout() {
-    return this.$vuetify.breakpoint.smAndDown;
+    return this.$vuetify.display.smAndDown;
   }
 
   get rssTree() {
@@ -489,16 +470,30 @@ export default class RssDialog extends HasTask {
     this.selectArticle = null
   }
 
+  formatDate(str: string) {
+    if (!str) {
+      return null
+    }
+
+    const time = parseDate(str)!
+    return tr('dialog.rss.date_format', {
+      date: formatTimestamp(time),
+      duration: formatAsDuration(time, {minUnit: 1}),
+    })
+  }
+
   created() {
-    darkMode = this.$vuetify.theme.dark
+    darkMode = (this.$vuetify.theme as any).global.name === 'dark'
     this.setTaskAndRun(this.fetchRssItems, 5000)
   }
 
-  @Emit('input')
+  @Emit('update:modelValue')
   closeDialog() {
     return false
   }
 }
+
+export default toNative(RssDialog)
 </script>
 
 <style lang="scss" scoped>
@@ -532,7 +527,7 @@ export default class RssDialog extends HasTask {
   padding: 0 20px;
   align-items: center;
 
-  .v-input--switch {
+  :deep(.v-switch) {
     margin: 0 0.5em;
     padding: 0;
   }
@@ -580,11 +575,11 @@ export default class RssDialog extends HasTask {
   }
 
   .v-list-item {
-    .v-list-item__action {
+    :deep(.v-list-item__append) {
       margin: 0;
     }
 
-    &:not(:hover) .v-list-item__action {
+    &:not(:hover) :deep(.v-list-item__append) {
       display: none;
     }
   }

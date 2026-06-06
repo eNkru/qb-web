@@ -1,19 +1,20 @@
 <template>
   <v-container>
-    <h4>{{ $t("preferences.webui_remote_control") }}}</h4>
+    <h4>{{ $t("preferences.webui_remote_control") }}</h4>
     <v-divider />
     <v-row
       dense
       align="center"
     >
       <v-col cols="2">
-        <v-subheader>{{ $t("preferences.data_update_interval") }}</v-subheader>
+        <v-list-subheader>{{ $t("preferences.data_update_interval") }}</v-list-subheader>
       </v-col>
       <v-col cols="4">
         <v-text-field
-          :value="config.updateInterval"
+          variant="outlined"
+          density="compact"
+          :model-value="config.updateInterval"
           type="number"
-          lazy
           @change="updateConfig({key: 'updateInterval', value: $event})"
         />
       </v-col>
@@ -23,23 +24,25 @@
       align="center"
     >
       <v-col cols="2">
-        <v-subheader>{{ $t("preferences.ip_address") }}</v-subheader>
+        <v-list-subheader>{{ $t("preferences.ip_address") }}</v-list-subheader>
       </v-col>
       <v-col cols="4">
         <v-text-field
-          :value="preferences.web_ui_address"
+          variant="outlined"
+          density="compact"
+          :model-value="preferences.web_ui_address"
           @change="changeSettings('web_ui_address', $event)"
-          lazy
         />
       </v-col>
       <v-col cols="1">
-        <v-subheader>{{ $t("preferences.ip_port") }}</v-subheader>
+        <v-list-subheader>{{ $t("preferences.ip_port") }}</v-list-subheader>
       </v-col>
       <v-col cols="1">
         <v-text-field
-          :value="preferences.web_ui_port"
+          variant="outlined"
+          density="compact"
+          :model-value="preferences.web_ui_port"
           @change="changeSettings('web_ui_port', $event)"
-          lazy
         />
       </v-col>
     </v-row>
@@ -47,7 +50,7 @@
       <v-col>
         <v-checkbox
           :label="$t('preferences.display_speed_in_title')"
-          :input-value="config.displaySpeedInTitle"
+          :model-value="config.displaySpeedInTitle"
           @change="updateTitleSpeedConfig($event)"
         />
       </v-col>
@@ -56,17 +59,19 @@
     <v-divider />
     <preference-row i18n-key="web_ui_username">
       <v-text-field
-        :value="preferences.web_ui_username"
+        variant="outlined"
+        density="compact"
+        :model-value="preferences.web_ui_username"
         @change="changeSettings('web_ui_username', $event)"
-        lazy
       />
     </preference-row>
     <preference-row i18n-key="web_ui_password">
       <v-text-field
-        :value="preferences.web_ui_password"
+        variant="outlined"
+        density="compact"
+        :model-value="preferences.web_ui_password"
         @change="changeSettings('web_ui_password', $event)"
         :placeholder="$t('preferences.new_password')"
-        lazy
       />
     </preference-row>
     <v-row dense>
@@ -75,9 +80,10 @@
       </v-col>
       <v-col cols="1">
         <v-text-field
-          :value="preferences.web_ui_max_auth_fail_count"
+          variant="outlined"
+          density="compact"
+          :model-value="preferences.web_ui_max_auth_fail_count"
           @change="changeSettings('web_ui_max_auth_fail_count', $event)"
-          lazy
         />
       </v-col>
       <v-col cols="auto">
@@ -85,9 +91,10 @@
       </v-col>
       <v-col cols="1">
         <v-text-field
-          :value="preferences.web_ui_ban_duration"
+          variant="outlined"
+          density="compact"
+          :model-value="preferences.web_ui_ban_duration"
           @change="changeSettings('web_ui_ban_duration', $event)"
-          lazy
         />
       </v-col>
       <v-col cols="auto">
@@ -97,14 +104,14 @@
     <v-row dense>
       <v-col>
         <v-checkbox
-          :input-value="preferences.bypass_auth_subnet_whitelist_enabled"
+          :model-value="preferences.bypass_auth_subnet_whitelist_enabled"
           :label="$t('preferences.bypass_auth_subnet_whitelist')"
           @change="changeSettings('bypass_auth_subnet_whitelist_enabled', $event)"
         />
       </v-col>
       <v-col>
         <v-checkbox
-          :input-value="preferences.bypass_local_auth"
+          :model-value="preferences.bypass_local_auth"
           :label="$t('preferences.bypass_local_auth')"
           @change="changeSettings('bypass_local_auth', $event)"
         />
@@ -113,9 +120,10 @@
     <v-row dense>
       <v-col cols="4">
         <v-textarea
-          :value="preferences.bypass_auth_subnet_whitelist"
+          variant="outlined"
+          density="compact"
+          :model-value="preferences.bypass_auth_subnet_whitelist"
           @change="changeSettings('bypass_auth_subnet_whitelist', $event)"
-          lazy
         />
       </v-col>
     </v-row>
@@ -123,37 +131,29 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { Vue, Component } from 'vue-facing-decorator'
 import {Preferences} from '@/types'
-import {Component} from 'vue-property-decorator'
-import {mapActions, mapGetters, mapMutations} from 'vuex'
 import {Config} from '@/store/config'
 import { ConfigPayload } from '@/store/types';
 import PreferenceRow from '@/components/dialogs/settingsDialog/PreferenceRow.vue'
 
 @Component({
   components: {PreferenceRow},
-  computed: {
-    ...mapGetters({
-      config: 'config',
-      preferences: 'allPreferences',
-    }),
-  },
-  methods: {
-    ...mapMutations([
-      'updateConfig',
-    ]),
-    ...mapActions({
-      updatePreferencesRequest: 'updatePreferencesRequest',
-    }),
-  },
 })
 export default class WebUISettings extends Vue {
-  preferences!: Preferences
-  config!: Config
+  get config(): Config {
+    return this.$store.getters.config;
+  }
+  get preferences(): Preferences {
+    return this.$store.getters.allPreferences;
+  }
 
-  updateConfig!: (_: ConfigPayload) => void
-  updatePreferencesRequest!: (_: any) => void
+  updateConfig(payload: ConfigPayload) {
+    this.$store.commit('updateConfig', payload);
+  }
+  updatePreferencesRequest(data: any) {
+    return this.$store.dispatch('updatePreferencesRequest', data);
+  }
 
   changeSettings(property: string, value: string | boolean) {
     this.updatePreferencesRequest({[property]: value})

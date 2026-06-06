@@ -1,8 +1,8 @@
 <template>
   <div>
     <v-dialog
-      :value="value"
-      @input="$emit('input', $event)"
+      :model-value="modelValue"
+      @update:model-value="$emit('update:modelValue', $event)"
       scrollable
       fullscreen
       persistent
@@ -41,7 +41,7 @@
               />
             </template>
             <template #[`item.fileSize`]="{ item }">
-              {{ item.fileSize | formatSize }}
+              {{ $formatSize(item.fileSize) }}
             </template>
             <template #[`item.actions`]="{ item }">
               <v-icon @click="downloadTorrent(item)">mdi-download</v-icon>
@@ -62,12 +62,12 @@
 <script lang="ts">
 import api from "@/Api";
 import HasTask from "@/mixins/hasTask";
-import { Component, Prop, Emit } from "vue-property-decorator";
+import { Component, Prop, Emit } from "vue-facing-decorator";
 import { SearchTaskTorrent } from "@/types";
-import { mapActions, mapGetters, mapMutations } from "vuex";
 import { tr } from "@/locale";
 import SearchDialogForm from "./SearchDialogForm.vue";
 import PluginManager from "./PluginsManager.vue";
+import { Category, Preferences } from '@/types';
 
 interface GridConfig {
   searchItems: SearchTaskTorrent[];
@@ -80,24 +80,35 @@ interface GridConfig {
     SearchDialogForm,
     PluginManager,
   },
-  computed: {
-    ...mapGetters({
-      allCategories: "allCategories",
-      preferences: "preferences",
-    }),
-  },
-  methods: {
-    ...mapMutations(["openAddForm", "setPasteUrl", "addFormDownloadItem", "openPluginManager"]),
-    ...mapActions({
-      loadSearchPlugins: 'fetchSearchPlugins',
-    }),
-  },
 })
 export default class SearchDialog extends HasTask {
   private _searchId = 0;
 
-  @Prop(Boolean)
-  readonly value!: boolean;
+  @Prop({ type: Boolean })
+  readonly modelValue!: boolean;
+
+  get allCategories(): Category[] {
+    return this.$store.getters.allCategories;
+  }
+  get preferences(): Preferences {
+    return this.$store.getters.preferences;
+  }
+
+  setPasteUrl(data: any) {
+    this.$store.commit('setPasteUrl', data);
+  }
+  openAddForm() {
+    this.$store.commit('openAddForm');
+  }
+  addFormDownloadItem(data: any) {
+    this.$store.commit('addFormDownloadItem', data);
+  }
+  loadSearchPlugins() {
+    return this.$store.dispatch('fetchSearchPlugins');
+  }
+  openPluginManager() {
+    this.$store.commit('openPluginManager');
+  }
 
   grid: GridConfig = {
     searchItems: [],
@@ -111,22 +122,16 @@ export default class SearchDialog extends HasTask {
       siteUrl: "",
     },
     headers: [
-      { text: tr("name"), value: "fileName" },
-      { text: tr("size"), value: "fileSize" },
-      { text: tr("seeds"), value: "nbSeeders" },
-      { text: tr("peers"), value: "nbLeechers" },
-      { text: tr("search_engine"), value: "siteUrl" },
-      { text: tr("action", 2), value: "actions", sortable: false },
+        { title: tr("name"), key: "fileName" },
+        { title: tr("size"), key: "fileSize" },
+        { title: tr("seeds"), key: "nbSeeders" },
+        { title: tr("peers"), key: "nbLeechers" },
+        { title: tr("search_engine"), key: "siteUrl" },
+        { title: tr("action", 2), key: "actions", sortable: false },
     ],
   };
 
   loading = false;
-
-  setPasteUrl!: (_: any) => void;
-  openAddForm!: () => void;
-  addFormDownloadItem!: (_: any) => void;
-  loadSearchPlugins!: () => void;
-  openPluginManager!: () => void;
 
   mounted() {
     this.loadSearchPlugins(); // load the plugins so they are available in the entire module
@@ -148,7 +153,7 @@ export default class SearchDialog extends HasTask {
     this.loading = false;
   }
 
-  @Emit("input")
+  @Emit("update:modelValue")
   closeDialog() {
     return false;
   }

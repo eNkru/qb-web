@@ -201,6 +201,10 @@ export default {
     add_torrents: {
       placeholder: 'Upload torrents by dropping them here,\nor click attachment button at right to select.',
       hint: 'One link per line',
+      source_label: 'Source',
+      options_label: 'Options',
+      advanced_label: 'Advanced',
+      attach_files: 'Attach torrent files',
     },
     delete_torrents: {
       msg: 'Are you sure you want to delete selected torrents from transfer list?',

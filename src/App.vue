@@ -2,16 +2,13 @@
   <v-app ref="app">
     <v-navigation-drawer
       app
-      :clipped="$vuetify.breakpoint.lgAndUp"
+      floating
       v-model="drawer"
-      v-class:phone-layout="phoneLayout"
-      width="300"
+      :class="{'phone-layout': phoneLayout}"
+      width="280"
     >
       <drawer v-model="drawerOptions" />
-
-      <template #append>
-        <DrawerFooter />
-      </template>
+      <DrawerFooter />
     </v-navigation-drawer>
     <main-toolbar v-model="drawer" />
 
@@ -45,7 +42,7 @@
       app
       class="elevation-4"
       padless
-      v-if="$vuetify.breakpoint.smAndUp"
+      v-if="$vuetify.display.smAndUp"
     >
       <app-footer />
     </v-footer>
@@ -63,8 +60,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import { mapGetters, mapState, mapMutations } from 'vuex';
+import { Vue, Component, Watch, toNative } from 'vue-facing-decorator';
 import { registerProtocolHandler, checkDownloadUrl } from './protocolHandler';
 
 import GlobalDialog from './components/GlobalDialog.vue';
@@ -85,8 +81,6 @@ import ContextMenu from './components/ContextMenu.vue';
 
 
 import api from './Api';
-import Component from 'vue-class-component';
-import { Watch } from 'vue-property-decorator';
 import { MainData } from './types';
 import { Config } from './store/config';
 import Api from './Api';
@@ -111,26 +105,9 @@ let appWrapEl: HTMLElement;
     SettingsDialog,
     ContextMenu,
   },
-  computed: {
-    ...mapState([
-      'mainData',
-      'rid',
-      'preferences',
-      'needAuth',
-    ]),
-    ...mapGetters(['config']),
-  },
-  methods: {
-    ...mapMutations([
-      'updateMainData',
-      'updatePreferences',
-      'setPasteUrl',
-      'updateNeedAuth',
-    ]),
-  },
 })
-export default class App extends Vue {
-  drawer = !this.phoneLayout
+class App extends Vue {
+  drawer = true
   drawerOptions = {
     showLogs: false,
     showRss: false,
@@ -145,19 +122,37 @@ export default class App extends Vue {
   task = 0
   mql?: MediaQueryList
 
-  mainData!: MainData
-  rid!: number
-  preferences!: any
-  config!: Config
-  needAuth!: boolean
+  get mainData(): MainData {
+    return this.$store.state.mainData;
+  }
+  get rid(): number {
+    return this.$store.state.rid;
+  }
+  get preferences(): any {
+    return this.$store.state.preferences;
+  }
+  get needAuth(): boolean {
+    return this.$store.state.needAuth;
+  }
+  get config(): Config {
+    return this.$store.getters.config;
+  }
 
-  updateMainData!: (_: any) => void
-  updatePreferences!: (_: any) => void
-  setPasteUrl!: (_: any) => void
-  updateNeedAuth!: (_: boolean) => void
+  updateMainData(data: any) {
+    this.$store.commit('updateMainData', data);
+  }
+  updatePreferences(data: any) {
+    this.$store.commit('updatePreferences', data);
+  }
+  setPasteUrl(data: any) {
+    this.$store.commit('setPasteUrl', data);
+  }
+  updateNeedAuth(value: boolean) {
+    this.$store.commit('updateNeedAuth', value);
+  }
 
   get phoneLayout() {
-    return this.$vuetify.breakpoint.xsOnly;
+    return this.$vuetify.display.xs;
   }
 
   initProtocolHandler() {
@@ -172,18 +167,20 @@ export default class App extends Vue {
   }
 
   async created() {
+    this.drawer = !this.phoneLayout;
+
     this.initProtocolHandler();
 
     await this.getInitData();
-    appWrapEl = (this.$refs.app as any).$el.querySelector('.v-application--wrap');
+    appWrapEl = (this.$refs.app as any).$el;
     appWrapEl.addEventListener('paste', this.onPaste);
   }
 
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.task) {
       clearTimeout(this.task);
     }
-    appWrapEl.removeEventListener('paste', this.onPaste);
+    appWrapEl?.removeEventListener('paste', this.onPaste);
   }
 
   async getInitData() {
@@ -259,6 +256,24 @@ export default class App extends Vue {
     });
   }
 
+  private setThemeColors(
+    target: 'light' | 'dark',
+    colors: Record<string, string>,
+  ) {
+    const theme = this.$vuetify.theme as any;
+    const themeColors = theme.themes[target].colors;
+    Object.keys(colors).forEach(key => {
+      themeColors[key] = colors[key];
+    });
+  }
+
+  private removeThemeClasses() {
+    const app = (this.$refs.app as any)?.$el;
+    if (app) {
+      app.classList.remove('grey-theme', 'luxury-theme', 'natural-theme', 'technology-theme', 'modern-dark-theme', 'crypto-theme', 'cyberpunk-theme');
+    }
+  }
+
   @Watch('needAuth')
   onNeedAuth(v: boolean) {
     if (!v) {
@@ -268,65 +283,47 @@ export default class App extends Vue {
 
   @Watch('config.themeMode', {immediate: true})
   onThemeMode(mode: 'light' | 'dark' | 'grey' | 'luxury' | 'modern-dark' | 'crypto' | 'cyberpunk' | 'natural' | 'technology' | null) {
-    const { theme } = this.$vuetify;
+    const theme = this.$vuetify.theme as any;
 
-    // If user explicitly chose a theme
     if (mode != null) {
       if (this.mql) {
-        this.mql.removeListener(null)
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        this.mql.removeEventListener('change', () => {});
         this.mql = undefined
       }
-      
-      // Apply grey/luxury/natural/technology theme (light variants)
+
       if (mode === 'grey' || mode === 'luxury' || mode === 'natural' || mode === 'technology') {
-        theme.dark = false;
-        
+        theme.change('light');
+
         if (mode === 'grey') {
-          // Apply darker grey color scheme
-          theme.themes.light.primary = '#6b8fb5';
-          theme.themes.light.secondary = '#757575';
-          theme.themes.light.accent = '#90b4d4';
-          theme.themes.light.error = '#d32f2f';
-          theme.themes.light.info = '#5c9fd6';
-          theme.themes.light.success = '#66bb6a';
-          theme.themes.light.warning = '#ffa726';
+          this.setThemeColors('light', {
+            primary: '#6b8fb5', secondary: '#757575', accent: '#90b4d4',
+            error: '#d32f2f', info: '#5c9fd6', success: '#66bb6a', warning: '#ffa726',
+          });
         } else if (mode === 'luxury') {
-          // Apply luxury color scheme
-          theme.themes.light.primary = '#D4AF37';
-          theme.themes.light.secondary = '#6C6863';
-          theme.themes.light.accent = '#D4AF37';
-          theme.themes.light.error = '#FF5252';
-          theme.themes.light.info = '#2196F3';
-          theme.themes.light.success = '#4CAF50';
-          theme.themes.light.warning = '#FFC107';
-          theme.themes.light.background = '#F9F8F6';
+          this.setThemeColors('light', {
+            primary: '#D4AF37', secondary: '#6C6863', accent: '#D4AF37',
+            error: '#FF5252', info: '#2196F3', success: '#4CAF50', warning: '#FFC107',
+            background: '#F9F8F6',
+          });
         } else if (mode === 'natural') {
-          // Apply natural color scheme
-          theme.themes.light.primary = '#5D7052';
-          theme.themes.light.secondary = '#C18C5D';
-          theme.themes.light.accent = '#E6DCCD';
-          theme.themes.light.error = '#A85448';
-          theme.themes.light.info = '#5D7052';
-          theme.themes.light.success = '#5D7052';
-          theme.themes.light.warning = '#C18C5D';
-          theme.themes.light.background = '#FDFCF8';
+          this.setThemeColors('light', {
+            primary: '#5D7052', secondary: '#C18C5D', accent: '#E6DCCD',
+            error: '#A85448', info: '#5D7052', success: '#5D7052', warning: '#C18C5D',
+            background: '#FDFCF8',
+          });
         } else {
-          // Apply technology color scheme
-          theme.themes.light.primary = '#0052FF';
-          theme.themes.light.secondary = '#64748B';
-          theme.themes.light.accent = '#0052FF';
-          theme.themes.light.error = '#EF4444';
-          theme.themes.light.info = '#0052FF';
-          theme.themes.light.success = '#22C55E';
-          theme.themes.light.warning = '#F59E0B';
-          theme.themes.light.background = '#FAFAFA';
+          this.setThemeColors('light', {
+            primary: '#0052FF', secondary: '#64748B', accent: '#0052FF',
+            error: '#EF4444', info: '#0052FF', success: '#22C55E', warning: '#F59E0B',
+            background: '#FAFAFA',
+          });
         }
-        
-        // Add theme class
+
         this.$nextTick(() => {
+          this.removeThemeClasses();
           const app = (this.$refs.app as any)?.$el;
           if (app) {
-            app.classList.remove('grey-theme', 'luxury-theme', 'natural-theme', 'technology-theme', 'modern-dark-theme', 'crypto-theme', 'cyberpunk-theme');
             if (mode === 'grey') app.classList.add('grey-theme');
             else if (mode === 'luxury') app.classList.add('luxury-theme');
             else if (mode === 'natural') app.classList.add('natural-theme');
@@ -334,89 +331,61 @@ export default class App extends Vue {
           }
         });
       } else if (mode === 'modern-dark') {
-        // Apply modern dark theme
-        theme.dark = true;
-        theme.themes.dark.primary = '#5E6AD2';
-        theme.themes.dark.secondary = '#8A8F98';
-        theme.themes.dark.accent = '#5E6AD2';
-        theme.themes.dark.error = '#FF5252';
-        theme.themes.dark.info = '#2196F3';
-        theme.themes.dark.success = '#4CAF50';
-        theme.themes.dark.warning = '#FFC107';
-        
+        theme.change('dark');
+        this.setThemeColors('dark', {
+          primary: '#5E6AD2', secondary: '#8A8F98', accent: '#5E6AD2',
+          error: '#FF5252', info: '#2196F3', success: '#4CAF50', warning: '#FFC107',
+        });
+
         this.$nextTick(() => {
+          this.removeThemeClasses();
           const app = (this.$refs.app as any)?.$el;
-          if (app) {
-            app.classList.remove('grey-theme', 'luxury-theme', 'natural-theme', 'technology-theme', 'modern-dark-theme', 'crypto-theme', 'cyberpunk-theme');
-            app.classList.add('modern-dark-theme');
-          }
+          if (app) app.classList.add('modern-dark-theme');
         });
       } else if (mode === 'crypto') {
-        // Apply crypto theme
-        theme.dark = true;
-        theme.themes.dark.primary = '#F7931A';
-        theme.themes.dark.secondary = '#94A3B8';
-        theme.themes.dark.accent = '#F7931A';
-        theme.themes.dark.error = '#FF5252';
-        theme.themes.dark.info = '#2196F3';
-        theme.themes.dark.success = '#FFD600';
-        theme.themes.dark.warning = '#EA580C';
-        
+        theme.change('dark');
+        this.setThemeColors('dark', {
+          primary: '#F7931A', secondary: '#94A3B8', accent: '#F7931A',
+          error: '#FF5252', info: '#2196F3', success: '#FFD600', warning: '#EA580C',
+        });
+
         this.$nextTick(() => {
+          this.removeThemeClasses();
           const app = (this.$refs.app as any)?.$el;
-          if (app) {
-            app.classList.remove('grey-theme', 'luxury-theme', 'natural-theme', 'technology-theme', 'modern-dark-theme', 'crypto-theme', 'cyberpunk-theme');
-            app.classList.add('crypto-theme');
-          }
+          if (app) app.classList.add('crypto-theme');
         });
       } else if (mode === 'cyberpunk') {
-        // Apply cyberpunk theme
-        theme.dark = true;
-        theme.themes.dark.primary = '#00ff88';
-        theme.themes.dark.secondary = '#6b7280';
-        theme.themes.dark.accent = '#00ff88';
-        theme.themes.dark.error = '#ff3366';
-        theme.themes.dark.info = '#00d4ff';
-        theme.themes.dark.success = '#00ff88';
-        theme.themes.dark.warning = '#ff00ff';
-        
+        theme.change('dark');
+        this.setThemeColors('dark', {
+          primary: '#00ff88', secondary: '#6b7280', accent: '#00ff88',
+          error: '#ff3366', info: '#00d4ff', success: '#00ff88', warning: '#ff00ff',
+        });
+
         this.$nextTick(() => {
+          this.removeThemeClasses();
           const app = (this.$refs.app as any)?.$el;
-          if (app) {
-            app.classList.remove('grey-theme', 'luxury-theme', 'natural-theme', 'technology-theme', 'modern-dark-theme', 'crypto-theme', 'cyberpunk-theme');
-            app.classList.add('cyberpunk-theme');
-          }
+          if (app) app.classList.add('cyberpunk-theme');
         });
       } else {
-        // Reset to default colors for light/dark
-        theme.themes.light.primary = '#1976d2';
-        theme.themes.light.secondary = '#424242';
-        theme.themes.light.accent = '#82B1FF';
-        theme.themes.light.error = '#FF5252';
-        theme.themes.light.info = '#2196F3';
-        theme.themes.light.success = '#4CAF50';
-        theme.themes.light.warning = '#FFC107';
-        
-        // Remove theme classes
-        this.$nextTick(() => {
-          const app = (this.$refs.app as any)?.$el;
-          if (app) {
-            app.classList.remove('grey-theme', 'luxury-theme', 'natural-theme', 'technology-theme', 'modern-dark-theme', 'crypto-theme', 'cyberpunk-theme');
-          }
+        this.setThemeColors('light', {
+          primary: '#1976d2', secondary: '#424242', accent: '#82B1FF',
+          error: '#FF5252', info: '#2196F3', success: '#4CAF50', warning: '#FFC107',
         });
-        
-        // Set dark mode based on selection
-        theme.dark = (mode === 'dark');
+
+        this.$nextTick(() => {
+          this.removeThemeClasses();
+        });
+
+        theme.change((mode === 'dark') ? 'dark' : 'light');
       }
       return;
     }
 
-    // If mode is null (auto), follow system preference
     this.mql = window.matchMedia('(prefers-color-scheme: dark)');
-    this.mql.addListener((e: MediaQueryListEvent) => {
-      theme.dark = e.matches
-    })
-    theme.dark = this.mql.matches
+    this.mql.addEventListener('change', (e: MediaQueryListEvent) => {
+      theme.change(e.matches ? 'dark' : 'light');
+    });
+    theme.change(this.mql.matches ? 'dark' : 'light');
   }
 
   @Watch('config.fontScale', {immediate: true})
@@ -427,13 +396,11 @@ export default class App extends Vue {
 
   @Watch('config.darkMode')
   onDarkMode(mode: any) {
-    // Migration: if darkMode is set but themeMode is not, migrate the setting (only once on load)
     if (mode != null && this.config.themeMode == null) {
       this.$store.commit('updateConfig', {
         key: 'themeMode',
         value: mode ? 'dark' : 'light',
       });
-      // Clear the old darkMode setting
       this.$store.commit('updateConfig', {
         key: 'darkMode',
         value: null,
@@ -441,25 +408,63 @@ export default class App extends Vue {
     }
   }
 }
+
+export default toNative(App)
 </script>
 
 <style lang="scss" scoped>
-.v-footer {
+:deep(.v-footer) {
   min-height: 36px;
 }
 </style>
 
 <style lang="scss">
-html {
+html, body, #app {
+  height: 100%;
   overflow-y: hidden;
 }
 
 html {
+  font-size: calc(16px * var(--app-font-scale, 1)) !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans CJK SC', 'Noto Sans CJK TC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-weight: 500;
+}
+
+.v-list-item-title {
+  font-weight: inherit;
+}
+
+.v-navigation-drawer {
   font-size: calc(16px * var(--app-font-scale, 1));
+  top: 64px !important;
+  height: calc(100vh - 100px) !important;
+}
+
+.v-app-bar {
+  left: 0 !important;
+  width: 100% !important;
+}
+
+.v-footer {
+  left: 0 !important;
+  width: 100% !important;
+}
+
+.v-application__wrap {
+  min-height: auto !important;
+  height: 100%;
+}
+
+.v-main {
+  padding-top: 64px !important;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow: hidden;
 }
 
 // Grey theme background colors
-.v-application.theme--light {
+.v-theme--light {
   &.grey-theme {
     background-color: #e0e0e0 !important;
     
@@ -475,7 +480,7 @@ html {
       background-color: #ececec !important;
     }
     
-    .v-navigation-drawer {
+    .v-navigation-drawer .v-navigation-drawer__content {
       background-color: #ececec !important;
     }
     
@@ -528,7 +533,7 @@ html {
 }
 
 // Luxury theme - Sophisticated Monochrome
-.v-application.theme--light {
+.v-theme--light {
   &.luxury-theme {
     color: #1A1A1A !important;
 
@@ -545,7 +550,7 @@ html {
       background-color: #F0EEEB !important;
     }
 
-    .v-navigation-drawer {
+    .v-navigation-drawer .v-navigation-drawer__content {
       background-color: #F9F8F6 !important;
     }
 
@@ -598,7 +603,7 @@ html {
       }
     }
 
-    .text--secondary,
+    .text-secondary,
     .v-label,
     .v-messages {
       color: #6C6863 !important;
@@ -607,7 +612,7 @@ html {
 }
 
 // Modern Dark theme
-.v-application.theme--dark {
+.v-theme--dark {
   &.modern-dark-theme {
     background-color: #050506 !important;
     color: #EDEDEF !important;
@@ -635,7 +640,7 @@ html {
       background-color: #141418 !important;
     }
 
-    .v-navigation-drawer {
+    .v-navigation-drawer .v-navigation-drawer__content {
       background-color: #0a0a0c !important;
     }
 
@@ -699,7 +704,7 @@ html {
       }
     }
 
-    .text--secondary,
+    .text-secondary,
     .v-label,
     .v-messages {
       color: #8A8F98 !important;
@@ -709,13 +714,13 @@ html {
       border-color: #1e1e24 !important;
     }
 
-    .v-input,
+    .v-field,
     .v-select,
     .v-textarea {
       color: #EDEDEF !important;
     }
 
-    .v-input__slot {
+    .v-field__field {
       background-color: #141418 !important;
       border: 1px solid #1e1e24 !important;
 
@@ -730,8 +735,7 @@ html {
       border: 1px solid #1e1e24 !important;
     }
 
-    .v-btn--active,
-    .v-btn--active::before {
+    .v-btn--active {
       color: #5E6AD2 !important;
     }
 
@@ -753,14 +757,14 @@ html {
       background-color: #141418 !important;
     }
 
-    .v-snack__wrapper {
+    .v-snackbar__wrapper {
       background-color: #141418 !important;
     }
   }
 }
 
 // Crypto theme - True Void with Bitcoin Fire
-.v-application.theme--dark {
+.v-theme--dark {
   &.crypto-theme {
     background-color: #030304 !important;
     color: #FFFFFF !important;
@@ -787,7 +791,7 @@ html {
       background-color: #0F1115 !important;
     }
 
-    .v-navigation-drawer {
+    .v-navigation-drawer .v-navigation-drawer__content {
       background-color: #0F1115 !important;
     }
 
@@ -851,7 +855,7 @@ html {
       }
     }
 
-    .text--secondary,
+    .text-secondary,
     .v-label,
     .v-messages {
       color: #94A3B8 !important;
@@ -861,13 +865,13 @@ html {
       border-color: #1E293B !important;
     }
 
-    .v-input,
+    .v-field,
     .v-select,
     .v-textarea {
       color: #FFFFFF !important;
     }
 
-    .v-input__slot {
+    .v-field__field {
       background-color: #0F1115 !important;
       border: 1px solid #1E293B !important;
 
@@ -882,8 +886,7 @@ html {
       border: 1px solid #1E293B !important;
     }
 
-    .v-btn--active,
-    .v-btn--active::before {
+    .v-btn--active {
       color: #F7931A !important;
     }
 
@@ -898,7 +901,7 @@ html {
 }
 
 // Cyberpunk theme - Neon-lit dark mode
-.v-application.theme--dark {
+.v-theme--dark {
   &.cyberpunk-theme {
     background-color: #0a0a0f !important;
     color: #e0e0e0 !important;
@@ -926,7 +929,7 @@ html {
       background-color: #12121a !important;
     }
 
-    .v-navigation-drawer {
+    .v-navigation-drawer .v-navigation-drawer__content {
       background-color: #1c1c2e !important;
     }
 
@@ -991,7 +994,7 @@ html {
       }
     }
 
-    .text--secondary,
+    .text-secondary,
     .v-label,
     .v-messages {
       color: #6b7280 !important;
@@ -1001,13 +1004,13 @@ html {
       border-color: #2a2a3a !important;
     }
 
-    .v-input,
+    .v-field,
     .v-select,
     .v-textarea {
       color: #e0e0e0 !important;
     }
 
-    .v-input__slot {
+    .v-field__field {
       background-color: #12121a !important;
       border: 1px solid #2a2a3a !important;
 
@@ -1022,8 +1025,7 @@ html {
       border: 1px solid #2a2a3a !important;
     }
 
-    .v-btn--active,
-    .v-btn--active::before {
+    .v-btn--active {
       color: #00ff88 !important;
     }
 
@@ -1035,14 +1037,13 @@ html {
       }
     }
 
-    .v-text-field--focused .v-input__slot,
-    .v-input--is-focused .v-input__slot {
+    .v-field--focused .v-field__field {
       border-color: #00ff88 !important;
       box-shadow: 0 0 6px rgba(0, 255, 136, 0.25) !important;
     }
 
     .v-tabs {
-      .v-tab--active {
+      .v-tab--selected {
         color: #00ff88 !important;
       }
 
@@ -1063,7 +1064,7 @@ html {
 }
 
 // Natural theme - Forest floor, clay, and unbleached paper
-.v-application.theme--light {
+.v-theme--light {
   &.natural-theme {
     background-color: #FDFCF8 !important;
     color: #2C2C24 !important;
@@ -1086,7 +1087,7 @@ html {
       background-color: #F0EBE5 !important;
     }
 
-    .v-navigation-drawer {
+    .v-navigation-drawer .v-navigation-drawer__content {
       background-color: #FDFCF8 !important;
     }
 
@@ -1150,7 +1151,7 @@ html {
       }
     }
 
-    .text--secondary,
+    .text-secondary,
     .v-label,
     .v-messages {
       color: #78786C !important;
@@ -1160,13 +1161,13 @@ html {
       border-color: #DED8CF !important;
     }
 
-    .v-input,
+    .v-field,
     .v-select,
     .v-textarea {
       color: #2C2C24 !important;
     }
 
-    .v-input__slot {
+    .v-field__field {
       background-color: #F0EBE5 !important;
       border: 1px solid #DED8CF !important;
 
@@ -1181,8 +1182,7 @@ html {
       border: 1px solid #DED8CF !important;
     }
 
-    .v-btn--active,
-    .v-btn--active::before {
+    .v-btn--active {
       color: #5D7052 !important;
     }
 
@@ -1194,13 +1194,12 @@ html {
       }
     }
 
-    .v-text-field--focused .v-input__slot,
-    .v-input--is-focused .v-input__slot {
+    .v-field--focused .v-field__field {
       border-color: #5D7052 !important;
     }
 
     .v-tabs {
-      .v-tab--active {
+      .v-tab--selected {
         color: #5D7052 !important;
       }
 
@@ -1221,7 +1220,7 @@ html {
 }
 
 // Technology theme - Electric Blue accent on warm off-white
-.v-application.theme--light {
+.v-theme--light {
   &.technology-theme {
     background-color: #FAFAFA !important;
     color: #0F172A !important;
@@ -1244,7 +1243,7 @@ html {
       background-color: #F1F5F9 !important;
     }
 
-    .v-navigation-drawer {
+    .v-navigation-drawer .v-navigation-drawer__content {
       background-color: #FAFAFA !important;
     }
 
@@ -1308,7 +1307,7 @@ html {
       }
     }
 
-    .text--secondary,
+    .text-secondary,
     .v-label,
     .v-messages {
       color: #64748B !important;
@@ -1318,13 +1317,13 @@ html {
       border-color: #E2E8F0 !important;
     }
 
-    .v-input,
+    .v-field,
     .v-select,
     .v-textarea {
       color: #0F172A !important;
     }
 
-    .v-input__slot {
+    .v-field__field {
       background-color: #FFFFFF !important;
       border: 1px solid #E2E8F0 !important;
 
@@ -1339,8 +1338,7 @@ html {
       border: 1px solid #E2E8F0 !important;
     }
 
-    .v-btn--active,
-    .v-btn--active::before {
+    .v-btn--active {
       color: #0052FF !important;
     }
 
@@ -1352,14 +1350,13 @@ html {
       }
     }
 
-    .v-text-field--focused .v-input__slot,
-    .v-input--is-focused .v-input__slot {
+    .v-field--focused .v-field__field {
       border-color: #0052FF !important;
       box-shadow: 0 0 0 1px #0052FF !important;
     }
 
     .v-tabs {
-      .v-tab--active {
+      .v-tab--selected {
         color: #0052FF !important;
       }
 
@@ -1377,9 +1374,8 @@ html {
       background: linear-gradient(to right, #0052FF, #4D7CFF) !important;
     }
 
-    .v-btn--contained {
-      &.primary,
-      &.v-btn--primary {
+    .v-btn--variant-elevated {
+      &.bg-primary {
         background: linear-gradient(to right, #0052FF, #4D7CFF) !important;
         color: #FFFFFF !important;
         border: none !important;
@@ -1392,12 +1388,92 @@ html {
   }
 }
 
-.v-application.theme--light .v-navigation-drawer .v-navigation-drawer__content,
-.v-application.theme--light .v-navigation-drawer .v-sheet,
-.v-application.theme--light .v-navigation-drawer .v-list,
-.v-application.theme--dark .v-navigation-drawer .v-navigation-drawer__content,
-.v-application.theme--dark .v-navigation-drawer .v-sheet,
-.v-application.theme--dark .v-navigation-drawer .v-list {
+// ===== Dialog Styling =====
+.v-dialog .v-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.v-dialog .v-card-title.headline {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  gap: 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background-color: rgba(0, 0, 0, 0.02);
+
+  .v-icon {
+    opacity: 0.7;
+  }
+
+  .v-btn {
+    margin-left: auto;
+  }
+}
+
+.v-theme--dark .v-dialog .v-card-title.headline {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.v-dialog .v-card-text {
+  padding: 16px 20px;
+}
+
+.v-dialog .v-card-actions {
+  padding: 8px 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.v-theme--dark .v-dialog .v-card-actions {
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+.v-dialog .v-card-actions .v-btn {
+  border-radius: 8px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+// ===== Floating Navigation Drawer =====
+.v-navigation-drawer {
+  border-right: none !important;
   background-color: transparent !important;
+
+  .v-navigation-drawer__content {
+    margin: 10px 0 10px 10px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.06);
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(var(--v-theme-surface)) !important;
+
+    // Drawer list scrolls, footer stays pinned
+    > .drawer {
+      flex: 1 1 auto;
+      overflow-y: auto;
+    }
+
+    > .drawer-footer {
+      flex-shrink: 0;
+      margin-top: auto;
+    }
+  }
+
+  @media (min-width: 960px) {
+    .v-navigation-drawer__scrim {
+      display: none;
+    }
+  }
+}
+
+.v-theme--dark .v-navigation-drawer .v-navigation-drawer__content {
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3), 0 0 1px rgba(255, 255, 255, 0.06);
 }
 </style>

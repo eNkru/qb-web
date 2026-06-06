@@ -25,28 +25,24 @@
       <v-spacer />
 
       <v-menu>
-        <template #activator="{ on }">
+        <template #activator="{ props }">
           <v-btn
             icon
-            v-on="on"
+            v-bind="props"
           >
             <v-icon>mdi-translate</v-icon>
           </v-btn>
         </template>
 
         <v-list>
-          <v-list-item-group
-            v-model="currentLocale"
-            color="primary"
+          <v-list-item
+            v-for="item in locales"
+            :key="item.value"
+            :active="currentLocale === item.value"
+            @click="currentLocale = item.value"
           >
-            <v-list-item
-              v-for="item in locales"
-              :key="item.value"
-              :value="item.value"
-            >
-              <v-list-item-title>{{ item.text }}</v-list-item-title>
-            </v-list-item>
-          </v-list-item-group>
+            <v-list-item-title>{{ item.text }}</v-list-item-title>
+          </v-list-item>
         </v-list>
       </v-menu>
 
@@ -59,28 +55,24 @@
       </v-btn>
 
       <v-menu>
-        <template #activator="{ on }">
+        <template #activator="{ props }">
           <v-btn
             icon
-            v-on="on"
+            v-bind="props"
           >
-            <v-icon v-text="themeModeIcon" />
+            <v-icon>{{ themeModeIcon }}</v-icon>
           </v-btn>
         </template>
 
         <v-list>
-          <v-list-item-group
-            v-model="currentThemeMode"
-            color="primary"
+          <v-list-item
+            v-for="item in themeModes"
+            :key="item[0]"
+            :active="currentThemeMode === item[0]"
+            @click="currentThemeMode = item[0]"
           >
-            <v-list-item
-              v-for="item in themeModes"
-              :key="item[0]"
-              :value="item[0]"
-            >
-              <v-list-item-title>{{ item[1] }}</v-list-item-title>
-            </v-list-item>
-          </v-list-item-group>
+            <v-list-item-title>{{ item[1] }}</v-list-item-title>
+          </v-list-item>
         </v-list>
       </v-menu>
       <v-btn
@@ -95,10 +87,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import Component from 'vue-class-component';
-import { mapMutations, mapActions } from 'vuex';
-import { Watch } from 'vue-property-decorator';
+import { Vue, Component, Watch, toNative } from 'vue-facing-decorator';
 import api from '../../Api';
 
 import { tr, translations, defaultLocale, LocaleKey } from '@/locale';
@@ -114,20 +103,11 @@ type ThemeModeKey = 'light' | 'dark' | 'grey' | 'luxury' | 'modern-dark' | 'cryp
   components: {
     AppFooter,
   },
-  methods: {
-    ...mapMutations([
-      'showSnackBar',
-      'updateConfig',
-    ]),
-    ...mapActions([
-      'asyncShowDialog',
-    ]),
-  },
 })
-export default class DrawerFooter extends Vue {
+class DrawerFooter extends Vue {
   locales = this.buildLocales()
-  currentLocale = this.$store.getters.config.locale || AUTO_KEY
-  oldLocale = this.$store.getters.config.locale || AUTO_KEY
+  currentLocale = AUTO_KEY
+  oldLocale = AUTO_KEY
   showInfo = false
 
   themeModes = [
@@ -143,11 +123,22 @@ export default class DrawerFooter extends Vue {
     [AUTO_KEY, tr('auto')],
   ]
 
-  asyncShowDialog!: (_: DialogConfig) => Promise<string | undefined>
-  showSnackBar!: (_: SnackBarConfig) => void
-  updateConfig!: (_: ConfigPayload) => void
-
   fontScales = [0.9, 1, 1.2, 1.35]
+
+  created() {
+    this.currentLocale = this.$store.getters.config.locale || AUTO_KEY
+    this.oldLocale = this.$store.getters.config.locale || AUTO_KEY
+  }
+
+  async asyncShowDialog(config: DialogConfig): Promise<string | undefined> {
+    return this.$store.dispatch('asyncShowDialog', config);
+  }
+  showSnackBar(config: SnackBarConfig) {
+    this.$store.commit('showSnackBar', config);
+  }
+  updateConfig(payload: ConfigPayload) {
+    this.$store.commit('updateConfig', payload);
+  }
 
   get currentThemeMode() {
     return this.$store.getters.config.themeMode || AUTO_KEY;
@@ -186,7 +177,7 @@ export default class DrawerFooter extends Vue {
   }
 
   get phoneLayout() {
-    return this.$vuetify.breakpoint.xsOnly;
+    return this.$vuetify.display.xs;
   }
 
   buildLocales() {
@@ -271,6 +262,8 @@ export default class DrawerFooter extends Vue {
     await api.shutdownApplication();
   }
 }
+
+export default toNative(DrawerFooter)
 </script>
 
 <style lang="scss" scoped>
@@ -279,16 +272,37 @@ export default class DrawerFooter extends Vue {
   padding: 0 8px;
   align-items: center;
   height: 52px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.v-theme--dark .button-bar {
+  border-top-color: rgba(255, 255, 255, 0.08);
 }
 
 .button-bar :deep(.v-btn) {
-  min-width: 40px;
-  width: 40px;
-  height: 40px;
+  min-width: 36px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+  }
+
+  .v-theme--dark &:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
 }
 
 .button-bar :deep(.v-icon) {
-  font-size: 22px;
+  font-size: 20px;
+  opacity: 0.7;
+  transition: opacity 0.15s ease;
+}
+
+.button-bar :deep(.v-btn:hover .v-icon) {
+  opacity: 1;
 }
 
 .footer {

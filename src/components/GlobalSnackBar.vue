@@ -1,8 +1,7 @@
 <template>
   <v-snackbar
     v-bind="config"
-    :value="config"
-    @input="changed"
+    v-model="snackbarVisible"
   >
     <template v-if="config">
       {{ config.text }}
@@ -18,7 +17,8 @@
   </v-snackbar>
 </template>
 
-<script>
+<script lang="ts">
+import { computed } from 'vue';
 import { useMutations, useState } from '@/store';
 
 export default {
@@ -26,18 +26,15 @@ export default {
     const mutations = useMutations(['closeSnackBar']);
     const { config } = useState(['config'], 'snackBar');
 
-    async function changed(v) {
-      if (v) {
-        return;
-      }
-
-      mutations.closeSnackBar();
-    }
+    const snackbarVisible = computed({
+      get: () => !!config.value,
+      set: (v) => { if (!v) mutations.closeSnackBar(); },
+    });
 
     function clickBtn() {
       const cb = config.value.callback;
 
-      changed(false);
+      mutations.closeSnackBar();
 
       if (cb) {
         cb();
@@ -46,7 +43,7 @@ export default {
 
     return {
       config,
-      changed,
+      snackbarVisible,
       clickBtn,
     };
   },

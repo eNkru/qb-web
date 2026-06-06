@@ -1,7 +1,6 @@
 <template>
   <v-dialog
-    :value="value"
-    @input="$emit('input', $event)"
+    v-model="showDialog"
     persistent
     width="50%"
   >
@@ -46,28 +45,22 @@
           <template v-else>
             <div class="rss-rules">
               <v-list
-                dense
+                density="compact"
               >
-                <v-list-item-group
-                  v-model="selectedRuleName"
-                  color="primary"
+                <v-list-item
+                  v-for="(value, key) in rssRules"
+                  :key="key"
+                  :active="selectedRuleName === key"
+                  @click="selectedRuleName = key"
                 >
-                  <v-list-item
-                    v-for="(value, key) in rssRules"
-                    :key="key"
-                    :value="key"
-                  >
-                    <v-list-item-action>
-                      <v-checkbox
-                        dense
-                        v-model="value.enabled"
-                      />
-                    </v-list-item-action>
-                    <v-list-item-content>
-                      <v-list-item-title v-text="key" />
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list-item-group>
+                  <template #prepend>
+                    <v-checkbox
+                      density="compact"
+                      v-model="value.enabled"
+                    />
+                  </template>
+                  <v-list-item-title v-text="key" />
+                </v-list-item>
               </v-list>
             </div>
             <v-divider vertical />
@@ -79,54 +72,54 @@
                 />
 
                 <v-checkbox
-                  dense
+                  density="compact"
                   :label="$t('dialog.rss_rule.use_regex')"
                   :disabled="!selectedRule.enabled"
-                  :value="selectedRule.useRegex"
+                  :model-value="selectedRule.useRegex"
                   @change="editRule('useRegex', $event)"
                 />
                 <v-text-field
-                  dense
+                  density="compact"
                   :label="$t('dialog.rss_rule.must_contain')"
                   :disabled="!selectedRule.enabled"
-                  :value="selectedRule.mustContain"
+                  :model-value="selectedRule.mustContain"
                   @change="editRule('mustContain', $event)"
                 />
                 <v-text-field
-                  dense
+                  density="compact"
                   :label="$t('dialog.rss_rule.must_not_contain')"
                   :disabled="!selectedRule.enabled"
-                  :value="selectedRule.mustNotContain"
+                  :model-value="selectedRule.mustNotContain"
                   @change="editRule('mustNotContain', $event)"
                 />
                 <v-text-field
-                  dense
+                  density="compact"
                   :label="$t('dialog.rss_rule.episode_filter')"
                   :disabled="!selectedRule.enabled"
-                  :value="selectedRule.episodeFilter"
+                  :model-value="selectedRule.episodeFilter"
                   @change="editRule('episodeFilter', $event)"
                 />
                 <v-checkbox
-                  dense
+                  density="compact"
                   :label="$t('dialog.rss_rule.smart_episode')"
                   :disabled="!selectedRule.enabled"
-                  :value="selectedRule.smartFilter"
+                  :model-value="selectedRule.smartFilter"
                   @change="editRule('smartFilter', $event)"
                 />
 
                 <v-select
-                  dense
+                  density="compact"
                   :label="$t('dialog.rss_rule.assign_category')"
                   :items="categoryItems"
                   :disabled="!selectedRule.enabled"
-                  :value="selectedRule.assignedCategory"
+                  :model-value="selectedRule.assignedCategory"
                   @change="editRule('assignedCategory', $event)"
                 />
                 <v-text-field
-                  dense
+                  density="compact"
                   :label="$t('location')"
                   :disabled="!selectedRule.enabled"
-                  :value="selectedRule.savePath"
+                  :model-value="selectedRule.savePath"
                   @change="editRule('savePath', $event)"
                 />
               </v-form>
@@ -138,23 +131,21 @@
                 v-text="$t('dialog.rss_rule.apply_to_feeds')"
               />
               <v-list
-                dense
+                density="compact"
                 v-if="selectedRule.enabled"
               >
                 <v-list-item
                   v-for="item in rssItems"
                   :key="item.value"
                 >
-                  <v-list-item-action>
+                  <template #prepend>
                     <v-checkbox
-                      dense
-                      :input-value="hasSelectSite(item.value)"
+                      density="compact"
+                      :model-value="hasSelectSite(item.value)"
                       @change="selectSite(item.value, $event)"
                     />
-                  </v-list-item-action>
-                  <v-list-item-content>
-                    <v-list-item-title v-text="item.text" />
-                  </v-list-item-content>
+                  </template>
+                  <v-list-item-title v-text="item.text" />
                 </v-list-item>
               </v-list>
             </div>
@@ -167,46 +158,45 @@
 
 <script lang="ts">
 import { isEmpty, isEqual, pull, cloneDeep } from 'lodash'
-import Vue from 'vue'
-import Component from 'vue-class-component';
+import { Vue, Component } from 'vue-facing-decorator';
 
 import { tr } from '@/locale'
-import { Prop, Emit, Watch } from 'vue-property-decorator';
+import { Prop, Emit, Watch } from 'vue-facing-decorator';
 import { RssRule, Category, RssNode } from '../../types';
 import api from '../../Api';
-import { mapActions, mapMutations, mapGetters } from 'vuex';
 import { DialogConfig, DialogType, SnackBarConfig } from '../../store/types';
 
-@Component({
-  computed: {
-    ...mapGetters([
-      'allCategories',
-    ]),
-  },
-  methods: {
-    ...mapMutations([
-      'showSnackBar',
-      'closeSnackBar',
-    ]),
-    ...mapActions([
-      'asyncShowDialog',
-    ]),
-  },
-})
+@Component
 export default class RssRulesDialog extends Vue {
-  @Prop(Boolean)
-  readonly value!: boolean
+  @Prop({ type: Boolean })
+  readonly modelValue!: boolean
+
+  get showDialog() {
+    return this.modelValue;
+  }
+  set showDialog(val: boolean) {
+    this.$emit('update:modelValue', val);
+  }
+
   @Prop()
   readonly rssNode!: RssNode
 
   rssRules: {[key: string]: RssRule} | null = null
   selectedRuleName: string | null = null
 
-  allCategories!: Category[]
+  get allCategories(): Category[] {
+    return this.$store.getters.allCategories;
+  }
 
-  asyncShowDialog!: (_: DialogConfig) => Promise<string | undefined>
-  showSnackBar!: (_: SnackBarConfig) => void
-  closeSnackBar!: () => void
+  asyncShowDialog(config: DialogConfig): Promise<string | undefined> {
+    return this.$store.dispatch('asyncShowDialog', config);
+  }
+  showSnackBar(config: SnackBarConfig) {
+    this.$store.commit('showSnackBar', config);
+  }
+  closeSnackBar() {
+    this.$store.commit('closeSnackBar');
+  }
 
   get selectedRule(): RssRule {
     if (!this.selectedRuleName || !(this.selectedRuleName in this.rssRules!)) {
@@ -321,7 +311,7 @@ export default class RssRulesDialog extends Vue {
     this.closeSnackBar();
   }
 
-  @Emit('input')
+  @Emit('update:modelValue')
   closeDialog() {
     return false
   }
@@ -387,7 +377,7 @@ export default class RssRulesDialog extends Vue {
 .rss-rules {
   flex: 30%;
   
-  .v-list-item__action {
+  :deep(.v-list-item__append) {
     margin: 0;
   }
 }
@@ -404,7 +394,7 @@ export default class RssRulesDialog extends Vue {
       margin-bottom: 1em;
     }
 
-    .v-input--selection-controls {
+    :deep(.v-selection-control) {
       margin-top: 4px;
     }
   }
@@ -421,7 +411,7 @@ export default class RssRulesDialog extends Vue {
     padding: 0 0.5em;
   }
 
-  .v-list-item__action {
+  :deep(.v-list-item__append) {
     margin: 0;
   }
 }

@@ -9,7 +9,7 @@
         ref="canvas"
         class="progress-inner"
       />
-      <span>{{ torrent.progress | progress }}</span>
+      <span>{{ $progress(torrent.progress) }}</span>
     </div>
     <fieldset>
       <legend>{{ $t('properties_widget.transfer') }}</legend>
@@ -20,10 +20,10 @@
         <v-row no-gutters>
           <template
             v-for="item in transfer"
+            :key="item.label"
           >
             <v-col
               class="label"
-              :key="item.label + '_l'"
               cols="3"
               sm="2"
               md="1"
@@ -32,7 +32,6 @@
             </v-col>
             <v-col
               class="value"
-              :key="item.label + '_v'"
               cols="9"
               sm="4"
               md="2"
@@ -52,10 +51,10 @@
         <v-row no-gutters>
           <template
             v-for="item in information"
+            :key="item.label"
           >
             <v-col
               class="label"
-              :key="item.label + '_l'"
               cols="3"
               sm="2"
               md="1"
@@ -64,7 +63,6 @@
             </v-col>
             <v-col
               class="value"
-              :key="item.label + '_v'"
               cols="9"
               sm="4"
               md="3"
@@ -85,8 +83,7 @@ import api from '../../Api'
 import {formatDuration, formatSize, formatTimestamp, toPrecision} from '@/filters'
 
 import {Torrent, TorrentProperties} from '@/types'
-import Component from 'vue-class-component'
-import {Prop, Watch} from 'vue-property-decorator'
+import { Vue, Component, Prop, Watch, toNative } from 'vue-facing-decorator'
 import BaseTorrentInfo from './baseTorrentInfo'
 import { tr } from '@/locale'
 
@@ -101,10 +98,8 @@ enum PieceState {
   Downloaded,
 }
 
-@Component({
-
-})
-export default class TorrentInfo extends BaseTorrentInfo {
+@Component
+class TorrentInfo extends BaseTorrentInfo {
   @Prop()
   readonly torrent!: Torrent
 
@@ -202,6 +197,8 @@ export default class TorrentInfo extends BaseTorrentInfo {
     }
   }
 }
+
+export default toNative(TorrentInfo)
 </script>
 
 <style lang="scss" scoped>

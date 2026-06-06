@@ -201,6 +201,10 @@ export default {
       add_torrents: {
         placeholder: 'Upload torrents door ze naar hier te slepen,\nof click rechts op de bijlageknop om ze te selecteren.',
         hint: 'Één link per regel',
+        source_label: 'Bron',
+        options_label: 'Opties',
+        advanced_label: 'Geavanceerd',
+        attach_files: 'Torrentbestanden bijvoegen',
       },
       delete_torrents: {
         msg: 'Weet u zeker dat u de geselecteerde torrents uit de tranferlijst wilt verwijderen?',

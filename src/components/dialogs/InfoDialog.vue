@@ -1,7 +1,6 @@
 <template>
   <v-dialog
-    :value="true"
-    @input="closeDialog"
+    v-model="showDialog"
     :width="dialogWidth"
     :fullscreen="phoneLayout"
   >
@@ -14,24 +13,24 @@
       </v-card-title>
       <v-card-text>
         <v-tabs v-model="tabSync">
-          <v-tab href="#general">
+          <v-tab value="general">
             {{ $t("prop_tab_bar.general") }}
           </v-tab>
-          <v-tab href="#trackers">
+          <v-tab value="trackers">
             {{ $t("prop_tab_bar.trackers") }}
           </v-tab>
-          <v-tab href="#peers">
+          <v-tab value="peers">
             {{ $t("prop_tab_bar.peers") }}
           </v-tab>
-          <v-tab href="#content">
+          <v-tab value="content">
             {{ $t("prop_tab_bar.content") }}
           </v-tab>
         </v-tabs>
-        <v-tabs-items
-          :value="tab"
+        <v-window
+          :model-value="tab"
           touchless
         >
-          <v-tab-item value="general">
+          <v-window-item value="general">
             <panel
               v-for="torrent in torrents"
               :key="torrent.hash"
@@ -43,8 +42,8 @@
                 :is-active="tab === 'general'"
               />
             </panel>
-          </v-tab-item>
-          <v-tab-item value="trackers">
+          </v-window-item>
+          <v-window-item value="trackers">
             <panel
               v-for="torrent in torrents"
               :key="torrent.hash"
@@ -56,8 +55,8 @@
                 :is-active="tab === 'trackers'"
               />
             </panel>
-          </v-tab-item>
-          <v-tab-item value="peers">
+          </v-window-item>
+          <v-window-item value="peers">
             <panel
               v-for="torrent in torrents"
               :key="torrent.hash"
@@ -69,8 +68,8 @@
                 :is-active="tab === 'peers'"
               />
             </panel>
-          </v-tab-item>
-          <v-tab-item value="content">
+          </v-window-item>
+          <v-window-item value="content">
             <panel
               v-for="torrent in torrents"
               :key="torrent.hash"
@@ -82,8 +81,8 @@
                 :is-active="tab === 'content'"
               />
             </panel>
-          </v-tab-item>
-        </v-tabs-items>
+          </v-window-item>
+        </v-window>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -98,14 +97,12 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { Vue, Component, Prop, Emit, Watch, toNative } from 'vue-facing-decorator';
 import TorrentInfo from './TorrentInfo.vue';
 import TorrentContent from './TorrentContent.vue';
 import Trackers from './Trackers.vue';
 import Peers from './Peers.vue';
 import Panel from './Panel.vue';
-import Component from 'vue-class-component';
-import { Prop, Emit, PropSync } from 'vue-property-decorator';
 import { Torrent } from '../../types';
 
 @Component({
@@ -116,30 +113,47 @@ import { Torrent } from '../../types';
     Peers,
     Panel,
   },
+  emits: ['update:modelValue', 'update:tab'],
 })
-export default class InfoDialog extends Vue {
-  @Prop(Array)
-  readonly value!: Torrent[]
+class InfoDialog extends Vue {
+  @Prop({ type: Array })
+  readonly modelValue!: Torrent[]
 
-  @PropSync('tab', String)
+  @Prop({ type: String })
+  readonly tab!: string
+
   tabSync!: string
 
+  @Watch('tab', { immediate: true })
+  onTabChanged(v: string) {
+    this.tabSync = v;
+  }
+
   get torrents() {
-    return (this.value || []).filter(Boolean)
+    return (this.modelValue || []).filter(Boolean)
+  }
+
+  get showDialog() {
+    return true;
+  }
+  set showDialog(_val: boolean) {
+    this.closeDialog();
   }
 
   get phoneLayout() {
-    return this.$vuetify.breakpoint.xsOnly;
+    return this.$vuetify.display.xs;
   }
   get dialogWidth() {
     return this.phoneLayout ? '100%' : '80%';
   }
 
-  @Emit('input')
+  @Emit('update:modelValue')
   closeDialog() {
     return false
   }
 }
+
+export default toNative(InfoDialog)
 </script>
 
 <style lang="scss" scoped>
@@ -147,7 +161,7 @@ export default class InfoDialog extends Vue {
 
 @include dialog-title;
 
-::v-deep .v-dialog {
+:deep(.v-dialog) {
   max-width: 1100px;
 
   .v-card__text {
@@ -156,7 +170,7 @@ export default class InfoDialog extends Vue {
   }
 }
 
-::v-deep .v-data-table thead th, ::v-deep .v-data-table tbody td {
+:deep(.v-data-table thead th), :deep(.v-data-table tbody td) {
   padding: 0 2px !important;
   height: auto;
 

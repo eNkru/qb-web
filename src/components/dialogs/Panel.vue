@@ -17,17 +17,18 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { Vue, Component, Prop, toNative } from 'vue-facing-decorator';
 
-export default Vue.extend({
-  props: {
-    single: Boolean,
-    title: {
-      type: String,
-      required: true,
-    },
-  },
-});
+@Component
+class Panel extends Vue {
+  @Prop({ type: Boolean })
+  readonly single!: boolean
+
+  @Prop({ type: String, required: true })
+  readonly title!: string
+}
+
+export default toNative(Panel);
 </script>
 
 <style lang="scss" scoped>

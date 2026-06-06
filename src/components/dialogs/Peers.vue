@@ -2,9 +2,9 @@
   <v-data-table
     :headers="headers"
     :items="peers"
-    :items-per-page="-1"
-    :hide-default-footer="true"
+    :items-per-page="99999"
   >
+    <template #bottom />
     <template #item="row">
       <tr>
         <td class="ip">
@@ -21,7 +21,7 @@
             </template>
           </template>
           {{ row.item.ip }}
-          <span class="grey--text">
+          <span class="text-grey">
             :{{ row.item.port }}
           </span>
         </td>
@@ -30,12 +30,12 @@
           {{ row.item.flags }}
         </td>
         <td>{{ row.item.client }}</td>
-        <td>{{ row.item.progress | progress }}</td>
-        <td>{{ row.item.dl_speed | networkSpeed }}</td>
-        <td>{{ row.item.downloaded | networkSize }}</td>
-        <td>{{ row.item.up_speed | networkSpeed }}</td>
-        <td>{{ row.item.uploaded | networkSize }}</td>
-        <td>{{ row.item.relevance | progress }}</td>
+        <td>{{ $progress(row.item.progress) }}</td>
+        <td>{{ $formatNetworkSpeed(row.item.dl_speed) }}</td>
+        <td>{{ networkSize(row.item.downloaded) }}</td>
+        <td>{{ $formatNetworkSpeed(row.item.up_speed) }}</td>
+        <td>{{ networkSize(row.item.uploaded) }}</td>
+        <td>{{ $progress(row.item.relevance) }}</td>
         <td>{{ row.item.files }}</td>
       </tr>
     </template>
@@ -48,44 +48,27 @@ import { codeToFlag, isWindows } from '../../utils';
 import api from '../../Api';
 import { formatSize } from '../../filters';
 import BaseTorrentInfo from './baseTorrentInfo';
-import Component from 'vue-class-component';
-import { Prop } from 'vue-property-decorator';
+
+import { Vue, Component, Prop, toNative } from 'vue-facing-decorator';
 import { tr } from '@/locale'
 
-@Component({
-  filters: {
-    networkSpeed(speed: number) {
-      if (speed === 0) {
-        return null;
-      }
-
-      return `${formatSize(speed)}/s`;
-    },
-    networkSize(size: number) {
-      if (size === 0) {
-        return null;
-      }
-
-      return formatSize(size);
-    },
-  },
-})
-export default class Peers extends BaseTorrentInfo {
-  @Prop(String)
+@Component
+class Peers extends BaseTorrentInfo {
+  @Prop({ type: String })
   readonly hash!: string
 
   headers = [
-    { text: tr('properties_widget.ip'), value: 'ip' },
-    { text: tr('properties_widget.connection'), value: 'connection' },
-    { text: tr('properties_widget.flags'), value: 'flags' },
-    { text: tr('properties_widget.client'), value: 'client' },
-    { text: tr('properties_widget.progress'), value: 'progress' },
-    { text: tr('properties_widget.downloadSpeed'), value: 'dl_speed' },
-    { text: tr('properties_widget.downloaded'), value: 'downloaded' },
-    { text: tr('properties_widget.uploadSpeed'), value: 'up_speed' },
-    { text: tr('properties_widget.uploaded'), value: 'uploaded' },
-    { text: tr('properties_widget.relevance'), value: 'relevance' },
-    { text: tr('properties_widget.files'), value: 'files' },
+    { title: tr('properties_widget.ip'), key: 'ip' },
+    { title: tr('properties_widget.connection'), key: 'connection' },
+    { title: tr('properties_widget.flags'), key: 'flags' },
+    { title: tr('properties_widget.client'), key: 'client' },
+    { title: tr('properties_widget.progress'), key: 'progress' },
+    { title: tr('properties_widget.downloadSpeed'), key: 'dl_speed' },
+    { title: tr('properties_widget.downloaded'), key: 'downloaded' },
+    { title: tr('properties_widget.uploadSpeed'), key: 'up_speed' },
+    { title: tr('properties_widget.uploaded'), key: 'uploaded' },
+    { title: tr('properties_widget.relevance'), key: 'relevance' },
+    { title: tr('properties_widget.files'), key: 'files' },
   ]
 
   peersObj: any = null
@@ -125,14 +108,24 @@ export default class Peers extends BaseTorrentInfo {
     return this.getPeers()
   }
 
+  networkSize(size: number) {
+    if (size === 0) {
+      return null;
+    }
+
+    return formatSize(size);
+  }
+
   startTask() {
     this.setTaskAndRun(this.doTask, 2000)
   }
 }
+
+export default toNative(Peers)
 </script>
 
 <style lang="scss" scoped>
-::v-deep .ip {
+:deep(.ip) {
   display: flex;
   align-items: center;
 

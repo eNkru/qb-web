@@ -1,7 +1,6 @@
 <template>
   <v-dialog
-    :value="true"
-    @input="closeDialog"
+    v-model="showDialog"
     :fullscreen="phoneLayout"
     persistent
     width="40em"
@@ -12,70 +11,53 @@
         <span>Edit tracker</span>
       </v-card-title>
       <v-card-text class="pa-0">
-        <v-stepper v-model="step">
-          <v-stepper-header>
-            <v-stepper-step
-              :complete="step > 1"
-              step="1"
-            >
-              Search
-            </v-stepper-step>
-            <v-divider />
-            <v-stepper-step
-              :complete="step > 2"
-              step="2"
-            >
-              Preview
-            </v-stepper-step>
-            <v-divider />
-            <v-stepper-step
-              :complete="step > 3"
-              step="3"
-            >
-              Result
-            </v-stepper-step>
-          </v-stepper-header>
-          <v-stepper-items>
-            <v-stepper-content step="1">
-              <v-form v-model="valid">
-                <v-text-field
-                  v-model="search"
-                  label="Search"
-                  :rules="[v => !!v || 'Required']"
-                  placeholder="Regex format"
-                  required
+        <v-stepper
+          v-model="step"
+          :items="['Search', 'Preview', 'Result']"
+        >
+          <template #default>
+            <v-stepper-window>
+              <v-stepper-window-item value="1">
+                <v-form v-model="valid">
+                  <v-text-field
+                    v-model="search"
+                    label="Search"
+                    :rules="[v => !!v || 'Required']"
+                    placeholder="Regex format"
+                    required
+                  />
+                  <v-text-field
+                    v-model="replace"
+                    label="Replace"
+                  />
+                </v-form>
+              </v-stepper-window-item>
+              <v-stepper-window-item value="2">
+                {{ toEdit.length }} torrent(s) to update.
+                <ol class="torrents pt-6">
+                  <li
+                    v-for="(row, i) in toEdit"
+                    :key="i"
+                  >
+                    {{ row.name }}
+                    <br>
+                    {{ row.origUrl }}
+                    <br>
+                    {{ row.newUrl }}
+                  </li>
+                </ol>
+              </v-stepper-window-item>
+              <v-stepper-window-item value="3">
+                <v-progress-linear
+                  v-if="submitting && currentIndex != toEdit.length"
+                  :model-value="currentIndex / toEdit.length * 100"
                 />
-                <v-text-field
-                  v-model="replace"
-                  label="Replace"
-                />
-              </v-form>
-            </v-stepper-content>
-            <v-stepper-content step="2">
-              {{ toEdit.length }} torrent(s) to update.
-              <ol class="torrents pt-6">
-                <li
-                  v-for="(row, i) in toEdit"
-                  :key="i"
-                >
-                  {{ row.name }}
-                  <br>
-                  {{ row.origUrl }}
-                  <br>
-                  {{ row.newUrl }}
-                </li>
-              </ol>
-            </v-stepper-content>
-            <v-stepper-content step="3">
-              <v-progress-linear
-                v-if="submitting && currentIndex != toEdit.length"
-                :value="currentIndex / toEdit.length * 100"
-              />
-              <template v-else>
-                {{ currentIndex }} torrent(s) updated.
-              </template>
-            </v-stepper-content>
-          </v-stepper-items>
+                <template v-else>
+                  {{ currentIndex }} torrent(s) updated.
+                </template>
+              </v-stepper-window-item>
+            </v-stepper-window>
+          </template>
         </v-stepper>
       </v-card-text>
       <v-card-actions>
@@ -84,17 +66,17 @@
           text
           @click="back"
           v-if="step < 3"
-          v-text="step == 1 ? $t('cancel') : $t('back')"
         >
-          Back
+          {{ step == 1 ? $t('cancel') : $t('back') }}
         </v-btn>
         <v-btn
           @click="foward"
           color="warning"
           :disabled="!canNext"
           :loading="submitting"
-          v-text="[null, $t('next'), $t('confirm'), $t('close')][step]"
-        />
+        >
+          {{ [null, $t('next'), $t('confirm'), $t('close')][step] }}
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -102,23 +84,16 @@
 
 <script lang="ts">
 import { chain } from 'lodash';
-import Vue from 'vue';
-import { mapGetters } from 'vuex';
+import { Vue, Component, Prop, Emit, toNative } from 'vue-facing-decorator';
 
 import api from '@/Api';
-import Component from 'vue-class-component';
-import { Prop, Emit } from 'vue-property-decorator';
 import { Torrent } from '../../types';
 
 
-@Component({
-  computed: {
-    ...mapGetters(['allTorrents']),
-  },
-})
-export default class EditTrackerDialog extends Vue {
-  @Prop(Array)
-  readonly value!: Torrent[]
+@Component
+class EditTrackerDialog extends Vue {
+  @Prop({ type: Array })
+  readonly modelValue!: Torrent[]
 
   step = 1
   valid = false
@@ -129,14 +104,23 @@ export default class EditTrackerDialog extends Vue {
   toEdit: any[] = []
   currentIndex = 0
 
-  allTorrents!: Torrent[]
+  get allTorrents(): Torrent[] {
+    return this.$store.getters.allTorrents;
+  }
+
+  get showDialog() {
+    return true;
+  }
+  set showDialog(_val: boolean) {
+    this.closeDialog();
+  }
 
   created() {
-    this.torrents = this.value
+    this.torrents = this.modelValue
   }
 
   get phoneLayout() {
-    return this.$vuetify.breakpoint.xsOnly;
+    return this.$vuetify.display.xs;
   }
   get canNext() {
     if (this.step === 1 && this.valid) {
@@ -151,7 +135,7 @@ export default class EditTrackerDialog extends Vue {
     return false;
   }
 
-  @Emit('input')
+  @Emit('update:modelValue')
   closeDialog() {
     return []
   }
@@ -207,6 +191,8 @@ export default class EditTrackerDialog extends Vue {
     this.submitting = false;
   }
 }
+
+export default toNative(EditTrackerDialog)
 </script>
 
 <style lang="scss" scoped>

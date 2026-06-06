@@ -1,18 +1,18 @@
-@import '~vuetify/src/styles/styles.sass';
-
 @mixin dialog-title {
-  @include theme(v-card) using($material) {
-    .v-card__title {
-      background-color: map-get($material, 'app-bar');
-    }
+  :deep(.v-card-title) {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+
+  .v-theme--dark :deep(.v-card-title) {
+    background-color: rgba(255, 255, 255, 0.03);
   }
 }
 
 @mixin dark-mode-value($light, $dark) {
-  &.theme--light {
+  .v-theme--light & {
     @content($light);
   }
-  &.theme--dark {
+  .v-theme--dark & {
     @content($dark);
   }
 }

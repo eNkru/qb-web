@@ -20,14 +20,15 @@
 </template>
 
 <script lang="ts">
-import {Component, Prop} from 'vue-property-decorator'
-import Vue from 'vue'
+import { Vue, Component, Prop, toNative } from 'vue-facing-decorator'
 
 @Component
-export default class PreferenceRow extends Vue {
-  @Prop(String)
+class PreferenceRow extends Vue {
+  @Prop({ type: String })
   readonly i18nKey?: string
 }
+
+export default toNative(PreferenceRow)
 </script>
 
 <style lang="scss" scoped>

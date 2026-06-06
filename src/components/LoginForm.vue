@@ -1,31 +1,35 @@
 <template>
   <v-dialog
-    :value="true"
+    :model-value="true"
     persistent
-    width="25em"
+    width="26em"
   >
-    <v-card>
+    <v-card class="login-card">
       <v-toolbar
         color="primary"
-        dark
         flat
       >
-        <v-toolbar-title class="pl-2">
+        <v-toolbar-title
+          class="pl-2"
+          style="font-weight: 600; letter-spacing: 0.01em;"
+        >
+          <v-icon
+            class="mr-2"
+            size="small"
+          >
+            mdi-login
+          </v-icon>
           {{ $t('login') }}
         </v-toolbar-title>
       </v-toolbar>
-      <v-card-text class="px-6 pt-6 pb-0">
-        <v-form
-          ref="form"
-          v-model="valid"
-        >
-          <div
-            @keyup.enter.capture="submit"
-            v-bind="{ [`grid-list-${$vuetify.breakpoint.name}`]: true }"
-          >
+      <v-card-text class="login-card-text">
+        <v-form ref="form">
+          <div @keyup.enter.capture="submit">
             <v-text-field
               v-model="baseUrl"
               prepend-icon="mdi-network"
+              variant="outlined"
+              density="compact"
               :label="$t('label.base_url')"
               autofocus
               required
@@ -33,15 +37,18 @@
             <v-text-field
               v-model="params.username"
               prepend-icon="mdi-account"
+              variant="outlined"
+              density="compact"
               :label="$t('username')"
-              autofocus
               required
             />
             <v-text-field
               v-model="params.password"
               prepend-icon="mdi-lock"
-              :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-              @click:append="showPassword = !showPassword"
+              variant="outlined"
+              density="compact"
+              :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+              @click:append-inner="showPassword = !showPassword"
               :label="$t('password')"
               :type="showPassword ? 'text' : 'password'"
               required
@@ -49,17 +56,24 @@
           </div>
         </v-form>
         <v-alert
+          v-if="loginError"
           type="warning"
-          :value="loginError"
-          v-text="loginError"
-        />
+          variant="tonal"
+          density="compact"
+          closable
+          class="mt-2"
+          @click:close="loginError = null"
+        >
+          {{ loginError }}
+        </v-alert>
       </v-card-text>
-      <v-card-actions class="px-6 pb-6 pt-2">
+      <v-card-actions class="login-actions">
         <v-spacer />
         <v-btn
+          variant="flat"
           @click="submit"
           color="primary"
-          :disabled="!valid || submitting"
+          :disabled="submitting"
           :loading="submitting"
         >
           {{ $t('submit') }}
@@ -79,10 +93,9 @@ export default defineComponent({
   setup(_, { emit }) {
     const store = useStore();
     const data = reactive({
-      valid: false,
       submitting: false,
       showPassword: false,
-      loginError: null,
+      loginError: null as string | null,
       baseUrl: store.getters.config.baseUrl || location.href,
       params: {
         username: '',
@@ -132,3 +145,24 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+@import '~@/assets/styles.scss';
+
+.login-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.login-card-text {
+  padding: 24px 24px 8px;
+
+  .v-text-field {
+    margin-bottom: 8px;
+  }
+}
+
+.login-actions {
+  padding: 8px 24px 20px;
+}
+</style>

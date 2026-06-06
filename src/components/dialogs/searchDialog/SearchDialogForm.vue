@@ -34,7 +34,7 @@
             {{ $t("plugin", 2) }}
           </v-btn>
           <v-dialog
-            v-if="!this.$vuetify.breakpoint.mobile"
+            v-if="!this.$vuetify.display.mobile"
             v-model="plugginSelectorOpen"
             max-width="20rem"
           >
@@ -57,7 +57,7 @@
                   :key="key"
                   v-model="searchForm.plugins"
                   :label="plugin.fullName"
-                  :value="plugin"
+                  :model-value="plugin"
                 />
               </v-card-text>
             </v-card>
@@ -66,7 +66,7 @@
             scrollable
             inset
             v-model="plugginSelectorOpen"
-            v-if="this.$vuetify.breakpoint.mobile"
+            v-if="this.$vuetify.display.mobile"
           >
             <v-sheet class="text-center">
               <v-card>
@@ -88,7 +88,7 @@
                     :key="key"
                     v-model="searchForm.plugins"
                     :label="plugin.fullName"
-                    :value="plugin"
+                    :model-value="plugin"
                   />
                 </v-card-text>
               </v-card>
@@ -99,7 +99,7 @@
           <v-autocomplete
             v-model="searchForm.category"
             :items="availableCategories"
-            item-text="name"
+            item-title="name"
             item-value="key"
             :label="$t('category', 1)"
           />
@@ -110,12 +110,10 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import { Component, Emit, Prop, Watch } from "vue-property-decorator";
+import { Vue, Component, Emit, Prop, Watch } from "vue-facing-decorator";
 import { SearchPlugin } from "@/types";
 import { tr } from "@/locale";
 import { intersection } from "lodash";
-import { mapGetters } from "vuex";
 import { SearchEnginePage } from '@/store/types';
 
 const ALL_KEY = "all";
@@ -137,18 +135,15 @@ export interface SearchForm {
   plugins: SearchPlugin[];
 }
 
-@Component({
-  computed: {
-    ...mapGetters({
-      searchPlugins: "allSearchPlugins",
-    }),
-  },
-})
+@Component
 export default class SearchDialogForm extends Vue {
   searchEngineState!: SearchEnginePage;
-  searchPlugins!: SearchPlugin[];
 
-  @Prop(Boolean)
+  get searchPlugins(): SearchPlugin[] {
+    return this.$store.getters.allSearchPlugins;
+  }
+
+  @Prop({ type: Boolean })
   readonly loading: boolean = false;
 
   plugginSelectorOpen = false;

@@ -201,6 +201,10 @@ export default {
     add_torrents: {
       placeholder: '将种子拖到这里上传，\n或者点击右边的附件图标来选择。',
       hint: '每行一个链接',
+      source_label: '来源',
+      options_label: '选项',
+      advanced_label: '高级',
+      attach_files: '附加种子文件',
     },
     delete_torrents: {
       msg: '确定要删除选中的种子吗？',

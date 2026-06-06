@@ -28,7 +28,7 @@
           v-for="(btn, index) in btns"
           :key="index"
           color="info"
-          text
+          variant="text"
           @click="clickBtn(btn[1])"
         >
           {{ btn[0] }}
@@ -40,6 +40,7 @@
 
 <script lang="ts">
 import { computed, ref, watch } from 'vue';
+import { useDisplay } from 'vuetify';
 
 import { tr } from '@/locale';
 import { DialogType, DialogConfig } from '@/store/types';
@@ -66,7 +67,8 @@ const BUTTONS = {
 const DefaultDialogWidth = '25%'
 
 export default {
-  setup(_: any, ctx: any) {
+  setup() {
+    const display = useDisplay();
     const mutations = useMutations(['closeDialog']);
     const { config: userConfig } = useState(['config'], 'dialog');
     const config = computed(() => {
@@ -76,7 +78,7 @@ export default {
       const o = Object.assign({dialog: {}}, userConfig.value) as DialogConfig;
 
       if (!('width' in o.dialog)) {
-        o.dialog.width = (ctx.root && ctx.root.$vuetify && ctx.root.$vuetify.breakpoint.smAndDown) ? null : DefaultDialogWidth
+        o.dialog.width = display.smAndDown.value ? null : DefaultDialogWidth
       }
 
       return o

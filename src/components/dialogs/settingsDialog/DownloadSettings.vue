@@ -7,17 +7,17 @@
       fluid
     >
       <v-switch
-        :input-value="preferences.create_subfolder_enabled"
+        :model-value="preferences.create_subfolder_enabled"
         :label="$t('preferences.create_subfolder_enabled')"
         @change="changeSettings('create_subfolder_enabled', !preferences.create_subfolder_enabled)"
       />
       <v-switch
-        :input-value="preferences.start_paused_enabled"
+        :model-value="preferences.start_paused_enabled"
         :label="$t('preferences.start_paused_enabled')"
         @change="changeSettings('start_paused_enabled', !preferences.start_paused_enabled)"
       />
       <v-switch
-        :input-value="preferences.auto_delete_mode"
+        :model-value="preferences.auto_delete_mode"
         :label="$t('preferences.auto_delete_mode')"
         @change="changeSettings('auto_delete_mode', !preferences.auto_delete_mode)"
       />
@@ -28,12 +28,12 @@
       fluid
     >
       <v-switch
-        :input-value="preferences.preallocate_all"
+        :model-value="preferences.preallocate_all"
         :label="$t('preferences.preallocate_all')"
         @change="changeSettings('preallocate_all', !preferences.preallocate_all)"
       />
       <v-switch
-        :input-value="preferences.incomplete_files_ext"
+        :model-value="preferences.incomplete_files_ext"
         :label="$t('preferences.incomplete_files_ext')"
         @change="changeSettings('incomplete_files_ext', !preferences.incomplete_files_ext)"
       />
@@ -46,58 +46,62 @@
     >
       <preference-row i18n-key="auto_tmm_enabled">
         <v-select
-          dense
+          variant="outlined"
+          density="compact"
           :items="torrentMode"
-          :value="preferences.auto_tmm_enabled ? torrentMode[0] : torrentMode[1]"
-          @change="changeSettings('auto_tmm_enabled', $event == torrentMode[0])"
+          :model-value="preferences.auto_tmm_enabled ? torrentMode[0] : torrentMode[1]"
+          @update:model-value="changeSettings('auto_tmm_enabled', $event == torrentMode[0])"
         />
       </preference-row>
       <preference-row i18n-key="torrent_changed_tmm_enabled">
         <v-select
-          dense
+          variant="outlined"
+          density="compact"
           :items="torrentAction"
-          :value="preferences.category_changed_tmm_enabled ? torrentAction[1] : torrentAction[0]"
-          @change="changeSettings('torrent_changed_tmm_enabled', $event == torrentAction[1])"
+          :model-value="preferences.category_changed_tmm_enabled ? torrentAction[1] : torrentAction[0]"
+          @update:model-value="changeSettings('torrent_changed_tmm_enabled', $event == torrentAction[1])"
         />
       </preference-row>
       <preference-row i18n-key="save_path_changed_tmm_enabled">
         <v-select
-          dense
+          variant="outlined"
+          density="compact"
           :items="torrentAction"
-          :value="preferences.category_changed_tmm_enabled ? torrentAction[1] : torrentAction[0]"
-          @change="changeSettings('save_path_changed_tmm_enabled', $event == torrentAction[1])"
+          :model-value="preferences.category_changed_tmm_enabled ? torrentAction[1] : torrentAction[0]"
+          @update:model-value="changeSettings('save_path_changed_tmm_enabled', $event == torrentAction[1])"
         />
       </preference-row>
       <preference-row i18n-key="category_changed_tmm_enabled">
         <v-select
-          dense
+          variant="outlined"
+          density="compact"
           :items="torrentAction"
-          :value="preferences.category_changed_tmm_enabled ? torrentAction[1] : torrentAction[0]"
-          @change="changeSettings('category_changed_tmm_enabled', $event == torrentAction[1])"
+          :model-value="preferences.category_changed_tmm_enabled ? torrentAction[1] : torrentAction[0]"
+          @update:model-value="changeSettings('category_changed_tmm_enabled', $event == torrentAction[1])"
         />
       </preference-row>
       <preference-row i18n-key="save_path">
         <v-text-field
-          dense
-          :value="preferences.save_path"
+          density="compact"
+          variant="outlined"
+          :model-value="preferences.save_path"
           @change="changeSettings('save_path', $event)"
-          lazy
         />
       </preference-row>
       <preference-row i18n-key="temp_path">
         <template #header>
           <v-checkbox
-            dense
-            :value="preferences.temp_path_enabled"
-            @change="changeSettings('temp_path_enabled', $event)"
+            density="compact"
+            :model-value="preferences.temp_path_enabled"
+            @update:model-value="changeSettings('temp_path_enabled', $event)"
           />
         </template>
         <v-text-field
           :disabled="!preferences.temp_path_enabled"
-          :value="preferences.temp_path"
+          :model-value="preferences.temp_path"
           @change="changeSettings('temp_path', $event)"
-          lazy
-          dense
+          density="compact"
+          variant="outlined"
         />
       </preference-row>
       <preference-row
@@ -105,9 +109,10 @@
         can-be-enabled="true"
       >
         <v-text-field
-          :value="preferences.export_dir"
+          :model-value="preferences.export_dir"
           @change="changeSettings('export_dir', $event)"
-          lazy
+          variant="outlined"
+          density="compact"
           clearable
         />
       </preference-row>
@@ -116,9 +121,10 @@
         can-be-enabled="true"
       >
         <v-text-field
-          :value="preferences.export_dir_fin"
+          :model-value="preferences.export_dir_fin"
           @change="changeSettings('export_dir_fin', $event)"
-          lazy
+          variant="outlined"
+          density="compact"
           clearable
         />
       </preference-row>
@@ -127,10 +133,8 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { Vue, Component } from 'vue-facing-decorator'
 import {Preferences} from '@/types'
-import {Component} from 'vue-property-decorator'
-import {mapActions, mapGetters} from 'vuex'
 import PreferenceRow from './PreferenceRow.vue'
 import { tr } from '@/locale'
 
@@ -138,23 +142,17 @@ import { tr } from '@/locale'
   components: {
     PreferenceRow,
   },
-  computed: {
-    ...mapGetters({
-      preferences: 'allPreferences',
-    }),
-  },
-  methods: {
-    ...mapActions({
-      updatePreferencesRequest: 'updatePreferencesRequest',
-    }),
-  },
 })
 export default class DownloadSettings extends Vue {
-  preferences!: Preferences
+  get preferences(): Preferences {
+    return this.$store.getters.allPreferences;
+  }
   torrentAction = [tr('preferences.switch_torrent_mode_to_manual'), tr('preferences.move_affected_torrent')]
   torrentMode = [tr('preferences.auto_mode'), tr('preferences.manual_mode')]
 
-  updatePreferencesRequest!: (_: any) => void
+  updatePreferencesRequest(data: any) {
+    return this.$store.dispatch('updatePreferencesRequest', data);
+  }
 
   changeSettings(property: string, value: string | boolean) {
     this.updatePreferencesRequest({[property]: value})
@@ -166,11 +164,15 @@ export default class DownloadSettings extends Vue {
 @import "~@/assets/styles.scss";
 
 h4 {
-  margin-top: 8px;
-  padding-left: 4px
+  margin-top: 16px;
+  margin-bottom: 4px;
+  padding-left: 4px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: rgba(var(--v-theme-on-surface), 0.7);
 }
 
-.v-input--switch {
+:deep(.v-switch) {
   margin: 0
 }
 

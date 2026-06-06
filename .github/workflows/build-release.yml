@@ -1,0 +1,52 @@
+name: Build & Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: |
+          corepack enable
+          yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn run build
+
+      - name: Prepare dist
+        run: |
+          # see https://github.com/qbittorrent/qBittorrent/pull/10485, fixed in qb v4.2.0
+          cp dist/public/{index,login}.html
+
+      - name: Create release zip
+        run: |
+          cd dist
+          zip -r ../qb-web.zip .
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Latest Build (${{ github.sha }})
+          body: |
+            Automated release from `main` branch.
+
+            **Commit:** `${{ github.sha }}`
+            **Date:** ${{ github.event.head_commit.timestamp }}
+            **Message:** ${{ github.event.head_commit.message }}
+          files: qb-web.zip
+          make_latest: true

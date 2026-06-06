@@ -6,13 +6,12 @@
     absolute
     offset-y
     transition="slide-y-transition"
-    @input="$emit('close')"
   >
-    <v-list dense>
+    <v-list density="compact">
       <v-list-item @click="copySavePath">
-        <v-list-item-icon>
+        <template #prepend>
           <v-icon>mdi-content-copy</v-icon>
-        </v-list-item-icon>
+        </template>
         <v-list-item-title>{{ $t('copy_save_path') }}</v-list-item-title>
       </v-list-item>
     </v-list>
@@ -20,11 +19,11 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import Component from 'vue-class-component';
-import { Prop } from 'vue-property-decorator';
+import { Vue, Component, Prop } from 'vue-facing-decorator';
 
-@Component
+@Component({
+  emits: ['update:modelValue', 'close'],
+})
 export default class ContextMenu extends Vue {
   @Prop({ type: Boolean, default: false })
   readonly value!: boolean
@@ -43,7 +42,10 @@ export default class ContextMenu extends Vue {
   }
 
   set show(val: boolean) {
-    this.$emit('input', val);
+    this.$emit('update:modelValue', val);
+    if (!val) {
+      this.$emit('close');
+    }
   }
 
   async copySavePath() {

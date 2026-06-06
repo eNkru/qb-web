@@ -1,9 +1,9 @@
-import { Prop, Watch, Component } from 'vue-property-decorator'
+import { Prop, Watch, Component } from 'vue-facing-decorator'
 import HasTask from '@/mixins/hasTask'
 
 @Component
 export default class BaseTorrentInfo extends HasTask {
-  @Prop(Boolean)
+  @Prop({ type: Boolean })
   readonly isActive!: boolean
 
   protected fetchInfo(): Promise<void> {

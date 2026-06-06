@@ -1,44 +1,75 @@
-import Vue from 'vue';
-import Vuetify from 'vuetify/lib';
+import { createVuetify } from 'vuetify';
+import * as components from 'vuetify/components';
+import * as directives from 'vuetify/directives';
+import { mdi } from 'vuetify/iconsets/mdi';
+import 'vuetify/styles';
 import i18n from '@/locale';
-
-Vue.use(Vuetify);
 
 let locale = i18n.locale();
 switch (locale) {
   case 'zh-CN':
-    locale = 'zh-Hans';
+    locale = 'zhHans';
     break;
   case 'zh-TW':
-    locale = 'zh-Hant';
+    locale = 'zhHant';
     break;
   default:
     locale = locale.split('-', 1)[0];
     break;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { default: translation } = require('vuetify/lib/locale/' + locale + '.js');
-
-export default new Vuetify({
+export default createVuetify({
+  components,
+  directives,
   theme: {
     themes: {
       light: {
-        primary: '#1976d2',
-        secondary: '#424242',
-        accent: '#82B1FF',
-        error: '#FF5252',
-        info: '#2196F3',
-        success: '#4CAF50',
-        warning: '#FFC107',
+        colors: {
+          primary: '#1976d2',
+          secondary: '#424242',
+          accent: '#82B1FF',
+          error: '#FF5252',
+          info: '#2196F3',
+          success: '#4CAF50',
+          warning: '#FFC107',
+        },
       },
     },
   },
-  lang: {
-    locales: { [locale]: translation },
-    current: locale,
+  locale: {
+    locale,
   },
   icons: {
-    iconfont: 'mdi',
+    defaultSet: 'mdi',
+    sets: { mdi },
+  },
+  defaults: {
+    VList: {
+      density: 'compact',
+    },
+    VDataTable: {
+      density: 'compact',
+    },
+    VBtn: {
+      variant: 'text',
+    },
+    VTextField: {
+      density: 'compact',
+    },
+    VSelect: {
+      density: 'compact',
+    },
+    VInput: {
+      density: 'compact',
+    },
+    VAutocomplete: {
+      density: 'compact',
+    },
+    VMenu: {
+      density: 'compact',
+    },
+    VCard: {
+      density: 'compact',
+    },
   },
 });

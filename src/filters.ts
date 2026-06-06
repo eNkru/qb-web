@@ -1,5 +1,5 @@
+import { App } from 'vue';
 import dayjs from 'dayjs';
-import Vue from 'vue';
 
 /* eslint-disable no-param-reassign */
 export function toPrecision(value: number, precision: number) {
@@ -36,9 +36,6 @@ export function formatSize(value: number): string {
 
   return `${toPrecision(value, 3)} ${unit}`;
 }
-
-Vue.filter('formatSize', formatSize);
-Vue.filter('size', formatSize);
 
 export interface DurationOptions {
   dayLimit?: number;
@@ -89,19 +86,12 @@ export function formatDuration(value: number, options?: DurationOptions) {
     unitSize++;
   }
 
-  // if (unitSize < 2 && index !== durations.length) {
-  //   const result = Math.floor(value / durations[index]);
-  //   parts.push(result + units[index]);
-  // }
-
   if (!parts.length) {
     return '0' + units[durations.length - 1 - opt.minUnit!];
   }
 
   return parts.join(' ');
 }
-
-Vue.filter('formatDuration', formatDuration);
 
 export function formatTimestamp(timestamp: number | null) {
   if (timestamp == null || timestamp === -1) {
@@ -112,22 +102,16 @@ export function formatTimestamp(timestamp: number | null) {
   return m.format('YYYY-MM-DD HH:mm:ss');
 }
 
-Vue.filter('formatTimestamp', formatTimestamp);
-
 export function formatAsDuration(timestamp: number, options?: DurationOptions) {
   const duration = (Date.now() / 1000) - timestamp;
   return formatDuration(duration, options);
 }
-
-Vue.filter('formatAsDuration', formatAsDuration);
 
 export function formatProgress(progress: number) {
   // eslint-disable-next-line
   progress *= 100;
   return `${toPrecision(progress, 3)}%`;
 }
-
-Vue.filter('progress', formatProgress);
 
 export function parseDate(str: string) {
   if (!str) {
@@ -137,4 +121,21 @@ export function parseDate(str: string) {
   return Date.parse(str) / 1000
 }
 
-Vue.filter('parseDate', parseDate)
+export function formatNetworkSpeed(speed: number) {
+  if (speed === 0) {
+    return null;
+  }
+
+  return `${formatSize(speed)}/s`;
+}
+
+export function registerFilters(app: App) {
+  app.config.globalProperties.$formatSize = formatSize;
+  app.config.globalProperties.$size = formatSize;
+  app.config.globalProperties.$formatDuration = formatDuration;
+  app.config.globalProperties.$formatTimestamp = formatTimestamp;
+  app.config.globalProperties.$formatAsDuration = formatAsDuration;
+  app.config.globalProperties.$progress = formatProgress;
+  app.config.globalProperties.$parseDate = parseDate;
+  app.config.globalProperties.$formatNetworkSpeed = formatNetworkSpeed;
+}

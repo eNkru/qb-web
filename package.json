@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@mdi/font": "^5.0.45",
+    "@mdi/js": "^7.4.47",
     "@types/node-polyglot": "^0.4.34",
     "axios": "^1.9.0",
     "core-js": "^3.6.5",
@@ -18,12 +19,11 @@
     "lodash": "^4.17.21",
     "node-polyglot": "^2.4.0",
     "roboto-fontface": "*",
-    "vue": "^2.7.16",
-    "vue-class-component": "^7.2.3",
-    "vue-property-decorator": "^9.1.2",
-    "vue-router": "^3.6.5",
-    "vuetify": "^2.7.2",
-    "vuex": "^3.6.2"
+    "vue": "^3.5.0",
+    "vue-facing-decorator": "^3.0.0",
+    "vue-router": "^4.4.0",
+    "vuetify": "^3.7.0",
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.5",
@@ -40,19 +40,17 @@
     "@vue/cli-plugin-vuex": "~5.0.8",
     "@vue/cli-service": "~5.0.8",
     "@vue/eslint-config-typescript": "^9.1.0",
-    "@vue/test-utils": "1.0.0-beta.29",
-    "@vue/vue2-jest": "^27.0.0-alpha.3",
+    "@vue/test-utils": "^2.4.0",
+    "@vue/vue3-jest": "^29.0.0",
     "eslint": "^7.32.0",
-    "eslint-plugin-vue": "^8.0.3",
-    "jest": "^27.1.0",
+    "eslint-plugin-vue": "^9.0.0",
+    "jest": "^29.0.0",
     "lint-staged": "^10.1.1",
-    "sass": "^1.26.5",
-    "sass-loader": "^8.0.2",
-    "ts-jest": "^27.0.4",
-    "typescript": "~4.5.5",
-    "vue-cli-plugin-vuetify": "^2.0.5",
-    "vue-template-compiler": "^2.7.16",
-    "vuetify-loader": "^1.9.2"
+    "sass": "^1.80.0",
+    "sass-loader": "^13.0.0",
+    "ts-jest": "^29.0.0",
+    "typescript": "~5.5.0",
+    "webpack-plugin-vuetify": "^3.0.0"
   },
   "gitHooks": {
     "pre-commit": "lint-staged"

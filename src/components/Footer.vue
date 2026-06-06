@@ -10,9 +10,9 @@
       v-if="app"
     >
       <div v-if="!phoneLayout">
-        <v-tooltip top>
-          <template #activator="{ on }">
-            <span v-on="on">
+        <v-tooltip location="top">
+          <template #activator="{ props }">
+            <span v-bind="props">
               qBittorrent {{ app.version }}
             </span>
           </template>
@@ -32,21 +32,21 @@
       />
       <div class="icon-label">
         <v-icon>mdi-sprout</v-icon>
-        {{ allTorrents.length }} [{{ totalSize | formatSize }}]
+        {{ allTorrents.length }} [{{ $formatSize(totalSize) }}]
       </div>
       <v-divider
         vertical
         class="mx-2"
         v-if="!phoneLayout"
       />
-      <v-tooltip top>
-        <template #activator="{ on }">
+      <v-tooltip location="top">
+        <template #activator="{ props }">
           <div
             class="icon-label"
-            v-on="on"
+            v-bind="props"
           >
             <v-icon>mdi-nas</v-icon>
-            {{ info.free_space_on_disk | formatSize }}
+            {{ $formatSize(info.free_space_on_disk) }}
           </div>
         </template>
         <span>
@@ -70,7 +70,7 @@
           mdi-swap-vertical-bold
         </v-icon>
         <span>
-          {{ info.alltime_dl | formatSize }}/{{ info.alltime_ul | formatSize }}
+          {{ $formatSize(info.alltime_dl) }}/{{ $formatSize(info.alltime_ul) }}
         </span>
       </div>
     </div>
@@ -92,13 +92,13 @@
         v-if="!phoneLayout"
       />
       <div class="icon-label">
-        <v-tooltip top>
-          <template #activator="{ on }">
+        <v-tooltip location="top">
+          <template #activator="{ props }">
             <v-icon
-              v-on="on"
-              :color="info.connection_status | connectionIconColor"
+              v-bind="props"
+              :color="connectionIconColor(info.connection_status)"
             >
-              mdi-{{ info.connection_status | connectionIcon }}
+              mdi-{{ connectionIcon(info.connection_status) }}
             </v-icon>
             <span v-if="phoneLayout">
               Network {{ info.connection_status }}
@@ -118,7 +118,7 @@
         <v-switch
           v-if="phoneLayout"
           hide-details
-          :value="speedLimited"
+          :model-value="speedLimited"
           @change="toggleSpeedLimitsMode"
           label="Alternative speed limits"
           class="mt-0 pt-0 speed-switch"
@@ -132,13 +132,12 @@
           </template>
         </v-switch>
         <v-tooltip
-          top
+          location="top"
           v-else
         >
-          <template #activator="{ on }">
+          <template #activator="{ props }">
             <v-icon
-              v-on="on"
-              v-bind="speedModeBind"
+              v-bind="{ ...props, ...speedModeBind }"
               @click="toggleSpeedLimitsMode"
             >
               mdi-speedometer
@@ -161,12 +160,12 @@
           mdi-download
         </v-icon>
         <span>
-          {{ info.dl_info_speed | formatSize }}/s
+          {{ $formatSize(info.dl_info_speed) }}/s
           <template v-if="info.dl_rate_limit">
-            ({{ info.dl_rate_limit | formatSize }}/s)
+            ({{ $formatSize(info.dl_rate_limit) }}/s)
           </template>
           <template v-if="!phoneLayout">
-            [{{ info.dl_info_data | formatSize }}]
+            [{{ $formatSize(info.dl_info_data) }}]
           </template>
         </span>
       </div>
@@ -182,12 +181,12 @@
           mdi-upload
         </v-icon>
         <span>
-          {{ info.up_info_speed | formatSize }}/s
+          {{ $formatSize(info.up_info_speed) }}/s
           <template v-if="info.up_rate_limit">
-            ({{ info.up_rate_limit | formatSize }}/s)
+            ({{ $formatSize(info.up_rate_limit) }}/s)
           </template>
           <template v-if="!phoneLayout">
-            [{{ info.up_info_data | formatSize }}]
+            [{{ $formatSize(info.up_info_data) }}]
           </template>
         </span>
       </div>
@@ -197,48 +196,15 @@
 
 <script lang="ts">
 import { sumBy } from 'lodash';
-import Vue from 'vue';
-import { mapState, mapGetters } from 'vuex';
+import { Vue, Component, Prop, Watch, toNative } from 'vue-facing-decorator';
 import api from '../Api';
 import buildInfo from '@/buildInfo';
-import Component from 'vue-class-component';
-import { Prop, Watch } from 'vue-property-decorator';
 import { Torrent, ServerState } from '@/types';
 
 
-@Component({
-  filters: {
-    connectionIcon(status: string) {
-      const statusMap: any = {
-        connected: 'check-network',
-        firewalled: 'minus-network',
-        disconnected: 'close-network',
-      };
-      return statusMap[status];
-    },
-    connectionIconColor(status: string) {
-      const statusMap: any = {
-        connected: 'success',
-        firewalled: 'warning',
-        disconnected: 'error',
-      };
-      return statusMap[status];
-    },
-  },
-  computed: {
-    ...mapState({
-      info(state: any) {
-        return this.isDataReady ? state.mainData.server_state : null;
-      },
-    }),
-    ...mapGetters([
-      'isDataReady',
-      'allTorrents',
-    ]),
-  },
-})
-export default class Footer extends Vue {
-  @Prop(Boolean)
+@Component
+class Footer extends Vue {
+  @Prop({ type: Boolean })
   readonly phoneLayout!: boolean
 
   app: any = null
@@ -246,9 +212,15 @@ export default class Footer extends Vue {
 
   buildInfo = buildInfo
 
-  info!: ServerState
-  isDataReady!: boolean
-  allTorrents!: Torrent[]
+  get info(): ServerState | null {
+    return this.isDataReady ? (this.$store.state as any).mainData.server_state : null;
+  }
+  get isDataReady(): boolean {
+    return this.$store.getters.isDataReady;
+  }
+  get allTorrents(): Torrent[] {
+    return this.$store.getters.allTorrents;
+  }
 
   get totalSize() {
     return sumBy(this.allTorrents, 'size');
@@ -299,6 +271,9 @@ export default class Footer extends Vue {
       return;
     }
 
+    if (!this.info) {
+      return;
+    }
     this.speedLimited = this.info.use_alt_speed_limits;
     this.getAppInfo();
   }
@@ -314,21 +289,55 @@ export default class Footer extends Vue {
   onSpeedLimitChanged (v: boolean) {
     this.speedLimited = v;
   }
+
+  connectionIcon(status: string) {
+    const statusMap: any = {
+      connected: 'check-network',
+      firewalled: 'minus-network',
+      disconnected: 'close-network',
+    };
+    return statusMap[status];
+  }
+
+  connectionIconColor(status: string) {
+    const statusMap: any = {
+      connected: 'success',
+      firewalled: 'warning',
+      disconnected: 'error',
+    };
+    return statusMap[status];
+  }
 }
+
+export default toNative(Footer)
 </script>
 
 <style lang="scss" scoped>
 .footer {
   font-size: 14px;
   width: 100%;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 4px 0;
+}
+
+.v-theme--dark .footer {
+  border-top-color: rgba(255, 255, 255, 0.08);
 }
 
 .icon-label {
   display: flex;
   align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
 
   .v-icon {
-    //margin-right: 4px;
+    opacity: 0.7;
   }
 }
 
@@ -340,7 +349,7 @@ export default class Footer extends Vue {
   font-size: inherit;
   width: 100%;
 
-  ::v-deep {
+  :deep() {
     .v-input__prepend-outer {
       margin-right: 0;
     }
@@ -349,10 +358,10 @@ export default class Footer extends Vue {
       margin-left: 4px;
       width: 100%;
 
-      .v-input__slot {
+      .v-field__field {
         justify-content: space-between;
 
-        .v-input--selection-controls__input {
+        .v-selection-control__input {
           order: 2;
         }
 
