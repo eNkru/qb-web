@@ -40,7 +40,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ github.sha }}
+          tag_name: build-${{ github.sha }}
           name: Build ${{ github.sha }}
           body: |
             Automated release from `main` branch.
