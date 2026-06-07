@@ -1,5 +1,4 @@
 import Vuex from 'vuex';
-import FilterGroupComponent from '@/components/drawer/FilterGroup.vue';
 import * as types from '@/components/types';
 import { mock } from '../utils';
 import { configStore } from '@/store/config';

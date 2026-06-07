@@ -1,4 +1,3 @@
-import Vuex from 'vuex';
 import store from '@/store';
 import { RootState } from '@/store/types';
 import { mock, mockBaseTorrent } from '../utils';
