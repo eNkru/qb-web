@@ -193,7 +193,7 @@
 </template>
 
 <script lang="ts">
-import { get, toPath, sortBy } from 'lodash'
+import { get, toPath, sortBy } from 'lodash-es'
 import { Vue, Component, Prop, Watch, Emit, toNative } from 'vue-facing-decorator'
 
 import HasTask from '@/mixins/hasTask'
@@ -204,6 +204,9 @@ import { RssItem, RssNode, RssTorrent } from '@/types';
 import { DialogType, DialogConfig, SnackBarConfig } from '@/store/types'
 import { parseDate, formatTimestamp, formatAsDuration } from '../../filters'
 import RssRulesDialog from './RssRulesDialog.vue'
+import { useMainStore } from '@/store/index';
+import { useDialogStore } from '@/store/dialog';
+import { useSnackBarStore } from '@/store/snackBar';
 
 let darkMode: boolean;
 
@@ -244,6 +247,9 @@ let darkMode: boolean;
 class RssDialog extends HasTask {
   display = useDisplay() as any;
   theme = useTheme() as any;
+  mainStore = useMainStore()
+  dialogStore = useDialogStore()
+  snackBarStore = useSnackBarStore()
 
   @Prop({ type: Boolean })
   readonly modelValue!: boolean
@@ -261,16 +267,16 @@ class RssDialog extends HasTask {
   showRulesDialog = false
 
   get preferences(): any {
-    return this.$store.state.preferences;
+    return this.mainStore.preferences;
   }
   async asyncShowDialog(config: DialogConfig): Promise<string | undefined> {
-    return this.$store.dispatch('asyncShowDialog', config);
+    return this.dialogStore.asyncShowDialog(config);
   }
   showSnackBar(config: SnackBarConfig) {
-    this.$store.commit('showSnackBar', config);
+    this.snackBarStore.showSnackBar(config);
   }
   closeSnackBar() {
-    this.$store.commit('closeSnackBar');
+    this.snackBarStore.closeSnackBar();
   }
 
   get phoneLayout() {

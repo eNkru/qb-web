@@ -84,6 +84,7 @@ import { SearchPlugin } from "@/types";
 import { tr } from "@/locale";
 import { intersection } from "lodash";
 import { SearchEnginePage } from '@/store/types';
+import { useSearchEngineStore } from '@/store/searchEngine';
 
 const ALL_KEY = "all";
 
@@ -107,11 +108,12 @@ export interface SearchForm {
 @Component
 export default class SearchDialogForm extends Vue {
   display = useDisplay() as any;
+  searchEngineStore = useSearchEngineStore()
 
   searchEngineState!: SearchEnginePage;
 
-  get searchPlugins(): SearchPlugin[] {
-    return this.$store.getters.allSearchPlugins;
+  get searchPlugins(): SearchPlugin[] | null | undefined {
+    return this.searchEngineStore.allSearchPlugins;
   }
 
   @Prop({ type: Boolean })
@@ -156,7 +158,7 @@ export default class SearchDialogForm extends Vue {
     if (!plugins) {
       this.availablePlugins = [];
     } else {
-      this.availablePlugins = this.searchPlugins.filter(x => x.enabled);
+      this.availablePlugins = plugins.filter(x => x.enabled);
       this.toggleSelectAll();
     }
   }

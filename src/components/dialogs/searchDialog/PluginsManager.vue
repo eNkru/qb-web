@@ -31,19 +31,22 @@
 <script lang="ts">
 import { SearchPlugin } from "@/types";
 import { Vue, Component } from "vue-facing-decorator";
+import { useSearchEngineStore } from '@/store/searchEngine';
 
 @Component
 export default class PluginsManager extends Vue {
+  searchEngineStore = useSearchEngineStore()
+
   get searchPlugins() {
-    return this.$store.state.searchPlugins;
+    return this.searchEngineStore.searchPlugins;
   }
 
   get isPluginManagerOpen(): boolean {
-    return this.$store.state.isPluginManagerOpen ?? false;
+    return this.searchEngineStore.isPluginManagerOpen ?? false;
   }
 
   closePluginManager() {
-    this.$store.commit('closePluginManager');
+    this.searchEngineStore.closePluginManager();
   }
 
   onDialogUpdate(val: boolean) {
@@ -53,10 +56,10 @@ export default class PluginsManager extends Vue {
   }
 
   togglePluginAvailabilityAction(plugin: SearchPlugin) {
-    return this.$store.dispatch('togglePluginAvailability', plugin);
+    return this.searchEngineStore.togglePluginAvailability(plugin);
   }
   updatePluginsRequest() {
-    return this.$store.dispatch('updatePluginsRequest');
+    return this.searchEngineStore.updatePluginsRequest();
   }
 
   togglePluginAvailability(plugin: SearchPlugin) {

@@ -19,22 +19,23 @@
 
 <script lang="ts">
 import { computed } from 'vue';
-import { useMutations, useState } from '@/store';
+import { useSnackBarStore } from '@/store/snackBar';
 
 export default {
   setup() {
-    const mutations = useMutations(['closeSnackBar']);
-    const { snackBarConfig: config } = useState(['snackBarConfig']);
+    const snackBarStore = useSnackBarStore();
+
+    const config = computed(() => snackBarStore.config);
 
     const snackbarVisible = computed({
       get: () => !!config.value,
-      set: (v) => { if (!v) mutations.closeSnackBar(); },
+      set: (v) => { if (!v) snackBarStore.closeSnackBar(); },
     });
 
     function clickBtn() {
-      const cb = config.value.callback;
+      const cb = config.value?.callback;
 
-      mutations.closeSnackBar();
+      snackBarStore.closeSnackBar();
 
       if (cb) {
         cb();

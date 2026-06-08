@@ -137,6 +137,7 @@ import { Vue, Component } from 'vue-facing-decorator'
 import {Preferences} from '@/types'
 import PreferenceRow from './PreferenceRow.vue'
 import { tr } from '@/locale'
+import { useMainStore } from '@/store/index';
 
 @Component({
   components: {
@@ -144,14 +145,16 @@ import { tr } from '@/locale'
   },
 })
 export default class DownloadSettings extends Vue {
+  mainStore = useMainStore()
+
   get preferences(): Preferences {
-    return this.$store.getters.allPreferences;
+    return this.mainStore.allPreferences;
   }
   torrentAction = [tr('preferences.switch_torrent_mode_to_manual'), tr('preferences.move_affected_torrent')]
   torrentMode = [tr('preferences.auto_mode'), tr('preferences.manual_mode')]
 
   updatePreferencesRequest(data: any) {
-    return this.$store.dispatch('updatePreferencesRequest', data);
+    return this.mainStore.updatePreferencesRequest(data);
   }
 
   changeSettings(property: string, value: any) {

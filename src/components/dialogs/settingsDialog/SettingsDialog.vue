@@ -72,6 +72,8 @@ import WebUISettings from './WebUISettings.vue'
 import RssSettings from './RssSettings.vue'
 import {Config} from '@/store/config'
 import { timeout } from '@/utils'
+import { useConfigStore } from '@/store/config';
+import { useMainStore } from '@/store/index';
 
 @Component({
   components: {
@@ -83,15 +85,17 @@ import { timeout } from '@/utils'
 })
 export default class SettingsDialog extends Vue {
   private display = useDisplay() as any;
+  configStore = useConfigStore()
+  mainStore = useMainStore()
 
   @Prop({ type: Boolean })
   readonly modelValue!: boolean
 
   get config(): Config {
-    return this.$store.getters.config;
+    return this.configStore.config;
   }
   get preferences(): Preferences {
-    return this.$store.getters.allPreferences;
+    return this.mainStore.allPreferences;
   }
 
   preferenceUpdated = false

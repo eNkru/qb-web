@@ -358,7 +358,7 @@
 <script lang="ts">
 import { Vue, Component, Watch, toNative } from 'vue-facing-decorator'
 import { useDisplay, useTheme } from 'vuetify'
-import { intersection, uniqBy } from 'lodash'
+import { intersection, uniqBy } from 'lodash-es'
 
 import { tr } from '@/locale'
 import ConfirmDeleteDialog from './dialogs/ConfirmDeleteDialog.vue'
@@ -371,6 +371,10 @@ import { getSiteAbbreviation } from '@/utils/siteMap'
 import { getSiteByHostname } from '@/sites'
 import { DialogType, TorrentFilter, ConfigPayload, DialogConfig, SnackBarConfig } from '@/store/types'
 import { Torrent, Category, Tag } from '@/types'
+import { useMainStore } from '@/store/index'
+import { useConfigStore } from '@/store/config'
+import { useDialogStore } from '@/store/dialog'
+import { useSnackBarStore } from '@/store/snackBar'
 
 function getTrackerHostname(tracker: string) {
   if (!tracker) {
@@ -472,6 +476,10 @@ function getStateInfo(state: string) {
 class Torrents extends Vue {
   display = useDisplay() as any;
   theme = useTheme() as any;
+  mainStore = useMainStore()
+  configStore = useConfigStore()
+  dialogStore = useDialogStore()
+  snackBarStore = useSnackBarStore()
 
   get isXs() { return this.display.xs; }
   get isDark() { return this.theme.global.current.dark; }
@@ -493,7 +501,7 @@ class Torrents extends Vue {
 
   get headers() {
     const selectCol = { title: '', key: 'data-table-select', sortable: false, width: '48px' };
-    const hidden = this.$store.getters.config.hiddenColumns || [];
+    const hidden = this.configStore.config.hiddenColumns || [];
     const visible = this.allColumns.filter(c => !hidden.includes(c.key));
     return [selectCol, ...visible];
   }
@@ -514,47 +522,47 @@ class Torrents extends Vue {
   currentPage = 1
 
   get isDataReady(): boolean {
-    return this.$store.getters.isDataReady;
+    return this.mainStore.isDataReady;
   }
   get allTorrents(): Torrent[] {
-    return this.$store.getters.allTorrents;
+    return this.mainStore.allTorrents;
   }
   get allCategories(): Category[] {
-    return this.$store.getters.allCategories;
+    return this.mainStore.allCategories;
   }
   get allTags(): Tag[] {
-    return this.$store.getters.allTags;
+    return this.mainStore.allTags;
   }
   get torrentGroupByCategory(): {[category: string]: Torrent[]} {
-    return this.$store.getters.torrentGroupByCategory;
+    return this.mainStore.torrentGroupByCategory;
   }
   get torrentGroupByTag(): {[tag: string]: Torrent[]} {
-    return this.$store.getters.torrentGroupByTag;
+    return this.mainStore.torrentGroupByTag;
   }
   get torrentGroupBySite(): {[site: string]: Torrent[]} {
-    return this.$store.getters.torrentGroupBySite;
+    return this.mainStore.torrentGroupBySite;
   }
   get torrentGroupByState(): {[state: string]: Torrent[]} {
-    return this.$store.getters.torrentGroupByState;
+    return this.mainStore.torrentGroupByState;
   }
   get filter(): TorrentFilter {
-    return this.$store.getters.config.filter;
+    return this.configStore.config.filter;
   }
   get query(): string | null {
-    return this.$store.state.query;
+    return this.mainStore.query;
   }
 
   updateConfig(payload: ConfigPayload) {
-    this.$store.commit('updateConfig', payload);
+    this.configStore.updateConfig(payload);
   }
 
   isColumnHidden(key: string): boolean {
-    const hidden = this.$store.getters.config.hiddenColumns || [];
+    const hidden = this.configStore.config.hiddenColumns || [];
     return hidden.includes(key);
   }
 
   toggleColumn(key: string) {
-    const hidden = [...(this.$store.getters.config.hiddenColumns || [])];
+    const hidden = [...(this.configStore.config.hiddenColumns || [])];
     const idx = hidden.indexOf(key);
     if (idx === -1) {
       hidden.push(key);
@@ -564,10 +572,10 @@ class Torrents extends Vue {
     this.updateConfig({ key: 'hiddenColumns', value: hidden.length ? hidden : null });
   }
   showSnackBar(config: SnackBarConfig) {
-    this.$store.commit('showSnackBar', config);
+    this.snackBarStore.showSnackBar(config);
   }
   async asyncShowDialog(config: DialogConfig): Promise<string | undefined> {
-    return this.$store.dispatch('asyncShowDialog', config);
+    return this.dialogStore.asyncShowDialog(config);
   }
 
   get loading() {
@@ -708,11 +716,11 @@ class Torrents extends Vue {
   }
 
   created() {
-    const savedItemsPerPage = this.$store.getters.config.pageOptions?.itemsPerPage;
+    const savedItemsPerPage = this.configStore.config.pageOptions?.itemsPerPage;
     if (savedItemsPerPage != null) {
       this.itemsPerPage = savedItemsPerPage;
     }
-    this.sortBy = this.$store.getters.config.sortBy ?? [];
+    this.sortBy = this.configStore.config.sortBy ?? [];
   }
 
   confirmDelete() {

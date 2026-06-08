@@ -61,10 +61,12 @@ import { useDisplay } from 'vuetify';
 import api from '@/Api';
 import { findSameNamedTorrents } from '@/utils';
 import { Torrent } from '../../types';
+import { useMainStore } from '@/store/index';
 
 @Component
 class ConfirmSetCategoryDialog extends Vue {
   private display = useDisplay() as any;
+  mainStore = useMainStore()
 
   @Prop({ type: Array })
   readonly modelValue!: Torrent[]
@@ -78,7 +80,7 @@ class ConfirmSetCategoryDialog extends Vue {
   sameNamedTorrents: Torrent[] = []
 
   get allTorrents(): Torrent[] {
-    return this.$store.getters.allTorrents;
+    return this.mainStore.allTorrents;
   }
 
   get showDialog() {

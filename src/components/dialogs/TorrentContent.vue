@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import { groupBy, xor, sumBy } from 'lodash';
+import { groupBy, xor, sumBy } from 'lodash-es';
 import api from '../../Api';
 import BaseTorrentInfo from './baseTorrentInfo'
 

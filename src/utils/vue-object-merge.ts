@@ -1,4 +1,4 @@
-import { isPlainObject } from 'lodash';
+import { isPlainObject } from 'lodash-es';
 
 export const stateMerge = function(state: any, value: any, propName?: string, ignoreNull?: boolean) {
 	if (isPlainObject(state) && (propName == null || propName in state)) {

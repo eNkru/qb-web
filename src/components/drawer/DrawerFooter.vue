@@ -94,6 +94,9 @@ import api from '../../Api';
 import { tr, translations, defaultLocale, LocaleKey } from '@/locale';
 import { DialogType, DialogConfig, SnackBarConfig, ConfigPayload } from '@/store/types';
 import AppFooter from '@/components/Footer.vue';
+import { useConfigStore } from '@/store/config';
+import { useDialogStore } from '@/store/dialog';
+import { useSnackBarStore } from '@/store/snackBar';
 
 const AUTO_KEY = 'auto';
 
@@ -107,6 +110,9 @@ type ThemeModeKey = 'light' | 'dark' | 'grey' | 'luxury' | 'modern-dark' | 'cryp
 })
 class DrawerFooter extends Vue {
   private  display = useDisplay() as any;
+  configStore = useConfigStore()
+  dialogStore = useDialogStore()
+  snackBarStore = useSnackBarStore()
 
   locales: { text: string; value: string }[] = this.buildLocales()
   currentLocale: string = AUTO_KEY
@@ -129,22 +135,22 @@ class DrawerFooter extends Vue {
   fontScales = [0.9, 1, 1.2, 1.35]
 
   created() {
-    this.currentLocale = this.$store.getters.config.locale || AUTO_KEY
-    this.oldLocale = this.$store.getters.config.locale || AUTO_KEY
+    this.currentLocale = this.configStore.config.locale || AUTO_KEY
+    this.oldLocale = this.configStore.config.locale || AUTO_KEY
   }
 
   async asyncShowDialog(config: DialogConfig): Promise<string | undefined> {
-    return this.$store.dispatch('asyncShowDialog', config);
+    return this.dialogStore.asyncShowDialog(config);
   }
   showSnackBar(config: SnackBarConfig) {
-    this.$store.commit('showSnackBar', config);
+    this.snackBarStore.showSnackBar(config);
   }
   updateConfig(payload: ConfigPayload) {
-    this.$store.commit('updateConfig', payload);
+    this.configStore.updateConfig(payload);
   }
 
   get currentThemeMode() {
-    return this.$store.getters.config.themeMode || AUTO_KEY;
+    return this.configStore.config.themeMode || AUTO_KEY;
   }
 
   set currentThemeMode(value: ThemeModeKey | typeof AUTO_KEY) {
@@ -171,7 +177,7 @@ class DrawerFooter extends Vue {
   }
 
   get currentFontScale() {
-    const scale = this.$store.getters.config.fontScale;
+    const scale = this.configStore.config.fontScale;
     return typeof scale === 'number' && scale > 0 ? scale : 1;
   }
 

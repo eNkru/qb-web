@@ -83,17 +83,19 @@
 </template>
 
 <script lang="ts">
-import { chain } from 'lodash';
+import { chain } from 'lodash-es';
 import { Vue, Component, Prop, Emit, toNative } from 'vue-facing-decorator';
 import { useDisplay } from 'vuetify';
 
 import api from '@/Api';
 import { Torrent } from '../../types';
+import { useMainStore } from '@/store/index';
 
 
 @Component
 class EditTrackerDialog extends Vue {
   private display = useDisplay() as any;
+  mainStore = useMainStore()
 
   @Prop({ type: Array })
   readonly modelValue!: Torrent[]
@@ -108,7 +110,7 @@ class EditTrackerDialog extends Vue {
   currentIndex = 0
 
   get allTorrents(): Torrent[] {
-    return this.$store.getters.allTorrents;
+    return this.mainStore.allTorrents;
   }
 
   get showDialog() {

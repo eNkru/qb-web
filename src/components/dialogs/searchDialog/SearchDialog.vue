@@ -67,6 +67,9 @@ import { tr } from "@/locale";
 import SearchDialogForm from "./SearchDialogForm.vue";
 import PluginManager from "./PluginsManager.vue";
 import { Category, Preferences } from '@/types';
+import { useMainStore } from '@/store/index';
+import { useAddFormStore } from '@/store/addForm';
+import { useSearchEngineStore } from '@/store/searchEngine';
 
 interface GridConfig {
   searchItems: SearchTaskTorrent[];
@@ -83,30 +86,34 @@ interface GridConfig {
 export default class SearchDialog extends HasTask {
   private _searchId = 0;
 
+  mainStore = useMainStore()
+  addFormStore = useAddFormStore()
+  searchEngineStore = useSearchEngineStore()
+
   @Prop({ type: Boolean })
   readonly modelValue!: boolean;
 
   get allCategories(): Category[] {
-    return this.$store.getters.allCategories;
+    return this.mainStore.allCategories;
   }
   get preferences(): Preferences {
-    return this.$store.getters.preferences;
+    return this.mainStore.preferences;
   }
 
   setPasteUrl(data: any) {
-    this.$store.commit('setPasteUrl', data);
+    this.mainStore.setPasteUrl(data.url);
   }
   openAddForm() {
-    this.$store.commit('openAddForm');
+    this.addFormStore.openAddForm();
   }
   addFormDownloadItem(data: any) {
-    this.$store.commit('addFormDownloadItem', data);
+    this.addFormStore.addFormDownloadItem(data);
   }
   loadSearchPlugins() {
-    return this.$store.dispatch('fetchSearchPlugins');
+    return this.searchEngineStore.fetchSearchPlugins();
   }
   openPluginManager() {
-    this.$store.commit('openPluginManager');
+    this.searchEngineStore.openPluginManager();
   }
 
   grid: GridConfig = {

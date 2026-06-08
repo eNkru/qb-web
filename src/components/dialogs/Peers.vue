@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts">
-import { map, merge, cloneDeep } from 'lodash';
+import { map, merge, cloneDeep } from 'lodash-es';
 import { codeToFlag, isWindows } from '../../utils';
 import api from '../../Api';
 import { formatSize } from '../../filters';

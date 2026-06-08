@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { isPlainObject, merge } from 'lodash';
+import { isPlainObject, merge } from 'lodash-es';
 import { ConfigPayload } from './types';
 
 const configKey = 'qb-config';

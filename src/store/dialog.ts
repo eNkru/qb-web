@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { merge, cloneDeep } from 'lodash';
+import { merge, cloneDeep } from 'lodash-es';
 import { DialogState, DialogConfig } from './types';
 
 export const useDialogStore = defineStore('dialog', {

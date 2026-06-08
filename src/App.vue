@@ -85,6 +85,8 @@ import { MainData } from './types';
 import { Config } from './store/config';
 import Api from './Api';
 import {formatSize} from '@/filters'
+import { useMainStore } from '@/store/index'
+import { useConfigStore } from '@/store/config'
 
 let appWrapEl: HTMLElement;
 
@@ -109,6 +111,8 @@ let appWrapEl: HTMLElement;
 class App extends Vue {
   display = useDisplay() as any;
   theme = useTheme() as any;
+  mainStore = useMainStore()
+  configStore = useConfigStore()
 
   drawer = true
   drawerOptions = {
@@ -126,33 +130,33 @@ class App extends Vue {
   task: ReturnType<typeof setTimeout> | 0 = 0
   mql?: MediaQueryList
 
-  get mainData(): MainData {
-    return this.$store.state.mainData;
+  get mainData(): MainData | undefined {
+    return this.mainStore.mainData;
   }
   get rid(): number {
-    return this.$store.state.rid;
+    return this.mainStore.rid;
   }
   get preferences(): any {
-    return this.$store.state.preferences;
+    return this.mainStore.preferences;
   }
   get needAuth(): boolean {
-    return this.$store.state.needAuth;
+    return this.mainStore.needAuth;
   }
   get config(): Config {
-    return this.$store.getters.config;
+    return this.configStore.config;
   }
 
   updateMainData(data: any) {
-    this.$store.commit('updateMainData', data);
+    this.mainStore.updateMainData(data);
   }
   updatePreferences(data: any) {
-    this.$store.commit('updatePreferences', data);
+    this.mainStore.updatePreferences(data);
   }
   setPasteUrl(data: any) {
-    this.$store.commit('setPasteUrl', data);
+    this.mainStore.setPasteUrl(data);
   }
   updateNeedAuth(value: boolean) {
-    this.$store.commit('updateNeedAuth', value);
+    this.mainStore.updateNeedAuth(value);
   }
 
   get phoneLayout() {
@@ -396,16 +400,15 @@ class App extends Vue {
   }
 
   @Watch('config.darkMode')
-  onDarkMode(mode: any) {
-    if (mode != null && this.config.themeMode == null) {
-      this.$store.commit('updateConfig', {
-        key: 'themeMode',
-        value: mode ? 'dark' : 'light',
-      });
-      this.$store.commit('updateConfig', {
-        key: 'darkMode',
-        value: null,
-      });
+  onDarkMode(mode: any) {      if (mode != null && this.config.themeMode == null) {
+        this.configStore.updateConfig({
+          key: 'themeMode',
+          value: mode ? 'dark' : 'light',
+        });
+        this.configStore.updateConfig({
+          key: 'darkMode',
+          value: null,
+        });
     }
   }
 }
