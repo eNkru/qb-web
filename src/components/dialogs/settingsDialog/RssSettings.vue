@@ -45,8 +45,6 @@ export default class SpeedSettings extends Vue {
 </script>
 
 <style lang="scss" scoped>
-@import "~@/assets/styles.scss";
-
 :deep(.v-switch) {
   margin: 0
 }

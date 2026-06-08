@@ -43,7 +43,7 @@ class Trackers extends BaseTorrentInfo {
     { title: tr('properties_widget.msg'), key: 'msg' },
   ]
 
-  trackers = []
+  trackers: any[] = []
 
   async getTracker() {
     this.trackers = await api.getTorrentTracker(this.hash);

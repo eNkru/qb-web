@@ -1,5 +1,8 @@
+const iconModules = import.meta.glob('./assets/site_icons/*.png', { eager: true, import: 'default' }) as Record<string, string>;
+
 function getSiteIcon(name: string): string {
-  return require(`@/assets/site_icons/${name}.png`);
+  const key = `./assets/site_icons/${name}.png`;
+  return iconModules[key] || '';
 }
 
 export interface SiteInfo {

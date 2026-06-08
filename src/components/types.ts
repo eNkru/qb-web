@@ -1,6 +1,7 @@
 export interface Group {
   title: string;
   icon: string;
+  'icon-alt'?: string;
   children: Child[];
   model: boolean | null;
   select: string;

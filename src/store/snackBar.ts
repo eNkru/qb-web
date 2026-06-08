@@ -1,25 +1,23 @@
+import { defineStore } from 'pinia';
 import { cloneDeep, isString } from 'lodash';
-import { Module } from 'vuex';
-import { SnackBarState } from './types';
+import { SnackBarState, SnackBarConfig } from './types';
 
-export const snackBarStore: Module<SnackBarState, any> = {
-  state() {
-    return {
-      config: null,
-    };
-  },
-  mutations: {
-    showSnackBar(state, payload) {
+export const useSnackBarStore = defineStore('snackBar', {
+  state: (): SnackBarState => ({
+    config: null,
+  }),
+  actions: {
+    showSnackBar(payload: string | SnackBarConfig) {
       if (isString(payload)) {
-        state.config = {
+        this.config = {
           text: payload,
         };
       } else {
-        state.config = cloneDeep(payload);
+        this.config = cloneDeep(payload);
       }
     },
-    closeSnackBar(state) {
-      state.config = null;
+    closeSnackBar() {
+      this.config = null;
     },
   },
-};
+});

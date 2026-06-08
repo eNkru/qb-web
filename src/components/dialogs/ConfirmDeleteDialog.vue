@@ -56,6 +56,7 @@
 
 <script lang="ts">
 import { Vue, Component, Emit, Prop, toNative } from 'vue-facing-decorator';
+import { useDisplay } from 'vuetify';
 
 import api from '@/Api';
 import { findSameNamedTorrents } from '@/utils';
@@ -63,6 +64,8 @@ import { Torrent } from '../../types';
 
 @Component
 class ConfirmDeleteDialog extends Vue {
+  private display = useDisplay() as any;
+
   @Prop({ type: Array })
   readonly modelValue!: Torrent[]
 
@@ -90,7 +93,7 @@ class ConfirmDeleteDialog extends Vue {
   }
 
   get phoneLayout() {
-    return this.$vuetify.display.xs;
+    return this.display.xs;
   }
 
   @Emit('update:modelValue')
@@ -122,8 +125,6 @@ export default toNative(ConfirmDeleteDialog)
 </script>
 
 <style lang="scss" scoped>
-@import '~@/assets/styles.scss';
-
 @include dialog-title;
 
 .torrents {

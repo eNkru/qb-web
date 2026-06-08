@@ -5,13 +5,13 @@
   >
     <v-col
       cols="auto"
-      v-if="$slots.header"
+      v-if="($slots as any)?.header"
       class="header"
     >
       <slot name="header" />
     </v-col>
     <v-col>
-      <span v-text="$t('preferences.' + this.$props.i18nKey)" />
+      <span>{{ i18nKey ? $t('preferences.' + i18nKey) : '' }}</span>
     </v-col>
     <v-col>
       <slot />

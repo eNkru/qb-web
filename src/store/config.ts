@@ -1,6 +1,6 @@
+import { defineStore } from 'pinia';
 import { isPlainObject, merge } from 'lodash';
-import { Module } from 'vuex';
-import { ConfigState, ConfigPayload } from './types';
+import { ConfigPayload } from './types';
 
 const configKey = 'qb-config';
 
@@ -57,27 +57,25 @@ export function loadConfig(): Partial<Config> {
   return JSON.parse(tmp);
 }
 
-export const configStore: Module<ConfigState, any> = {
-  state() {
-    return {
-      userConfig: loadConfig(),
-    };
-  },
-  mutations: {
-    updateConfig(state, payload: ConfigPayload) {
-      const { key, value } = payload;
-      if (isPlainObject(value)) {
-        state.userConfig[key] = merge({}, state.userConfig[key], value);
-      } else {
-        state.userConfig[key] = value;
-      }
-
-      saveConfig(state.userConfig);
-    },
-  },
+export const useConfigStore = defineStore('config', {
+  state: () => ({
+    userConfig: loadConfig() as any,
+  }),
   getters: {
     config(state) {
       return merge({}, defaultConfig, state.userConfig);
     },
   },
-};
+  actions: {
+    updateConfig(payload: ConfigPayload) {
+      const { key, value } = payload;
+      if (isPlainObject(value)) {
+        this.userConfig[key] = merge({}, this.userConfig[key], value);
+      } else {
+        this.userConfig[key] = value;
+      }
+
+      saveConfig(this.userConfig);
+    },
+  },
+});

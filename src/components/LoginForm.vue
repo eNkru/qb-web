@@ -147,8 +147,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '~@/assets/styles.scss';
-
 .login-card {
   border-radius: 12px;
   overflow: hidden;

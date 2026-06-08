@@ -1,4 +1,4 @@
-let buildInfo = process.env.GIT_TAG
+let buildInfo = (import.meta.env.VITE_GIT_TAG as string | undefined) ?? 'dev'
 
 if (!buildInfo) {
   buildInfo = 'dev'

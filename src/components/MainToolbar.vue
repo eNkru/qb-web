@@ -1,7 +1,7 @@
 <template>
   <v-app-bar
-    clipped-left
     app
+    elevation="0"
     class="app-bar pl-2"
     :class="{'phone-layout': phoneLayout}"
   >
@@ -12,7 +12,7 @@
     >
       <img
         class="icon"
-        src="img/icons/favicon-192x192.png"
+        src="/img/icons/favicon-192x192.png"
       >
       <span class="title hidden-sm-and-down ml-3 mr-5">
         qBittorrent Web UI
@@ -38,9 +38,12 @@
 <script lang="ts">
 import { throttle } from 'lodash';
 import { Vue, Component, Prop, Emit, Watch, toNative } from 'vue-facing-decorator';
+import { useDisplay } from 'vuetify';
 
 @Component
 class MainToolbar extends Vue {
+  display = useDisplay() as any;
+
   @Prop({ type: Boolean })
   readonly modelValue!: boolean
 
@@ -56,7 +59,7 @@ class MainToolbar extends Vue {
   }
 
   get phoneLayout() {
-    return this.$vuetify.display.smAndDown;
+    return this.display.smAndDown;
   }
 
   get searchBarExpanded() {

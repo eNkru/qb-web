@@ -1,6 +1,7 @@
 <template>
   <v-dialog
-    v-model="searchEngineState.isPluginManagerOpen"
+    :model-value="isPluginManagerOpen"
+    @update:model-value="onDialogUpdate"
     max-width="20rem"
     scrollable
   >
@@ -8,7 +9,7 @@
       <v-card-title> <v-icon>mdi-toy-brick</v-icon> {{ $t("plugin_manager") }} </v-card-title>
       <v-card-text>
         <v-switch
-          v-for="(plugin, key) in searchEngineState.searchPlugins"
+          v-for="(plugin, key) in searchPlugins"
           :key="key"
           :model-value="plugin.enabled"
           :label="plugin.fullName"
@@ -28,14 +29,27 @@
 </template>
 
 <script lang="ts">
-import { SearchEnginePage } from "@/store/types";
 import { SearchPlugin } from "@/types";
 import { Vue, Component } from "vue-facing-decorator";
 
 @Component
 export default class PluginsManager extends Vue {
-  get searchEngineState(): SearchEnginePage {
-    return this.$store.state.searchEngine;
+  get searchPlugins() {
+    return this.$store.state.searchPlugins;
+  }
+
+  get isPluginManagerOpen(): boolean {
+    return this.$store.state.isPluginManagerOpen ?? false;
+  }
+
+  closePluginManager() {
+    this.$store.commit('closePluginManager');
+  }
+
+  onDialogUpdate(val: boolean) {
+    if (!val) {
+      this.closePluginManager();
+    }
   }
 
   togglePluginAvailabilityAction(plugin: SearchPlugin) {

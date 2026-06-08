@@ -1,7 +1,7 @@
 <template>
   <div
     class="torrents"
-    :class="{'phone-layout': $vuetify.display.xs}"
+    :class="{'phone-layout': isXs}"
   >
     <div class="toolbar-wrapper">
       <div class="toolbar">
@@ -119,7 +119,7 @@
         >
           <v-icon>mdi-chevron-double-down</v-icon>
         </v-btn>
-        <template v-if="!$vuetify.display.xs">
+        <template v-if="!isXs">
           <div class="toolbar-divider" />
           <v-btn
             icon
@@ -160,9 +160,7 @@
           </v-btn>
         </template>
         <div class="toolbar-divider" />
-        <v-menu
-          :close-on-content-click="false"
-        >
+        <v-menu>
           <template #activator="{ props: menuProps }">
             <v-btn
               icon
@@ -287,7 +285,7 @@
               <v-progress-linear
                 :model-value="item.progress * 100"
                 :color="stateColor(item.state, true, item.seq_dl)"
-                :bg-color="$vuetify.theme.current.dark ? 'grey-darken-3' : 'grey-lighten-3'"
+                :bg-color="isDark ? 'grey-darken-3' : 'grey-lighten-3'"
                 bg-opacity="0.5"
                 height="22"
                 rounded
@@ -359,6 +357,7 @@
 
 <script lang="ts">
 import { Vue, Component, Watch, toNative } from 'vue-facing-decorator'
+import { useDisplay, useTheme } from 'vuetify'
 import { intersection, uniqBy } from 'lodash'
 
 import { tr } from '@/locale'
@@ -471,6 +470,11 @@ function getStateInfo(state: string) {
 
 })
 class Torrents extends Vue {
+  display = useDisplay() as any;
+  theme = useTheme() as any;
+
+  get isXs() { return this.display.xs; }
+  get isDark() { return this.theme.global.current.dark; }
   readonly allColumns = [
     { title: tr('name'), key: 'name' },
     { title: tr('sites'), key: 'tracker' },
@@ -639,10 +643,10 @@ class Torrents extends Vue {
     return `mdi-${item.icon}`;
   }
 
-  stateColor(state: string, isProgress?: boolean, isSeqDL?: boolean) {
+  stateColor(state: string, isProgress?: boolean, isSeqDL?: boolean): string | undefined {
     const item = getStateInfo(state);
     if (!isProgress) {
-      return item.color;
+      return item.color ?? undefined;
     }
     if (isSeqDL) {
       return '#e33371';
@@ -682,7 +686,7 @@ class Torrents extends Vue {
   }
 
   getProgressColorClass(progress: number) {
-    const color = (progress >= 0.5 || (this.$vuetify.theme as any).global.current.dark)
+    const color = (progress >= 0.5 || this.isDark)
       ? 'text-white' : 'text-black';
     return color;
   }
@@ -866,8 +870,6 @@ export default toNative(Torrents)
 </script>
 
 <style lang="scss" scoped>
-@import '~@/assets/styles.scss';
-
 .toolbar {
   display: flex;
   align-items: center;

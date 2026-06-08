@@ -24,7 +24,7 @@ import { useMutations, useState } from '@/store';
 export default {
   setup() {
     const mutations = useMutations(['closeSnackBar']);
-    const { config } = useState(['config'], 'snackBar');
+    const { snackBarConfig: config } = useState(['snackBarConfig']);
 
     const snackbarVisible = computed({
       get: () => !!config.value,

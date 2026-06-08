@@ -1,5 +1,4 @@
 import 'vue';
-import type { Store } from 'vuex';
 
 declare module '*.vue' {
   import type { DefineComponent } from 'vue';
@@ -9,7 +8,7 @@ declare module '*.vue' {
 
 declare module 'vue' {
   interface ComponentCustomProperties {
-    $store: Store<any>;
+    $store: any;
     $t: (key: string, ...args: any[]) => string;
     $formatSize: (value: number) => string;
     $size: (value: number) => string;
@@ -19,6 +18,5 @@ declare module 'vue' {
     $progress: (progress: number) => string;
     $parseDate: (str: string) => number | null;
     $formatNetworkSpeed: (speed: number) => string | null;
-    $vuetify: any;
   }
 }

@@ -9,17 +9,17 @@
       <v-switch
         :model-value="preferences.create_subfolder_enabled"
         :label="$t('preferences.create_subfolder_enabled')"
-        @change="changeSettings('create_subfolder_enabled', !preferences.create_subfolder_enabled)"
+        @change="changeSettings('create_subfolder_enabled', !(preferences.create_subfolder_enabled ?? false))"
       />
       <v-switch
         :model-value="preferences.start_paused_enabled"
         :label="$t('preferences.start_paused_enabled')"
-        @change="changeSettings('start_paused_enabled', !preferences.start_paused_enabled)"
+        @change="changeSettings('start_paused_enabled', !(preferences.start_paused_enabled ?? false))"
       />
       <v-switch
         :model-value="preferences.auto_delete_mode"
         :label="$t('preferences.auto_delete_mode')"
-        @change="changeSettings('auto_delete_mode', !preferences.auto_delete_mode)"
+        @change="changeSettings('auto_delete_mode', !(preferences.auto_delete_mode ?? false))"
       />
     </v-container>
     <v-divider />
@@ -30,12 +30,12 @@
       <v-switch
         :model-value="preferences.preallocate_all"
         :label="$t('preferences.preallocate_all')"
-        @change="changeSettings('preallocate_all', !preferences.preallocate_all)"
+        @change="changeSettings('preallocate_all', !(preferences.preallocate_all ?? false))"
       />
       <v-switch
         :model-value="preferences.incomplete_files_ext"
         :label="$t('preferences.incomplete_files_ext')"
-        @change="changeSettings('incomplete_files_ext', !preferences.incomplete_files_ext)"
+        @change="changeSettings('incomplete_files_ext', !(preferences.incomplete_files_ext ?? false))"
       />
     </v-container>
     <h4>{{ $t('preferences.saving_management') }}</h4>
@@ -49,7 +49,7 @@
           variant="outlined"
           density="compact"
           :items="torrentMode"
-          :model-value="preferences.auto_tmm_enabled ? torrentMode[0] : torrentMode[1]"
+          :model-value="(preferences.auto_tmm_enabled ?? false) ? torrentMode[0] : torrentMode[1]"
           @update:model-value="changeSettings('auto_tmm_enabled', $event == torrentMode[0])"
         />
       </preference-row>
@@ -58,7 +58,7 @@
           variant="outlined"
           density="compact"
           :items="torrentAction"
-          :model-value="preferences.category_changed_tmm_enabled ? torrentAction[1] : torrentAction[0]"
+          :model-value="(preferences.category_changed_tmm_enabled ?? false) ? torrentAction[1] : torrentAction[0]"
           @update:model-value="changeSettings('torrent_changed_tmm_enabled', $event == torrentAction[1])"
         />
       </preference-row>
@@ -67,7 +67,7 @@
           variant="outlined"
           density="compact"
           :items="torrentAction"
-          :model-value="preferences.category_changed_tmm_enabled ? torrentAction[1] : torrentAction[0]"
+          :model-value="(preferences.category_changed_tmm_enabled ?? false) ? torrentAction[1] : torrentAction[0]"
           @update:model-value="changeSettings('save_path_changed_tmm_enabled', $event == torrentAction[1])"
         />
       </preference-row>
@@ -76,7 +76,7 @@
           variant="outlined"
           density="compact"
           :items="torrentAction"
-          :model-value="preferences.category_changed_tmm_enabled ? torrentAction[1] : torrentAction[0]"
+          :model-value="(preferences.category_changed_tmm_enabled ?? false) ? torrentAction[1] : torrentAction[0]"
           @update:model-value="changeSettings('category_changed_tmm_enabled', $event == torrentAction[1])"
         />
       </preference-row>
@@ -154,15 +154,13 @@ export default class DownloadSettings extends Vue {
     return this.$store.dispatch('updatePreferencesRequest', data);
   }
 
-  changeSettings(property: string, value: string | boolean) {
+  changeSettings(property: string, value: any) {
     this.updatePreferencesRequest({[property]: value})
   }
 }
 </script>
 
 <style lang="scss" scoped>
-@import "~@/assets/styles.scss";
-
 h4 {
   margin-top: 16px;
   margin-bottom: 4px;

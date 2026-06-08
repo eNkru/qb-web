@@ -4,7 +4,7 @@
     v-model="value"
   >
     <v-card v-if="!!config">
-      <v-card-title v-text="config.title" />
+      <v-card-title>{{ config.title }}</v-card-title>
       <v-card-text
         class="content"
         :class="{'is-input': isInput}"
@@ -68,9 +68,9 @@ const DefaultDialogWidth = '25%'
 
 export default {
   setup() {
-    const display = useDisplay();
+    const display = useDisplay() as any;
     const mutations = useMutations(['closeDialog']);
-    const { config: userConfig } = useState(['config'], 'dialog');
+    const { dialogConfig: userConfig } = useState(['dialogConfig']);
     const config = computed(() => {
       if (!userConfig.value) {
         return null;
@@ -78,7 +78,7 @@ export default {
       const o = Object.assign({dialog: {}}, userConfig.value) as DialogConfig;
 
       if (!('width' in o.dialog)) {
-        o.dialog.width = display.smAndDown.value ? null : DefaultDialogWidth
+        o.dialog.width = display.smAndDown ? null : DefaultDialogWidth
       }
 
       return o

@@ -40,9 +40,8 @@
     />
     <v-footer
       app
-      class="elevation-4"
       padless
-      v-if="$vuetify.display.smAndUp"
+      v-if="!display.xs"
     >
       <app-footer />
     </v-footer>
@@ -61,6 +60,7 @@
 
 <script lang="ts">
 import { Vue, Component, Watch, toNative } from 'vue-facing-decorator';
+import { useDisplay, useTheme } from 'vuetify';
 import { registerProtocolHandler, checkDownloadUrl } from './protocolHandler';
 
 import GlobalDialog from './components/GlobalDialog.vue';
@@ -107,10 +107,14 @@ let appWrapEl: HTMLElement;
   },
 })
 class App extends Vue {
+  display = useDisplay() as any;
+  theme = useTheme() as any;
+
   drawer = true
   drawerOptions = {
     showLogs: false,
     showRss: false,
+    showSearch: false,
     showSettings: false,
   }
   contextMenu = {
@@ -119,7 +123,7 @@ class App extends Vue {
     y: 0,
     savePath: '',
   }
-  task = 0
+  task: ReturnType<typeof setTimeout> | 0 = 0
   mql?: MediaQueryList
 
   get mainData(): MainData {
@@ -152,7 +156,7 @@ class App extends Vue {
   }
 
   get phoneLayout() {
-    return this.$vuetify.display.xs;
+    return this.display.xs;
   }
 
   initProtocolHandler() {
@@ -260,8 +264,7 @@ class App extends Vue {
     target: 'light' | 'dark',
     colors: Record<string, string>,
   ) {
-    const theme = this.$vuetify.theme as any;
-    const themeColors = theme.themes[target].colors;
+    const themeColors = this.theme.themes[target].colors;
     Object.keys(colors).forEach(key => {
       themeColors[key] = colors[key];
     });
@@ -283,8 +286,6 @@ class App extends Vue {
 
   @Watch('config.themeMode', {immediate: true})
   onThemeMode(mode: 'light' | 'dark' | 'grey' | 'luxury' | 'modern-dark' | 'crypto' | 'cyberpunk' | 'natural' | 'technology' | null) {
-    const theme = this.$vuetify.theme as any;
-
     if (mode != null) {
       if (this.mql) {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -293,7 +294,7 @@ class App extends Vue {
       }
 
       if (mode === 'grey' || mode === 'luxury' || mode === 'natural' || mode === 'technology') {
-        theme.change('light');
+        this.theme.global.name = 'light';
 
         if (mode === 'grey') {
           this.setThemeColors('light', {
@@ -331,7 +332,7 @@ class App extends Vue {
           }
         });
       } else if (mode === 'modern-dark') {
-        theme.change('dark');
+        this.theme.global.name = 'dark';
         this.setThemeColors('dark', {
           primary: '#5E6AD2', secondary: '#8A8F98', accent: '#5E6AD2',
           error: '#FF5252', info: '#2196F3', success: '#4CAF50', warning: '#FFC107',
@@ -343,7 +344,7 @@ class App extends Vue {
           if (app) app.classList.add('modern-dark-theme');
         });
       } else if (mode === 'crypto') {
-        theme.change('dark');
+        this.theme.global.name = 'dark';
         this.setThemeColors('dark', {
           primary: '#F7931A', secondary: '#94A3B8', accent: '#F7931A',
           error: '#FF5252', info: '#2196F3', success: '#FFD600', warning: '#EA580C',
@@ -355,7 +356,7 @@ class App extends Vue {
           if (app) app.classList.add('crypto-theme');
         });
       } else if (mode === 'cyberpunk') {
-        theme.change('dark');
+        this.theme.global.name = 'dark';
         this.setThemeColors('dark', {
           primary: '#00ff88', secondary: '#6b7280', accent: '#00ff88',
           error: '#ff3366', info: '#00d4ff', success: '#00ff88', warning: '#ff00ff',
@@ -376,16 +377,16 @@ class App extends Vue {
           this.removeThemeClasses();
         });
 
-        theme.change((mode === 'dark') ? 'dark' : 'light');
+        this.theme.global.name = (mode === 'dark') ? 'dark' : 'light';
       }
       return;
     }
 
     this.mql = window.matchMedia('(prefers-color-scheme: dark)');
     this.mql.addEventListener('change', (e: MediaQueryListEvent) => {
-      theme.change(e.matches ? 'dark' : 'light');
+      this.theme.global.name = e.matches ? 'dark' : 'light';
     });
-    theme.change(this.mql.matches ? 'dark' : 'light');
+    this.theme.global.name = this.mql.matches ? 'dark' : 'light';
   }
 
   @Watch('config.fontScale', {immediate: true})
@@ -414,7 +415,7 @@ export default toNative(App)
 
 <style lang="scss" scoped>
 :deep(.v-footer) {
-  min-height: 36px;
+  padding: 0 !important;
 }
 </style>
 

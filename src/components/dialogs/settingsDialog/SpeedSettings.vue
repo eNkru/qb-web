@@ -13,18 +13,16 @@
             <v-text-field
               variant="outlined"
               density="compact"
-              @change="changeSettings('dl_limit', convertToBytes($event))"
-              :label="$t('preferences.dl_limit')"
-              :placeholder="convertToKB(preferences.dl_limit)"
-              lazy
+              @change="changeSettings('dl_limit', convertToBytes(Number($event) || 0))"
+              :label="($t as any)('preferences.dl_limit')"
+              :placeholder="convertToKB(Number(preferences.dl_limit) || 0)"
             />
             <v-text-field
               variant="outlined"
               density="compact"
-              @change="changeSettings('up_limit', convertToBytes($event))"
-              :label="$t('preferences.up_limit')"
-              :placeholder="convertToKB(preferences.up_limit)"
-              lazy
+              @change="changeSettings('up_limit', convertToBytes(Number($event) || 0))"
+              :label="($t as any)('preferences.up_limit')"
+              :placeholder="convertToKB(Number(preferences.up_limit) || 0)"
             />
           </v-col>
           <v-col
@@ -36,19 +34,17 @@
               variant="outlined"
               density="compact"
               type="number"
-              @change="changeSettings('alt_dl_limit', convertToBytes($event))"
-              :label="$t('preferences.dl_limit')"
-              :placeholder="convertToKB(preferences.alt_dl_limit)"
-              lazy
+              @change="changeSettings('alt_dl_limit', convertToBytes(Number($event) || 0))"
+              :label="($t as any)('preferences.dl_limit')"
+              :placeholder="convertToKB(Number(preferences.alt_dl_limit) || 0)"
             />
             <v-text-field
               variant="outlined"
               density="compact"
               type="number"
-              @change="changeSettings('alt_up_limit', convertToBytes($event))"
-              :label="$t('preferences.up_limit')"
-              :placeholder="convertToKB(preferences.alt_up_limit)"
-              lazy
+              @change="changeSettings('alt_up_limit', convertToBytes(Number($event) || 0))"
+              :label="($t as any)('preferences.up_limit')"
+              :placeholder="convertToKB(Number(preferences.alt_up_limit) || 0)"
             />
             <v-checkbox
               :label="$t('preferences.alternate_schedule_enable_time')"
@@ -65,7 +61,7 @@
             cols="auto"
           >
             <v-time-picker
-              :model-value="preferences.schedule_from_hour + ':' + preferences.schedule_from_min"
+              :model-value="(preferences.schedule_from_hour ?? '') + ':' + (preferences.schedule_from_min ?? '')"
               color="green-lighten-1"
               format="24hr"
               @update:model-value="updateSchedulerFrom($event)"
@@ -75,7 +71,7 @@
             cols="auto"
           >
             <v-time-picker
-              :model-value="preferences.schedule_to_hour + ':' + preferences.schedule_to_min"
+              :model-value="(preferences.schedule_to_hour ?? '') + ':' + (preferences.schedule_to_min ?? '')"
               color="green-lighten-1"
               format="24hr"
               @update:model-value="updateSchedulerTo($event)"
@@ -90,18 +86,15 @@
     >
       <v-switch
         :model-value="preferences.limit_utp_rate"
-        :label="$t('preferences.limit_utp_rate')"
-        @change="changeSettings('limit_utp_rate', !preferences.limit_utp_rate)"
+        :label="$t('preferences.limit_utp_rate')"              @change="changeSettings('limit_utp_rate', !(preferences.limit_utp_rate ?? false))"
       />
       <v-switch
         :model-value="preferences.limit_tcp_overhead"
-        :label="$t('preferences.limit_tcp_overhead')"
-        @change="changeSettings('limit_tcp_overhead', !preferences.limit_tcp_overhead)"
+        :label="$t('preferences.limit_tcp_overhead')"              @change="changeSettings('limit_tcp_overhead', !(preferences.limit_tcp_overhead ?? false))"
       />
       <v-switch
         :model-value="preferences.limit_lan_peers"
-        :label="$t('preferences.limit_lan_peers')"
-        @change="changeSettings('limit_lan_peers', !preferences.limit_lan_peers)"
+        :label="$t('preferences.limit_lan_peers')"              @change="changeSettings('limit_lan_peers', !(preferences.limit_lan_peers ?? false))"
       />
     </v-container>
   </v-container>
@@ -131,16 +124,18 @@ export default class SpeedSettings extends Vue {
     return value * 1024
   }
 
-  changeSettings(property: string, value: string | boolean | number) {
+  changeSettings(property: string, value: any) {
     this.updatePreferencesRequest({[property]: value})
   }
 
-  updateSchedulerFrom(event: string) {
+  updateSchedulerFrom(event: string | null) {
+    if (!event) return
     const strings = event.split(':')
     this.updatePreferencesRequest({'schedule_from_hour': strings[0], 'schedule_from_min': strings[1]})
   }
 
-  updateSchedulerTo(event: string) {
+  updateSchedulerTo(event: string | null) {
+    if (!event) return
     const strings = event.split(':')
     this.updatePreferencesRequest({'schedule_to_hour': strings[0], 'schedule_to_min': strings[1]})
   }
@@ -148,8 +143,6 @@ export default class SpeedSettings extends Vue {
 </script>
 
 <style lang="scss" scoped>
-@import "~@/assets/styles.scss";
-
 :deep(.v-switch) {
   margin: 0
 }

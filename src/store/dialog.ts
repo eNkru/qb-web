@@ -1,30 +1,26 @@
-import { merge, cloneDeep } from 'lodash'
-import { Module } from 'vuex';
-import { DialogState } from './types';
+import { defineStore } from 'pinia';
+import { merge, cloneDeep } from 'lodash';
+import { DialogState, DialogConfig } from './types';
 
-export const dialogStore: Module<DialogState, any> = {
-  state() {
-    return {
-      config: null,
-    };
-  },
-  mutations: {
-    showDialog(state, payload) {
-      state.config = cloneDeep(payload);
-    },
-    closeDialog(state) {
-      state.config = null;
-    },
-  },
+export const useDialogStore = defineStore('dialog', {
+  state: (): DialogState => ({
+    config: null,
+  }),
   actions: {
-    asyncShowDialog({ commit }, payload) {
+    showDialog(payload: DialogConfig) {
+      this.config = cloneDeep(payload);
+    },
+    closeDialog() {
+      this.config = null;
+    },
+    async asyncShowDialog(payload: DialogConfig): Promise<string | undefined> {
       return new Promise((resolve) => {
         const options = merge({}, payload, {
           callback: resolve,
-        })
+        });
 
-        commit('showDialog', options);
-      })
+        this.showDialog(options);
+      });
     },
   },
-};
+});

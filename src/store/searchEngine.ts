@@ -1,80 +1,76 @@
-import { Module } from "vuex";
-import { SearchPlugin } from "@/types";
-import { SearchEnginePage } from "./types";
-import api from "@/Api";
+import { defineStore } from 'pinia';
+import { SearchPlugin } from '@/types';
+import api from '@/Api';
 
-export default {
-  state: {
-    searchPlugins: [],
+export const useSearchEngineStore = defineStore('searchEngine', {
+  state: () => ({
+    searchPlugins: [] as SearchPlugin[] | undefined | null,
     isPluginManagerOpen: false,
-  },
-  mutations: {
-    setSearchPlugins(state, plugins: SearchPlugin[] | undefined | null) {
-      state.searchPlugins = plugins;
-    },
-    openPluginManager(state) {
-      state.isPluginManagerOpen = true;
-    },
-    closePluginManager(state) {
-      state.isPluginManagerOpen = false;
-    },
-  },
+  }),
   getters: {
     allSearchPlugins(state): SearchPlugin[] | undefined | null {
       return state.searchPlugins;
     },
   },
   actions: {
-    fetchSearchPlugins({ dispatch }) {
-      // semantic helper
-      dispatch("getSearchPluginsRequest");
+    setSearchPlugins(plugins: SearchPlugin[] | undefined | null) {
+      this.searchPlugins = plugins;
     },
-    async getSearchPluginsRequest({ dispatch }) {
+    openPluginManager() {
+      this.isPluginManagerOpen = true;
+    },
+    closePluginManager() {
+      this.isPluginManagerOpen = false;
+    },
+    async fetchSearchPlugins() {
+      await this.getSearchPluginsRequest();
+    },
+    async getSearchPluginsRequest() {
       try {
         const searchPlugins = await api.getSearchPlugins();
 
-        dispatch("getSearchPluginRequestSuccess", searchPlugins);
+        this.getSearchPluginRequestSuccess(searchPlugins);
       } catch {
-        dispatch("getSearchPluginsRequestFailure");
+        this.getSearchPluginsRequestFailure();
       }
     },
-    getSearchPluginRequestSuccess({ commit }, searchPlugins) {
-      commit("setSearchPlugins", undefined);
+    getSearchPluginRequestSuccess(searchPlugins: SearchPlugin[]) {
+      this.setSearchPlugins(undefined);
 
-      commit("setSearchPlugins", searchPlugins);
+      this.setSearchPlugins(searchPlugins);
     },
-    getSearchPluginRequestFailure({ commit }) {
-      commit("setSearchPlugins", null);
+    getSearchPluginsRequestFailure() {
+      this.setSearchPlugins(null);
     },
-    togglePluginAvailability({ dispatch }, plugin) {
-      dispatch("togglePluginEnableRequest", plugin);
+    async togglePluginAvailability(plugin: SearchPlugin) {
+      await this.togglePluginEnableRequest(plugin);
     },
-    async togglePluginEnableRequest({ dispatch }, plugin: SearchPlugin) {
+    async togglePluginEnableRequest(plugin: SearchPlugin) {
       try {
-        await api.enablePlugin(plugin, !plugin.enabled); // switch plugin enable state
+        await api.enablePlugin(plugin, !plugin.enabled);
 
-        dispatch("enablePluginRequestSuccess", plugin);
+        this.enablePluginRequestSuccess();
       } catch {
         // Do nothing
       }
     },
-    enablePluginRequestSuccess({ dispatch }) {
-      dispatch('fetchSearchPlugins'); // refresh the plugins
+    enablePluginRequestSuccess() {
+      this.fetchSearchPlugins();
     },
-    async updatePluginsRequest({ dispatch }) {
+    async updatePluginsRequest() {
       try {
         await api.updateSearchPlugins();
 
-        dispatch("updatePluginsRequestSuccess");
+        this.updatePluginsRequestSuccess();
       } catch {
-        dispatch("updatePluginsRequestFailure");
+        this.updatePluginsRequestFailure();
       }
     },
-    async updatePluginsRequestSuccess({ dispatch }) {
-      await dispatch('getSearchPluginsRequest');
+    async updatePluginsRequestSuccess() {
+      await this.getSearchPluginsRequest();
     },
     updatePluginsRequestFailure() {
       // Do nothing
     },
   },
-} as Module<SearchEnginePage, any>;
+});
