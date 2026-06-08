@@ -31,7 +31,7 @@ jobs:
       - name: Prepare dist
         run: |
           # see https://github.com/qbittorrent/qBittorrent/pull/10485, fixed in qb v4.2.0
-          cp dist/{index,login}.html .
+          cp dist/index.html dist/login.html
 
       - name: Create release zip
         run: |

@@ -25,7 +25,7 @@ jobs:
         run: |
           yarn run build
           # see https://github.com/qbittorrent/qBittorrent/pull/10485, fixed in qb v4.2.0
-          cp dist/{index,login}.html .
+          cp dist/index.html dist/login.html
           cp INSTALL.md dist
           zip -r $RELEASE_FILE dist
 
