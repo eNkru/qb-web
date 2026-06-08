@@ -1,32 +1,24 @@
-import Vuex from 'vuex';
-import { configStore } from '@/store/config';
+import { createPinia, setActivePinia } from 'pinia';
+import { useConfigStore } from '@/store/config';
 
-const store = new Vuex.Store({
-  modules: {
-    config: configStore,
-  },
-});
+let store: ReturnType<typeof useConfigStore>;
 
 beforeEach(() => {
-  store.replaceState({
-    config: {
-      userConfig: {},
-    },
-  });
+  setActivePinia(createPinia());
+  store = useConfigStore();
+  // Reset userConfig after store creation
+  store.$patch({ userConfig: {} });
 });
 
 test('load config', () => {
-  const spyGet = jest.spyOn(Object.getPrototypeOf(localStorage), 'getItem');
+  const spyGet = vi.spyOn(Object.getPrototypeOf(localStorage), 'getItem');
   spyGet.mockReturnValue('{"foo": "bar"}');
 
-  // eslint-disable-next-line no-shadow
-  const store = new Vuex.Store({
-    modules: {
-      config: configStore,
-    },
-  });
+  // Re-create store to trigger loadConfig from localStorage
+  setActivePinia(createPinia());
+  const newStore = useConfigStore();
 
-  expect(store.getters.config).toMatchObject({
+  expect(newStore.config).toMatchObject({
     foo: 'bar',
   });
 
@@ -34,11 +26,11 @@ test('load config', () => {
 });
 
 test('config getter', () => {
-  expect(store.getters.config).not.toEqual({});
+  expect(store.config).not.toEqual({});
 });
 
 describe('update config', () => {
-  const spySet = jest.spyOn(Object.getPrototypeOf(localStorage), 'setItem');
+  const spySet = vi.spyOn(Object.getPrototypeOf(localStorage), 'setItem');
 
   beforeEach(() => {
     spySet.mockClear();
@@ -52,35 +44,35 @@ describe('update config', () => {
       foo1: 'bar1',
     };
 
-    store.commit('updateConfig', {
+    store.updateConfig({
       key: 'obj',
       value: value1,
     });
 
-    expect(store.state.config.userConfig).toEqual({
+    expect(store.userConfig).toEqual({
       obj: value1,
     });
 
     const value2 = {
       foo2: 'bar2',
     };
-    store.commit('updateConfig', {
+    store.updateConfig({
       key: 'obj',
       value: value2,
     });
 
-    expect(store.state.config.userConfig).toEqual({
+    expect(store.userConfig).toEqual({
       obj: Object.assign({}, value1, value2),
     });
   });
 
   test('update plain type', () => {
-    store.commit('updateConfig', {
+    store.updateConfig({
       key: 'foo',
       value: 'bar',
     });
 
-    expect(store.getters.config).toMatchObject({
+    expect(store.config).toMatchObject({
       foo: 'bar',
     });
     expect(spySet).toBeCalled();

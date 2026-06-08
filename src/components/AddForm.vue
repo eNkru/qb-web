@@ -283,7 +283,7 @@ import { useDisplay } from 'vuetify';
 import api from '../Api';
 import { Preferences, Category } from '../types';
 
-/* eslint-disable camelcase */
+ 
 const defaultParams = {
   urls: '',
   category: '',
@@ -295,7 +295,7 @@ const defaultParams = {
   firstLastPiecePrio: false,
   autoTMM: false,
 };
-/* eslint-enable camelcase */
+ 
 
 @Component
 class AddForm extends Vue {
@@ -361,7 +361,7 @@ class AddForm extends Vue {
 
   created() {
     defaultParams.paused = this.prefs.start_paused_enabled;
-    /* eslint-disable-next-line camelcase */
+     
     defaultParams.root_path = this.prefs.create_subfolder_enabled;
     defaultParams.savepath = this.prefs.save_path;
     defaultParams.autoTMM = this.prefs.auto_tmm_enabled;

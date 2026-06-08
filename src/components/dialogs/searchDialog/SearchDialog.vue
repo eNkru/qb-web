@@ -22,8 +22,8 @@
         <v-card-text>
           <SearchDialogForm
             :loading="loading"
-            @triggerSearch="triggerSearch"
-            @stopSearch="stopSearch"
+            @trigger-search="triggerSearch"
+            @stop-search="stopSearch"
           />
 
           <v-data-table

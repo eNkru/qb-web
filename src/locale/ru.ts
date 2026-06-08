@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+ 
 export default {
   lang: 'Русский',
   auto: 'Автоматически',

@@ -153,8 +153,7 @@
         v-if="!phoneLayout"
       />
       <div class="icon-label">
-        <v-icon            :color="(info?.dl_info_speed ?? 0) > 0 ? 'success' : undefined"
-        >
+        <v-icon :color="(info?.dl_info_speed ?? 0) > 0 ? 'success' : undefined">
           mdi-download
         </v-icon>
         <span>
@@ -173,8 +172,7 @@
         v-if="!phoneLayout"
       />
       <div class="icon-label">
-        <v-icon            :color="(info?.up_info_speed ?? 0) > 0 ? 'warning' : undefined"
-        >
+        <v-icon :color="(info?.up_info_speed ?? 0) > 0 ? 'warning' : undefined">
           mdi-upload
         </v-icon>
         <span>

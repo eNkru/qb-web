@@ -14,10 +14,9 @@
           width="2"
           indeterminate
         />
-        <v-icon
-          v-else
-          v-text="getRowIcon(row)"
-        />
+        <v-icon v-else>
+          {{ getRowIcon(row) }}
+        </v-icon>
       </template>
       <template #append="row">
         <span>
@@ -45,7 +44,7 @@ enum EFilePriority {
   maximal = 7
 }
 
-/* eslint-disable camelcase */
+ 
 interface File {
   id: number;
   name: string;
@@ -56,7 +55,7 @@ interface File {
   piece_range: Array<number>;
   availability: number;
 }
-/* eslint-disable camelcase */
+ 
 
 interface TreeItem {
   id: number;

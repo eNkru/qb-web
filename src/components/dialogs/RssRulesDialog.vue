@@ -68,7 +68,9 @@
               <v-form class="rule-form">
                 <p
                   class="form-title"
-                >{{ $t('dialog.rss_rule.rule_settings') }}</p>
+                >
+                  {{ $t('dialog.rss_rule.rule_settings') }}
+                </p>
 
                 <v-checkbox
                   density="compact"
@@ -127,7 +129,9 @@
 
               <p
                 class="feeds-title"
-              >{{ $t('dialog.rss_rule.apply_to_feeds') }}</p>
+              >
+                {{ $t('dialog.rss_rule.apply_to_feeds') }}
+              </p>
               <v-list
                 density="compact"
                 v-if="selectedRule.enabled"

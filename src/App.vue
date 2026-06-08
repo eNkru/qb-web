@@ -202,7 +202,7 @@ class App extends Vue {
 
     try {
       await this.getMainData();
-    } catch (e) {
+    } catch {
       this.updateNeedAuth(true);
       return;
     }
@@ -288,7 +288,7 @@ class App extends Vue {
   onThemeMode(mode: 'light' | 'dark' | 'grey' | 'luxury' | 'modern-dark' | 'crypto' | 'cyberpunk' | 'natural' | 'technology' | null) {
     if (mode != null) {
       if (this.mql) {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
+         
         this.mql.removeEventListener('change', () => {});
         this.mql = undefined
       }

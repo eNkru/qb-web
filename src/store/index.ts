@@ -262,6 +262,7 @@ function createVuexCompatStore() {
       case 'updateNeedAuth': return mainStore.updateNeedAuth(payload);
       case 'setQuery': return mainStore.setQuery(payload);
       default:
+        // eslint-disable-next-line no-console
         console.warn(`[store] Unknown commit: ${method}`);
         return;
     }
@@ -284,12 +285,17 @@ function createVuexCompatStore() {
       case 'updatePluginsRequestSuccess': return searchEngineStore.updatePluginsRequestSuccess();
       case 'updatePluginsRequestFailure': return searchEngineStore.updatePluginsRequestFailure();
       default:
+        // eslint-disable-next-line no-console
         console.warn(`[store] Unknown dispatch: ${method}`);
         return;
     }
   }
 
-  return { state, getters, commit, dispatch };
+  function replaceState(newState: RootState) {
+    mainStore.$patch(newState);
+  }
+
+  return { state, getters, commit, dispatch, replaceState };
 }
 
 // Lazily-initialized store proxy — defers Pinia store creation to first access
@@ -298,6 +304,7 @@ const store: any = {
   get getters() { return getCompatStore().getters; },
   commit(method: string, payload?: any) { return getCompatStore().commit(method, payload); },
   dispatch(method: string, payload?: any) { return getCompatStore().dispatch(method, payload); },
+  replaceState(newState: RootState) { return getCompatStore().replaceState(newState); },
 };
 
 export default store;

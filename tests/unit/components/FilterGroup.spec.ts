@@ -1,25 +1,20 @@
-import Vuex from 'vuex';
+import { createPinia, setActivePinia } from 'pinia';
+import { useConfigStore } from '@/store/config';
 import * as types from '@/components/types';
 import { mock } from '../utils';
-import { configStore } from '@/store/config';
 
 // Create a store that properly simulates the config module
 const createStore = () => {
-  const store = new Vuex.Store({
-    modules: {
-      config: configStore,
-    },
-  });
-  // Override the state with our test data
-  store.replaceState({
-    config: {
-      userConfig: {
-        filter: {
-          state: null,
-          category: null,
-          site: null,
-          foo: 'bar',
-        },
+  setActivePinia(createPinia());
+  const store = useConfigStore();
+  // Set up test data
+  store.$patch({
+    userConfig: {
+      filter: {
+        state: null,
+        category: null,
+        site: null,
+        foo: 'bar',
       },
     },
   });
@@ -29,36 +24,35 @@ const createStore = () => {
 // Create a simple mock-based approach since vue-facing-decorator doesn't work well with direct instantiation
 // Instead, we test the component logic by manually creating an object that behaves like the component
 function createComponentInstance(props: { group: types.Group }) {
-  const store = createStore();
-  
+  const piniaStore = createStore();
+
   // Create a plain object that mimics the component's behavior
   const instance = {
     group: props.group,
     model: false as boolean | null,
     selected: null as string | null,
-    $store: store,
-    $t: (key: string) => key,
-    
+    configStore: piniaStore,
+
     // Method copied from FilterGroup component
     select(key: string | null) {
       this.selected = this.selected === key ? null : key;
-      this.$store.commit('updateConfig', {
+      this.configStore.updateConfig({
         key: 'filter',
         value: {
           [this.group.select]: this.selected,
         },
       });
     },
-    
+
     // isFontIcon helper
     isFontIcon(icon: string) {
       return icon.startsWith('mdi-');
     },
   };
-  
+
   // Call created hook logic manually (from FilterGroup.vue created())
   instance.model = instance.group.model;
-  const s = instance.$store.getters.config.filter[instance.group.select];
+  const s = instance.configStore.config.filter[instance.group.select];
   if (instance.group.children.some((child: types.Child) => child.key === s)) {
     instance.selected = s;
   } else {
@@ -67,7 +61,7 @@ function createComponentInstance(props: { group: types.Group }) {
   if (instance.model == null) {
     instance.model = instance.selected != null;
   }
-  
+
   return instance;
 }
 

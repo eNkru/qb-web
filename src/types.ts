@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+ 
 export interface BaseTorrent {
   added_on: number;
   amount_left: number;

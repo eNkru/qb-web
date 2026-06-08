@@ -86,15 +86,18 @@
     >
       <v-switch
         :model-value="preferences.limit_utp_rate"
-        :label="$t('preferences.limit_utp_rate')"              @change="changeSettings('limit_utp_rate', !(preferences.limit_utp_rate ?? false))"
+        :label="$t('preferences.limit_utp_rate')"
+        @change="changeSettings('limit_utp_rate', !(preferences.limit_utp_rate ?? false))"
       />
       <v-switch
         :model-value="preferences.limit_tcp_overhead"
-        :label="$t('preferences.limit_tcp_overhead')"              @change="changeSettings('limit_tcp_overhead', !(preferences.limit_tcp_overhead ?? false))"
+        :label="$t('preferences.limit_tcp_overhead')"
+        @change="changeSettings('limit_tcp_overhead', !(preferences.limit_tcp_overhead ?? false))"
       />
       <v-switch
         :model-value="preferences.limit_lan_peers"
-        :label="$t('preferences.limit_lan_peers')"              @change="changeSettings('limit_lan_peers', !(preferences.limit_lan_peers ?? false))"
+        :label="$t('preferences.limit_lan_peers')"
+        @change="changeSettings('limit_lan_peers', !(preferences.limit_lan_peers ?? false))"
       />
     </v-container>
   </v-container>

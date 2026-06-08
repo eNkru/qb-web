@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+ 
 import path from 'path'
 import fs from 'fs/promises'
 import { execSync } from 'child_process'
@@ -18,18 +18,15 @@ function isIconFile(iconPath) {
 
 function getIconIndex(iconPath) {
   const output = execShell(`magick identify -format "%s:%w\\n" ${iconPath}`) 
-  let lastIndex = 0
-  for (const line of output.split('\n')) {
+  const lines = output.split('\n').filter(Boolean)
+  for (const line of lines) {
     const [index, width] = line.split(':')
     const size = parseInt(width)
     if (size >= ICON_SIZE) {
       return index
     }
-
-    lastIndex = index
   }
-
-  return lastIndex
+  return 0
 }
 
 function convertIcon(iconPath, outputPath) {
@@ -55,6 +52,7 @@ async function fixSiteIcon(name) {
 }
 
 async function main() {
+  // eslint-disable-next-line no-useless-assignment
   let files = []
   if (process.argv.length > 2) {
     files = process.argv.slice(2)

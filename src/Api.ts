@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+ 
 import Axios, { AxiosInstance, AxiosPromise, AxiosResponse } from 'axios';
 import {
   RssNode,
@@ -89,7 +89,7 @@ class Api {
     if (torrents) {
       const formData = new FormData();
       for (const [key, value] of Object.entries(params)) {
-        // eslint-disable-next-line
+         
         formData.append(key, value);
       }
 

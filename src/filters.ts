@@ -1,7 +1,7 @@
 import { App } from 'vue';
 import dayjs from 'dayjs';
 
-/* eslint-disable no-param-reassign */
+ 
 export function toPrecision(value: number, precision: number) {
   const limit = 10 ** precision;
   if (value >= limit) {
@@ -80,7 +80,7 @@ export function formatDuration(value: number, options?: DurationOptions) {
     const result = Math.floor(value / duration);
     parts.push(result + units[index]);
 
-    // eslint-disable-next-line
+     
     value %= duration;
     index++;
     unitSize++;
@@ -108,7 +108,7 @@ export function formatAsDuration(timestamp: number, options?: DurationOptions) {
 }
 
 export function formatProgress(progress: number) {
-  // eslint-disable-next-line
+   
   progress *= 100;
   return `${toPrecision(progress, 3)}%`;
 }

@@ -1,3 +1,4 @@
+import { createPinia, setActivePinia } from 'pinia';
 import store from '@/store';
 import { RootState } from '@/store/types';
 import { mock, mockBaseTorrent } from '../utils';
@@ -13,6 +14,10 @@ const emtpyState: RootState = {
 };
 
 const mockState = mock(emtpyState);
+
+beforeAll(() => {
+  setActivePinia(createPinia());
+});
 
 beforeEach(() => {
   store.replaceState(emtpyState);
@@ -45,7 +50,7 @@ describe('all torrents getter', () => {
       mainData: {
         categories: {},
         tags: [""],
-        // eslint-disable-next-line camelcase
+         
         server_state: undefined as any,
         torrents: {
           a: mockBaseTorrent({}),

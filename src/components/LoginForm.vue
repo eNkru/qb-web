@@ -90,6 +90,7 @@ import api from '@/Api';
 import { useStore } from '@/store';
 
 export default defineComponent({
+  emits: ['input'],
   setup(_, { emit }) {
     const store = useStore();
     const data = reactive({

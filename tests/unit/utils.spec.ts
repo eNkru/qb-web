@@ -2,21 +2,21 @@ import { findSameNamedTorrents, codeToFlag, sleep } from '@/utils';
 import { mockTorrent } from './utils';
 
 test('timeout', async () => {
-  jest.useFakeTimers();
+  vi.useFakeTimers();
 
-  const fn = jest.fn();
+  const fn = vi.fn();
 
   sleep(1000).then(fn);
   expect(fn).not.toBeCalled();
 
-  jest.advanceTimersByTime(500);
+  vi.advanceTimersByTime(500);
   // HACK: force wait promise,
   // see https://stackoverflow.com/a/51132058/2806903
   // and https://stackoverflow.com/a/52196951/2806903
   await Promise.resolve();
   expect(fn).not.toBeCalled();
 
-  jest.advanceTimersByTime(500);
+  vi.advanceTimersByTime(500);
   await Promise.resolve();
   expect(fn).toBeCalled();
 });

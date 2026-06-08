@@ -56,7 +56,7 @@ export const sleep = timeout;
 export function codeToFlag(code: string) {
   const magicNumber = 0x1F1A5;
 
-  // eslint-disable-next-line
+   
   code = code.toUpperCase();
   const codePoints = [...code].map(c => magicNumber + c.charCodeAt(0));
   const char = String.fromCodePoint(...codePoints);

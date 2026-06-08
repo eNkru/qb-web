@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+ 
 export default {
     lang: 'Nederlands',
     auto: 'Automatisch',

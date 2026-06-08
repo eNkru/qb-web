@@ -148,10 +148,10 @@ class TorrentInfo extends BaseTorrentInfo {
 
   initCanvas(el: HTMLCanvasElement) {
     const { clientWidth, clientHeight } = el;
-    /* eslint-disable no-param-reassign */
+     
     el.width = clientWidth;
     el.height = clientHeight;
-    /* eslint-enable no-param-reassign */
+     
 
     return el.getContext('2d')!;
   }

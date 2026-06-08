@@ -103,10 +103,9 @@
                     size="22"
                     width="2"
                   />
-                  <v-icon
-                    v-else
-                    v-text="getRowIcon(row)"
-                  />
+                  <v-icon v-else>
+                    {{ getRowIcon(row) }}
+                  </v-icon>
                 </template>
                 <template #title="{ item }">
                   {{ (item as any).name }}
