@@ -7,7 +7,7 @@
     <v-card>
       <v-card-title class="headline">
         <v-icon class="mr-2">mdi-filter</v-icon>
-        <span v-text="$t('dialog.rss_rule.title')" />
+        <span>{{ $t('dialog.rss_rule.title') }}</span>
         <v-spacer />
         <v-btn
           icon
@@ -48,10 +48,10 @@
                 density="compact"
               >
                 <v-list-item
-                  v-for="(value, key) in rssRules"
-                  :key="key"
-                  :active="selectedRuleName === key"
-                  @click="selectedRuleName = key"
+                  v-for="(value, ruleKey) in rssRules"
+                  :key="ruleKey"
+                  :active="selectedRuleName === (ruleKey as string)"
+                  @click="selectedRuleName = String(ruleKey)"
                 >
                   <template #prepend>
                     <v-checkbox
@@ -59,7 +59,7 @@
                       v-model="value.enabled"
                     />
                   </template>
-                  <v-list-item-title v-text="key" />
+                  <v-list-item-title>{{ ruleKey }}</v-list-item-title>
                 </v-list-item>
               </v-list>
             </div>
@@ -68,8 +68,7 @@
               <v-form class="rule-form">
                 <p
                   class="form-title"
-                  v-text="$t('dialog.rss_rule.rule_settings')"
-                />
+                >{{ $t('dialog.rss_rule.rule_settings') }}</p>
 
                 <v-checkbox
                   density="compact"
@@ -119,8 +118,8 @@
                   density="compact"
                   :label="$t('location')"
                   :disabled="!selectedRule.enabled"
-                  :model-value="selectedRule.savePath"
-                  @change="editRule('savePath', $event)"
+                  :model-value="selectedRule.savepath"
+                  @change="editRule('savepath', $event)"
                 />
               </v-form>
 
@@ -128,8 +127,7 @@
 
               <p
                 class="feeds-title"
-                v-text="$t('dialog.rss_rule.apply_to_feeds')"
-              />
+              >{{ $t('dialog.rss_rule.apply_to_feeds') }}</p>
               <v-list
                 density="compact"
                 v-if="selectedRule.enabled"
@@ -145,7 +143,7 @@
                       @change="selectSite(item.value, $event)"
                     />
                   </template>
-                  <v-list-item-title v-text="item.text" />
+                  <v-list-item-title>{{ item.text }}</v-list-item-title>
                 </v-list-item>
               </v-list>
             </div>
@@ -338,8 +336,6 @@ export default class RssRulesDialog extends Vue {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/assets/styles.scss';
-
 @include dialog-title;
 
 .v-card {

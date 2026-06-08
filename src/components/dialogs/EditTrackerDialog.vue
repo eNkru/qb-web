@@ -85,6 +85,7 @@
 <script lang="ts">
 import { chain } from 'lodash';
 import { Vue, Component, Prop, Emit, toNative } from 'vue-facing-decorator';
+import { useDisplay } from 'vuetify';
 
 import api from '@/Api';
 import { Torrent } from '../../types';
@@ -92,6 +93,8 @@ import { Torrent } from '../../types';
 
 @Component
 class EditTrackerDialog extends Vue {
+  private display = useDisplay() as any;
+
   @Prop({ type: Array })
   readonly modelValue!: Torrent[]
 
@@ -120,7 +123,7 @@ class EditTrackerDialog extends Vue {
   }
 
   get phoneLayout() {
-    return this.$vuetify.display.xs;
+    return this.display.xs;
   }
   get canNext() {
     if (this.step === 1 && this.valid) {
@@ -196,8 +199,6 @@ export default toNative(EditTrackerDialog)
 </script>
 
 <style lang="scss" scoped>
-@import '~@/assets/styles.scss';
-
 @include dialog-title;
 
 .torrents {

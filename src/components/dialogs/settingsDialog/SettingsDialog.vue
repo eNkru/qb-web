@@ -10,7 +10,7 @@
     <v-card>
       <v-card-title class="headline">
         <v-icon class="mr-2">mdi-cog</v-icon>
-        <span v-text="$t('settings')" />
+        <span>{{ $t('settings') }}</span>
         <v-spacer />
         <v-btn
           icon
@@ -64,6 +64,7 @@
 
 <script lang="ts">
 import { Vue, Component, Emit, Prop, Watch } from 'vue-facing-decorator'
+import { useDisplay } from 'vuetify'
 import DownloadSettings from './DownloadSettings.vue'
 import SpeedSettings from './SpeedSettings.vue'
 import {Preferences} from '@/types'
@@ -81,6 +82,8 @@ import { timeout } from '@/utils'
   },
 })
 export default class SettingsDialog extends Vue {
+  private display = useDisplay() as any;
+
   @Prop({ type: Boolean })
   readonly modelValue!: boolean
 
@@ -96,7 +99,7 @@ export default class SettingsDialog extends Vue {
   tab = 'downloads'
 
   get phoneLayout() {
-    return this.$vuetify.display.xs;
+    return this.display.xs;
   }
 
   @Watch('preferences')
@@ -115,8 +118,6 @@ export default class SettingsDialog extends Vue {
 </script>
 
 <style lang="scss" scoped>
-@import "~@/assets/styles.scss";
-
 @include dialog-title;
 
 :deep(.v-card-text) {

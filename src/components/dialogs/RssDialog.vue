@@ -77,7 +77,7 @@
         <v-divider />
         <div
           class="content"
-          :class="{phone: $vuetify.display.smAndDown}"
+          :class="{phone: display.smAndDown}"
         >
           <div
             v-if="!rssNode"
@@ -108,10 +108,10 @@
                     v-text="getRowIcon(row)"
                   />
                 </template>
-                <template #label="row">
-                  {{ row.item.name }}
-                  <template v-if="row.item.children">
-                    ({{ row.item.children.length }})
+                <template #title="{ item }">
+                  {{ (item as any).name }}
+                  <template v-if="(item as any).children">
+                    ({{ (item as any).children.length }})
                   </template>
                 </template>
               </v-treeview>
@@ -144,8 +144,7 @@
                     <v-list-item-title>
                       <span
                         :title="article.title"
-                        v-text="article.title"
-                      />
+                      >{{ article.title }}</span>
                     </v-list-item-title>
                     <template #prepend>
                       <v-btn
@@ -171,7 +170,7 @@
                   >{{ selectArticle.title }}</a>
                 </p>
                 <p>{{ `${$t('category', 1)}: ${selectArticle ? selectArticle.category: ''}` }}</p>
-                <p>{{ $t('date') }}: {{ formatDate(selectArticle ? selectArticle.date : null) }}</p>
+                <p>{{ $t('date') }}: {{ formatDate(selectArticle?.date ?? null) }}</p>
               </div>
               <v-divider />
               <iframe
@@ -199,6 +198,7 @@ import { get, toPath, sortBy } from 'lodash'
 import { Vue, Component, Prop, Watch, Emit, toNative } from 'vue-facing-decorator'
 
 import HasTask from '@/mixins/hasTask'
+import { useDisplay, useTheme } from 'vuetify';
 import api from '@/Api';
 import { tr } from '@/locale'
 import { RssItem, RssNode, RssTorrent } from '@/types';
@@ -243,6 +243,9 @@ let darkMode: boolean;
   },
 })
 class RssDialog extends HasTask {
+  display = useDisplay() as any;
+  theme = useTheme() as any;
+
   @Prop({ type: Boolean })
   readonly modelValue!: boolean
 
@@ -272,7 +275,7 @@ class RssDialog extends HasTask {
   }
 
   get phoneLayout() {
-    return this.$vuetify.display.smAndDown;
+    return this.display.smAndDown;
   }
 
   get rssTree() {
@@ -394,7 +397,7 @@ class RssDialog extends HasTask {
     const input = await this.asyncShowDialog({
       text: tr('name'),
       type: DialogType.Input,
-      value: this.selectedPath!,
+      value: (this.selectedPath as any),
     })
 
     if (!input) {
@@ -405,9 +408,13 @@ class RssDialog extends HasTask {
       text: tr('label.moving'),
     })
 
+    const path = (this as any).selectedPath
+    if (!path) {
+      return
+    }
     try {
-      await api.moveRssFeed(this.selectedPath!, input);
-    } catch (e) {
+      await api.moveRssFeed(path, input);
+    } catch (e: any) {
       this.showSnackBar({
         text: e.response ? e.response.data : e.message,
       })
@@ -432,8 +439,12 @@ class RssDialog extends HasTask {
       text: tr('label.deleting'),
     })
 
+    const rssPath = (this as any).selectedPath
+    if (!rssPath) {
+      return
+    }
     try {
-      await api.removeRssFeed(this.selectedPath!);
+      await api.removeRssFeed(rssPath);
     } catch (e) {
       this.showSnackBar({
         text: e.response ? e.response.data : e.message,
@@ -446,7 +457,11 @@ class RssDialog extends HasTask {
   }
 
   async refreshRssItem() {
-    await api.refreshRssFeed(this.selectedPath!);
+    const feedPath = (this as any).selectedPath
+    if (!feedPath) {
+      return
+    }
+    await api.refreshRssFeed(feedPath);
     await this.runTask();
   }
 
@@ -470,7 +485,7 @@ class RssDialog extends HasTask {
     this.selectArticle = null
   }
 
-  formatDate(str: string) {
+  formatDate(str: string | null) {
     if (!str) {
       return null
     }
@@ -483,7 +498,7 @@ class RssDialog extends HasTask {
   }
 
   created() {
-    darkMode = (this.$vuetify.theme as any).global.name === 'dark'
+    darkMode = this.theme.global.name === 'dark'
     this.setTaskAndRun(this.fetchRssItems, 5000)
   }
 
@@ -497,8 +512,6 @@ export default toNative(RssDialog)
 </script>
 
 <style lang="scss" scoped>
-@import '~@/assets/styles.scss';
-
 @include dialog-title;
 
 .v-card {

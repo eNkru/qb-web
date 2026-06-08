@@ -3,7 +3,7 @@
     class="panel"
     v-if="!single"
   >
-    <legend v-text="title" />
+    <legend>{{ title }}</legend>
     <div class="inner">
       <slot />
     </div>

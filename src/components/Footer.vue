@@ -46,15 +46,15 @@
             v-bind="props"
           >
             <v-icon>mdi-nas</v-icon>
-            {{ $formatSize(info.free_space_on_disk) }}
+            {{ $formatSize(info?.free_space_on_disk ?? 0) }}
           </div>
         </template>
         <span>
-          Queued I/O jobs: {{ info.queued_io_jobs }}
+          Queued I/O jobs: {{ info?.queued_io_jobs }}
         </span>
         <br>
         <span>
-          Avg queue time: {{ info.average_time_queue }} ms
+          Avg queue time: {{ info?.average_time_queue }} ms
         </span>
       </v-tooltip>
       <v-divider
@@ -70,7 +70,7 @@
           mdi-swap-vertical-bold
         </v-icon>
         <span>
-          {{ $formatSize(info.alltime_dl) }}/{{ $formatSize(info.alltime_ul) }}
+          {{ $formatSize(info?.alltime_dl ?? 0) }}/{{ $formatSize(info?.alltime_ul ?? 0) }}
         </span>
       </div>
     </div>
@@ -83,8 +83,7 @@
         v-if="!phoneLayout"
         class="icon-label"
       >
-        <v-icon>mdi-lan</v-icon>
-        {{ $t('label.dht_nodes', info.dht_nodes) }}
+        <v-icon>mdi-lan</v-icon>            {{ $t('label.dht_nodes', info?.dht_nodes ?? 0) }}
       </div>
       <v-divider
         vertical
@@ -96,16 +95,16 @@
           <template #activator="{ props }">
             <v-icon
               v-bind="props"
-              :color="connectionIconColor(info.connection_status)"
+              :color="connectionIconColor(info?.connection_status ?? '')"
             >
-              mdi-{{ connectionIcon(info.connection_status) }}
+              mdi-{{ connectionIcon(info?.connection_status ?? '') }}
             </v-icon>
             <span v-if="phoneLayout">
-              Network {{ info.connection_status }}
+              Network {{ info?.connection_status ?? '' }}
             </span>
           </template>
           <span>
-            Network {{ info.connection_status }}
+            Network {{ info?.connection_status }}
           </span>
         </v-tooltip>
       </div>
@@ -154,18 +153,17 @@
         v-if="!phoneLayout"
       />
       <div class="icon-label">
-        <v-icon
-          :color=" info.dl_info_speed > 0 ? 'success' : null"
+        <v-icon            :color="(info?.dl_info_speed ?? 0) > 0 ? 'success' : undefined"
         >
           mdi-download
         </v-icon>
         <span>
-          {{ $formatSize(info.dl_info_speed) }}/s
-          <template v-if="info.dl_rate_limit">
-            ({{ $formatSize(info.dl_rate_limit) }}/s)
+          {{ $formatSize(info?.dl_info_speed ?? 0) }}/s
+          <template v-if="info?.dl_rate_limit">
+            ({{ $formatSize(info?.dl_rate_limit) }}/s)
           </template>
           <template v-if="!phoneLayout">
-            [{{ $formatSize(info.dl_info_data) }}]
+            [{{ $formatSize(info?.dl_info_data ?? 0) }}]
           </template>
         </span>
       </div>
@@ -175,18 +173,17 @@
         v-if="!phoneLayout"
       />
       <div class="icon-label">
-        <v-icon
-          :color=" info.up_info_speed > 0 ? 'warning' : null"
+        <v-icon            :color="(info?.up_info_speed ?? 0) > 0 ? 'warning' : undefined"
         >
           mdi-upload
         </v-icon>
         <span>
-          {{ $formatSize(info.up_info_speed) }}/s
-          <template v-if="info.up_rate_limit">
-            ({{ $formatSize(info.up_rate_limit) }}/s)
+          {{ $formatSize(info?.up_info_speed ?? 0) }}/s
+          <template v-if="info?.up_rate_limit">
+            ({{ $formatSize(info?.up_rate_limit) }}/s)
           </template>
           <template v-if="!phoneLayout">
-            [{{ $formatSize(info.up_info_data) }}]
+            [{{ $formatSize(info?.up_info_data ?? 0) }}]
           </template>
         </span>
       </div>
@@ -197,6 +194,7 @@
 <script lang="ts">
 import { sumBy } from 'lodash';
 import { Vue, Component, Prop, Watch, toNative } from 'vue-facing-decorator';
+import { useDisplay } from 'vuetify';
 import api from '../Api';
 import buildInfo from '@/buildInfo';
 import { Torrent, ServerState } from '@/types';
@@ -204,6 +202,8 @@ import { Torrent, ServerState } from '@/types';
 
 @Component
 class Footer extends Vue {
+  display = useDisplay() as any;
+
   @Prop({ type: Boolean })
   readonly phoneLayout!: boolean
 
@@ -213,7 +213,7 @@ class Footer extends Vue {
   buildInfo = buildInfo
 
   get info(): ServerState | null {
-    return this.isDataReady ? (this.$store.state as any).mainData.server_state : null;
+    return this.isDataReady ? (this.$store.state as any).mainData?.server_state ?? null : null;
   }
   get isDataReady(): boolean {
     return this.$store.getters.isDataReady;
@@ -317,7 +317,7 @@ export default toNative(Footer)
   font-size: 14px;
   width: 100%;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
-  padding: 4px 0;
+  padding: 6px 0;
 }
 
 .v-theme--dark .footer {

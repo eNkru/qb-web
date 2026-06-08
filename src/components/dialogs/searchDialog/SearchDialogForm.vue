@@ -9,7 +9,7 @@
           <v-text-field
             v-model="searchForm.pattern"
             prepend-inner-icon="mdi-magnify"
-            @keypress.enter="$refs.searchButton.click"
+            @keypress.enter="($refs.searchButton as any).click()"
             :label="$t('search')"
             :rules="[v => !!v || $t('msg.item_is_required', { item: $t('query') })]"
             clearable
@@ -34,9 +34,9 @@
             {{ $t("plugin", 2) }}
           </v-btn>
           <v-dialog
-            v-if="!this.$vuetify.display.mobile"
             v-model="plugginSelectorOpen"
             max-width="20rem"
+            :fullscreen="display.mobile"
           >
             <v-card>
               <v-card-title>
@@ -57,43 +57,11 @@
                   :key="key"
                   v-model="searchForm.plugins"
                   :label="plugin.fullName"
-                  :model-value="plugin"
+                  :value="plugin"
                 />
               </v-card-text>
             </v-card>
           </v-dialog>
-          <v-bottom-sheet
-            scrollable
-            inset
-            v-model="plugginSelectorOpen"
-            v-if="this.$vuetify.display.mobile"
-          >
-            <v-sheet class="text-center">
-              <v-card>
-                <v-card-title>
-                  {{ $t("plugin", 1) }} {{ $t("usage") }}
-                  <v-spacer />
-                  <v-btn
-                    small
-                    @click="toggleSelectAll"
-                    :color="searchForm.plugins.length > 0 ? 'primary' : ''"
-                  >
-                    {{ $t("all") }}
-                  </v-btn>
-                </v-card-title>
-                <v-divider />
-                <v-card-text>
-                  <v-checkbox
-                    v-for="(plugin, key) in availablePlugins"
-                    :key="key"
-                    v-model="searchForm.plugins"
-                    :label="plugin.fullName"
-                    :model-value="plugin"
-                  />
-                </v-card-text>
-              </v-card>
-            </v-sheet>
-          </v-bottom-sheet>
         </v-col>
         <v-col align-self="center">
           <v-autocomplete
@@ -111,6 +79,7 @@
 
 <script lang="ts">
 import { Vue, Component, Emit, Prop, Watch } from "vue-facing-decorator";
+import { useDisplay } from 'vuetify';
 import { SearchPlugin } from "@/types";
 import { tr } from "@/locale";
 import { intersection } from "lodash";
@@ -137,6 +106,8 @@ export interface SearchForm {
 
 @Component
 export default class SearchDialogForm extends Vue {
+  display = useDisplay() as any;
+
   searchEngineState!: SearchEnginePage;
 
   get searchPlugins(): SearchPlugin[] {
@@ -222,7 +193,6 @@ export default class SearchDialogForm extends Vue {
 </script>
 
 <style lang="scss" scoped>
-@import "~@/assets/styles.scss";
 .v-form {
   .col__plugins {
     button {

@@ -61,6 +61,7 @@
 <script lang="ts">
 import { sortBy, sumBy, isUndefined } from 'lodash';
 import { Vue, Component, Prop, Emit, toNative } from 'vue-facing-decorator';
+import { useDisplay } from 'vuetify';
 
 import { tr } from '@/locale';
 import { Torrent, Category, Tag } from '@/types';
@@ -120,12 +121,14 @@ interface MenuItem {
   title: string;
   model?: boolean | null;
   select?: string;
-  click?: () => void;
+  click?: (value?: string) => void;
   children?: MenuChildrenItem[];
+  filterGroups?: any[];
 }
 
 interface MenuChildrenItem extends MenuItem {
   key: string | null;
+  value?: string;
   append?: string;
 }
 
@@ -135,6 +138,8 @@ interface MenuChildrenItem extends MenuItem {
   },
 })
 class Drawer extends Vue {
+  display = useDisplay() as any;
+
   @Prop()
   readonly modelValue: any
 
@@ -183,7 +188,7 @@ class Drawer extends Vue {
   }
 
   get phoneLayout() {
-    return this.$vuetify.display.smAndDown;
+    return this.display.smAndDown;
   }
 
   buildStateGroup(): MenuChildrenItem[] {

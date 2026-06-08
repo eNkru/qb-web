@@ -56,6 +56,7 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Emit, toNative } from 'vue-facing-decorator';
+import { useDisplay } from 'vuetify';
 
 import api from '@/Api';
 import { findSameNamedTorrents } from '@/utils';
@@ -63,6 +64,8 @@ import { Torrent } from '../../types';
 
 @Component
 class ConfirmSetCategoryDialog extends Vue {
+  private display = useDisplay() as any;
+
   @Prop({ type: Array })
   readonly modelValue!: Torrent[]
 
@@ -91,7 +94,7 @@ class ConfirmSetCategoryDialog extends Vue {
   }
 
   get phoneLayout() {
-    return this.$vuetify.display.xs;
+    return this.display.xs;
   }
 
   @Emit('update:modelValue')
@@ -123,8 +126,6 @@ export default toNative(ConfirmSetCategoryDialog)
 </script>
 
 <style lang="scss" scoped>
-@import '~@/assets/styles.scss';
-
 @include dialog-title;
 
 .torrents {

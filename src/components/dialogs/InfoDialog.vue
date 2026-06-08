@@ -9,7 +9,7 @@
         <v-icon class="mr-2">
           mdi-alert-circle
         </v-icon>
-        <span v-text="$t('info')" />
+        <span>{{ $t('info') }}</span>
       </v-card-title>
       <v-card-text>
         <v-tabs v-model="tabSync">
@@ -89,8 +89,7 @@
         <v-btn
           text
           @click="closeDialog"
-          v-text="$t('close')"
-        />
+        >{{ $t('close') }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -98,6 +97,7 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Emit, Watch, toNative } from 'vue-facing-decorator';
+import { useDisplay } from 'vuetify';
 import TorrentInfo from './TorrentInfo.vue';
 import TorrentContent from './TorrentContent.vue';
 import Trackers from './Trackers.vue';
@@ -116,6 +116,8 @@ import { Torrent } from '../../types';
   emits: ['update:modelValue', 'update:tab'],
 })
 class InfoDialog extends Vue {
+  private display = useDisplay() as any;
+
   @Prop({ type: Array })
   readonly modelValue!: Torrent[]
 
@@ -141,7 +143,7 @@ class InfoDialog extends Vue {
   }
 
   get phoneLayout() {
-    return this.$vuetify.display.xs;
+    return this.display.xs;
   }
   get dialogWidth() {
     return this.phoneLayout ? '100%' : '80%';
@@ -157,8 +159,6 @@ export default toNative(InfoDialog)
 </script>
 
 <style lang="scss" scoped>
-@import '~@/assets/styles.scss';
-
 @include dialog-title;
 
 :deep(.v-dialog) {

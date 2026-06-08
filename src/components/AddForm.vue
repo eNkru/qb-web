@@ -2,7 +2,7 @@
   <div class="add-form">
     <div
       class="btn-add-tab"
-      :class="{'with-footer': $vuetify.display.smAndUp, 'phone-layout': phoneLayout}"
+      :class="{'with-footer': display.smAndUp, 'phone-layout': phoneLayout}"
     >
       <v-btn
         color="primary"
@@ -17,7 +17,7 @@
       </v-btn>
     </div>
     <v-dialog
-      v-model="state.isOpen"
+      v-model="dialogOpen"
       eager
       persistent
       scrollable
@@ -27,7 +27,7 @@
       <v-card class="add-form-card">
         <v-card-title class="headline">
           <v-icon class="mr-2">mdi-link-plus</v-icon>
-          <span>{{ state.downloadItem && state.downloadItem.title || $t('title.add_torrents') }}</span>
+          <span>{{ downloadItem && downloadItem.title || $t('title.add_torrents') }}</span>
           <v-spacer />
           <v-btn
             icon
@@ -69,11 +69,11 @@
                   variant="outlined"
                   density="compact"
                   :rules="[v => (!!files.length || !!v || $t('msg.item_is_required', { item: 'URL' }))]"
-                  :rows="$vuetify.display.xs ? 1 : 3"
+                  :rows="display.xs ? 1 : 3"
                   required
                   :autofocus="!phoneLayout"
                   :model-value="params.urls"
-                  :readonly="state.downloadItem !== null"
+                  :readonly="downloadItem !== null"
                   @update:model-value="setParams('urls', $event)"
                 >
                   <template #append>
@@ -278,10 +278,10 @@
 <script lang="ts">
 import { isNil } from 'lodash';
 import { Vue, Component, Watch, toNative } from 'vue-facing-decorator';
+import { useDisplay } from 'vuetify';
 
 import api from '../Api';
 import { Preferences, Category } from '../types';
-import { AddFormState } from '@/store/types';
 
 /* eslint-disable camelcase */
 const defaultParams = {
@@ -299,15 +299,18 @@ const defaultParams = {
 
 @Component
 class AddForm extends Vue {
-  files: FileList | [] = []
+  display = useDisplay() as any;
+
+  files: File[] = []
   defaultParams = defaultParams
   userParams: Record<string, any> = {}
   error: string | null = null
   submitting = false
   showMore = false
+  dialogOpen = false
 
-  get state(): AddFormState {
-    return this.$store.state.addForm;
+  get downloadItem(): { title: string; url: string } | null {
+    return this.$store.state.addFormDownloadItem ?? null;
   }
   get pasteUrl(): string | null {
     return this.$store.state.pasteUrl;
@@ -326,17 +329,16 @@ class AddForm extends Vue {
   }
 
   openAddForm() {
-    this.$store.commit('openAddForm');
+    this.dialogOpen = true;
   }
   closeAddForm() {
-    this.$store.commit('closeAddForm');
+    this.dialogOpen = false;
   }
-
   get params() {
     return Object.assign({}, defaultParams, this.userParams);
   }
   get phoneLayout() {
-    return this.$vuetify.display.xs;
+    return this.display.xs;
   }
   get categoryItems() {
     return this.allCategories.map(c => ({ text: c.name, value: c.key }));
@@ -370,13 +372,6 @@ class AddForm extends Vue {
       ? this.$refs.fileZone
       : this.$refs.fileZone.$el;
     el.addEventListener('drop', this.onDrop, true);
-  }
-
-  @Watch('state', {deep: true})
-  onStateUpdate(state: AddFormState) {
-    if (state.downloadItem) {
-      this.setParams('urls', state.downloadItem.url);
-    }
   }
 
   beforeUnmount() {
@@ -446,7 +441,7 @@ class AddForm extends Vue {
     }
 
     e.preventDefault();
-    this.files = files;
+    this.files = Array.from(files);
   }
 
   @Watch('pasteUrl', {immediate: true})
@@ -455,7 +450,7 @@ class AddForm extends Vue {
       return;
     }
 
-    if (!this.state.isOpen) {
+    if (!this.dialogOpen) {
       this.userParams['urls'] = v;
       this.openAddForm();
     }
@@ -471,8 +466,6 @@ export default toNative(AddForm)
 </script>
 
 <style lang="scss" scoped>
-@import '~@/assets/styles.scss';
-
 @include dialog-title;
 
 .btn-add-tab {

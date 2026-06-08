@@ -10,7 +10,7 @@
       <v-card>
         <v-card-title class="headline">
           <v-icon class="mr-2">mdi-card-search-outline</v-icon>
-          <span v-text="$t('search')" />
+          <span>{{ $t('search') }}</span>
           <v-spacer />
           <v-btn
             icon
@@ -37,8 +37,7 @@
               <a
                 :href="item.descrLink"
                 target="_blank"
-                v-text="item.fileName"
-              />
+              >{{ item.fileName }}</a>
             </template>
             <template #[`item.fileSize`]="{ item }">
               {{ $formatSize(item.fileSize) }}
@@ -209,7 +208,5 @@ export default class SearchDialog extends HasTask {
 </script>
 
 <style lang="scss" scoped>
-@import "~@/assets/styles.scss";
-
 @include dialog-title;
 </style>

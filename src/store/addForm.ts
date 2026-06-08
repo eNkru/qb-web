@@ -1,29 +1,27 @@
-import { Module } from 'vuex';
+import { defineStore } from 'pinia';
 import { AddFormState } from './types';
 
-export const addFormStore: Module<AddFormState, any> = {
-  state() {
-    return {
-      isOpen: false,
-      downloadItem: null,
-    };
-  },
+export const useAddFormStore = defineStore('addForm', {
+  state: (): AddFormState => ({
+    isOpen: false,
+    downloadItem: null,
+  }),
   getters: {
     isOpen(state) {
       return state.isOpen;
     },
   },
-  mutations: {
-    openAddForm(state) {
-      state.isOpen = true;
+  actions: {
+    openAddForm() {
+      this.isOpen = true;
     },
-    closeAddForm(state) {
-      state.isOpen = false;
-      state.downloadItem = null;
+    closeAddForm() {
+      this.isOpen = false;
+      this.downloadItem = null;
     },
-    addFormDownloadItem(state, payload) {
+    addFormDownloadItem(payload: { downloadItem: AddFormState['downloadItem'] }) {
       const { downloadItem } = payload;
-      state.downloadItem = downloadItem;
+      this.downloadItem = downloadItem;
     },
   },
-};
+});

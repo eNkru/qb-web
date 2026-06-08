@@ -4,7 +4,7 @@ import { Vue, Component } from 'vue-facing-decorator'
 export default class HasTask extends Vue {
   destroy?: boolean
   call?: CallableFunction
-  taskId?: number
+  taskId?: ReturnType<typeof setTimeout>
   interval = 2000
 
   setTaskAndRun(call: CallableFunction, interval?: number) {
@@ -35,7 +35,7 @@ export default class HasTask extends Vue {
   cancelTask() {
     if (this.taskId) {
       clearTimeout(this.taskId);
-      this.taskId = 0;
+      this.taskId = 0 as any;
     }
   }
 

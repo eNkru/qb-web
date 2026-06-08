@@ -57,7 +57,7 @@ export interface DialogConfig {
   type?: DialogType;
   buttons?: any;
 
-  rules?: CallableFunction[];
+  rules?: any[];
   placeholder?: string;
   value?: string;
 }

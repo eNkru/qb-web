@@ -69,7 +69,7 @@
             v-for="item in themeModes"
             :key="item[0]"
             :active="currentThemeMode === item[0]"
-            @click="currentThemeMode = item[0]"
+            @click="currentThemeMode = item[0] as any"
           >
             <v-list-item-title>{{ item[1] }}</v-list-item-title>
           </v-list-item>
@@ -88,6 +88,7 @@
 
 <script lang="ts">
 import { Vue, Component, Watch, toNative } from 'vue-facing-decorator';
+import { useDisplay } from 'vuetify';
 import api from '../../Api';
 
 import { tr, translations, defaultLocale, LocaleKey } from '@/locale';
@@ -105,8 +106,10 @@ type ThemeModeKey = 'light' | 'dark' | 'grey' | 'luxury' | 'modern-dark' | 'cryp
   },
 })
 class DrawerFooter extends Vue {
-  locales = this.buildLocales()
-  currentLocale = AUTO_KEY
+  private  display = useDisplay() as any;
+
+  locales: { text: string; value: string }[] = this.buildLocales()
+  currentLocale: string = AUTO_KEY
   oldLocale = AUTO_KEY
   showInfo = false
 
@@ -177,11 +180,11 @@ class DrawerFooter extends Vue {
   }
 
   get phoneLayout() {
-    return this.$vuetify.display.xs;
+    return this.display.xs;
   }
 
-  buildLocales() {
-    const locales: {}[] = Object.entries(translations).map(([lang, translation]) => {
+  buildLocales(): { text: string; value: string }[] {
+    const locales = Object.entries(translations).map(([lang, translation]) => {
       return {
         text: translation.lang,
         value: lang,

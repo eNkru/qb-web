@@ -8,7 +8,7 @@
     <v-card>
       <v-card-title class="headline">
         <v-icon class="mr-2">mdi-delta</v-icon>
-        <span v-text="$t('logs')" />
+        <span>{{ $t('logs') }}</span>
       </v-card-title>
       <v-card-text>
         <v-progress-linear
@@ -34,8 +34,7 @@
         <v-btn
           variant="text"
           @click="closeDialog"
-          v-text="$t('close')"
-        />
+        >{{ $t('close') }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -44,10 +43,13 @@
 <script lang="ts">
 import api from '@/Api';
 import { Vue, Component, Prop, Emit, toNative } from 'vue-facing-decorator';
+import { useDisplay } from 'vuetify';
 import HasTask from '../../mixins/hasTask';
 
 @Component
 class LogsDialog extends HasTask {
+  private display = useDisplay() as any;
+
   @Prop({ type: Boolean })
   readonly modelValue!: boolean
 
@@ -61,10 +63,10 @@ class LogsDialog extends HasTask {
   }
 
   get dialogWidth() {
-    return this.$vuetify.display.smAndDown ? '100%' : '70%';
+    return this.display.smAndDown ? '100%' : '70%';
   }
   get phoneLayout() {
-    return this.$vuetify.display.xs;
+    return this.display.xs;
   }
 
   @Emit('update:modelValue')
@@ -118,8 +120,6 @@ export default toNative(LogsDialog)
 </script>
 
 <style lang="scss" scoped>
-@import '~@/assets/styles.scss';
-
 @include dialog-title;
 
 .logs {

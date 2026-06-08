@@ -79,12 +79,12 @@ class Peers extends BaseTorrentInfo {
     return map(this.peersObj, (value, key) => merge({}, value, { key }));
   }
 
-  codeToFlag(code: string) {
+  codeToFlag(code: string): { char: string; url: string } {
     if (code) {
       return codeToFlag(code);
     }
 
-    return {};
+    return { char: '', url: '' };
   }
 
   async getPeers() {
