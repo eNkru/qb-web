@@ -7,23 +7,33 @@ yarn install
 
 ### Compiles and hot-reloads for development
 ```
-yarn run serve
+yarn dev
 ```
 
-To connect the dev server to a running qBittorrent instance:
+To connect the dev server to a running qBittorrent instance, set the `QB_WEBUI_URL` env var:
 ```
-QB_WEBUI_URL=http://<your-qbittorrent-ip>:<port> yarn serve
+QB_WEBUI_URL=http://<your-qbittorrent-ip>:<port> yarn dev
 ```
 
 ### Compiles and minifies for production
 ```
-yarn run build
+yarn build
 ```
 
 ### Lints and fixes files
 ```
-yarn run lint
+yarn lint
+```
+
+### Type-check the project
+```
+yarn typecheck
+```
+
+### Run unit tests
+```
+yarn test:unit
 ```
 
 ### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+See [Vite Configuration Reference](https://vite.dev/config/).

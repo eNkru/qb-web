@@ -24,23 +24,9 @@ jobs:
       - name: Pack Release
         run: |
           yarn run build
-          # see https://github.com/qbittorrent/qBittorrent/pull/10485, fixed in qb v4.2.0
-          cp dist/index.html dist/login.html
-          cp INSTALL.md dist
-          zip -r $RELEASE_FILE dist
-
-      - name: Publish
-        run: |
           cd dist
-          git init
-          git config user.name ${{ github.actor }}
-          git config user.email ${{ github.actor }}@users.noreply.github.com
-          git remote add origin https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
-          git checkout -b gh-pages
-          git add --all
-          git commit -m "Publish"
-          git push origin gh-pages -f
-      
+          zip -r ../$RELEASE_FILE .
+
       - id: create_release
         uses: softprops/action-gh-release@v3
         with:

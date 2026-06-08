@@ -1,5 +1,4 @@
 name: Build & Release
-# force new workflow run - test
 
 on:
   push:
@@ -27,11 +26,6 @@ jobs:
 
       - name: Build
         run: yarn run build
-
-      - name: Prepare dist
-        run: |
-          # see https://github.com/qbittorrent/qBittorrent/pull/10485, fixed in qb v4.2.0
-          cp dist/index.html dist/login.html
 
       - name: Create release zip
         run: |

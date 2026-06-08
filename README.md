@@ -1,40 +1,36 @@
 # qb-web
 
 [![Tested](https://img.shields.io/badge/Tested-qBittorrent%20%E2%89%A5%20v4.2.5-brightgreen)](#)
-[![Release](https://img.shields.io/github/v/release/CzBiX/qb-web?include_prereleases)](https://github.com/CzBiX/qb-web/releases/latest)
-[![Gitter](https://badges.gitter.im/qb-web/community.svg)](https://gitter.im/qb-web/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
-[![CI](https://github.com/CzBiX/qb-web/workflows/CI/badge.svg)](https://github.com/CzBiX/qb-web/actions)
 
-A modern, responsive alternative Web UI for qBittorrent. Built as a single-page application with Vue 2, TypeScript, and Vuetify.
+A modern, responsive alternative Web UI for qBittorrent. Built as a single-page application with Vue 3, TypeScript, and Vuetify 3.
 
 ## Features
 
-- **Modern UI** — Material Design via Vuetify with multiple themes (Light, Dark, Grey, Luxury, Modern Dark, Crypto, Cyberpunk, Natural, Technology)
+- **Modern UI** — Material Design via Vuetify 3 with multiple themes (Light, Dark, Grey, Luxury, Modern Dark, Crypto, Cyberpunk, Natural, Technology)
 - **Responsive** — Works on desktop and mobile
-- **i18n** — English, 中文, Русский, Türkçe, Nederlands
+- **i18n** — English, 中文 (Simplified & Traditional), Русский, Türkçe, Nederlands
 - **RSS** — Full feed and download rule management
 - **Search** — Integrated torrent search
 - **Real-time sync** — Incremental polling via qBittorrent's sync API
 
-[TODO board](https://github.com/CzBiX/qb-web/projects/2)
-
-## Screenshots
-
-![Main](./screenshot/main.png)
-![Add Torrents](./screenshot/add-torrents.png)
-![RSS](./screenshot/rss.png)
-![RSS Rule](./screenshot/rss-rule.png)
-
 ## Installation
 
-Download the latest release from [GitHub Releases](https://github.com/CzBiX/qb-web/releases/latest).
+### Download a release build
 
-1. Extract all files.
-2. In qBittorrent Web UI Options, enable **Use alternative Web UI** and set **Files location** to the extracted folder (without the `public` suffix).
+The latest build artifacts are available from the **Actions** tab on GitHub.
+1. Go to [Releases](https://github.com/CzBiX/qb-web/releases) and download the latest `qb-web.zip`.
+2. Extract all files.
+3. In qBittorrent Web UI Options, enable **Use alternative Web UI** and set **Files location** to the extracted folder.
 
-**Recovery:** If something goes wrong, append `/api/v2/app/setPreferences?json=%7B%22alternative_webui_enabled%22:false%7D` to the URL to disable the alternative Web UI.
+### Build from source
+```bash
+yarn install
+yarn build
+# The output will be in the `dist/` folder.
+```
+Then point qBittorrent's alternative Web UI to the `dist/` folder.
 
-See the [Wiki](https://github.com/CzBiX/qb-web/wiki/How-to-use) for more details, including [running multiple Web UIs](https://github.com/CzBiX/qb-web/wiki/Running-multi-WebUI-at-the-same-time).
+**Recovery:** If something goes wrong, append `/api/v2/app/setPreferences?json=%7B%22alternative_webui_enabled%22:false%7D` to the URL in your browser to disable the alternative Web UI.
 
 ## Development
 
@@ -42,20 +38,22 @@ See [DEV.md](DEV.md) for setup and development commands.
 
 To connect the dev server to a running qBittorrent instance:
 ```bash
-QB_WEBUI_URL=http://<your-qbittorrent-ip>:<port> yarn serve
+QB_WEBUI_URL=http://<your-qbittorrent-ip>:<port> yarn dev
 ```
+
+This sets a Vite proxy to forward `/api/v2` requests to your qBittorrent instance, avoiding CORS issues during development.
 
 ## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | Vue 2.7 (TypeScript) |
-| UI | Vuetify 2.7 (Material Design) |
-| State | Vuex 3 |
+| Framework | Vue 3.5 (TypeScript) |
+| UI | Vuetify 3.7 (Material Design) |
+| State | Pinia 2 |
 | HTTP | Axios |
 | i18n | node-polyglot |
-| Build | Vue CLI 5 |
-| Test | Jest 27 + Vue Test Utils |
+| Build | Vite 6 |
+| Test | Vitest 2 + Vue Test Utils 2 |
 | Package | Yarn 3 |
 
 ## Architecture
@@ -69,24 +67,27 @@ src/
 ├── consts.ts           # StateType enum
 ├── filters.ts          # Vue filters (size, duration, time)
 ├── directives.ts       # Custom directives (v-class)
+├── router.ts           # Vue Router
 ├── components/
 │   ├── Torrents.vue    # Main torrent table
 │   ├── AddForm.vue     # Add torrent dialog
 │   ├── Drawer.vue      # Sidebar with filters
 │   ├── MainToolbar.vue # Top toolbar
-│   ├── dialogs/        # Settings, RSS, Search, Info dialogs
+│   ├── dialogs/        # Settings, RSS, Search, Info, Peers, Logs dialogs
 │   └── drawer/         # FilterGroup, DrawerFooter
-├── store/              # Vuex modules
-│   ├── index.ts        # Root store, main data, filtering
+├── store/              # Pinia stores
+│   ├── index.ts        # Main store — torrent data, filtering, polling state
 │   ├── config.ts       # User preferences (persisted to localStorage)
-│   ├── addForm.ts
-│   ├── dialog.ts
-│   ├── snackBar.ts
-│   └── searchEngine.ts
+│   ├── types.ts        # Store-specific type definitions
+│   ├── addForm.ts      # Add torrent form state
+│   ├── dialog.ts       # Global dialog state
+│   ├── snackBar.ts     # Snackbar notifications
+│   └── searchEngine.ts # Torrent search state
 ├── locale/             # Translations (en, zh-CN, zh-TW, ru, tr, nl)
 ├── plugins/            # Vuetify, i18n
 ├── utils/              # Helpers (vue-object-merge, siteMap)
 ├── sites.ts            # Tracker-to-icon mapping
+├── protocolHandler.ts  # magnet: protocol handling
 └── assets/             # Icons, styles
 ```
 
@@ -95,7 +96,7 @@ src/
 1. On startup, `App.vue` registers a `magnet:` protocol handler, reads `#download=` hash params, and resolves the base URL.
 2. Fetches initial data via `Api.getMainData()` and `Api.getAppPreferences()`.
 3. Polls `/sync/maindata` with a `rid` (response ID) for incremental updates at a configurable interval (default 2000ms).
-4. Partial updates are merged into Vuex state using `vue-object-merge`.
+4. Partial updates are merged into Pinia state using `vue-object-merge`.
 5. User actions (pause, resume, delete, add) call the corresponding qBittorrent API endpoints.
 
 ### Authentication
@@ -106,13 +107,15 @@ src/
 
 ### Component Patterns
 
-Components use `vue-class-component` with `vue-property-decorator`:
+Components use `vue-facing-decorator` for class-style component syntax:
+
 ```typescript
-@Component({
-  components: { ... },
-  computed: { ...mapState([...]), ...mapGetters([...]) },
-})
-export default class MyComponent extends Vue { }
+import { Vue, Component, Watch } from 'vue-facing-decorator';
+
+@Component({ components: { ... } })
+export default class MyComponent extends Vue {
+  // reactive state, computed via getters, methods, lifecycle hooks
+}
 ```
 
 ## Adding a New Site Icon
@@ -138,11 +141,10 @@ Icon resolution order: exact match → suffix match (subdomains) → base domain
 
 **Add an API endpoint:** Add method to `Api` class in `src/Api.ts`, define types in `src/types.ts`, use `this.axios.get/post`.
 
-**Add a dialog:** Create component in `src/components/dialogs/`, add to `App.vue` with `v-if`, add state to `drawerOptions` or Vuex.
+**Add a dialog:** Create component in `src/components/dialogs/`, add to `App.vue` with `v-if`, add state to `drawerOptions` or a Pinia store.
 
 ## Resources
 
 - [qBittorrent Web API](https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1))
-- [Vue 2 Docs](https://v2.vuejs.org/)
-- [Vuetify 2 Docs](https://v2.vuetifyjs.com/)
-- [Project Wiki](https://github.com/CzBiX/qb-web/wiki)
+- [Vue 3 Docs](https://vuejs.org/)
+- [Vuetify 3 Docs](https://vuetifyjs.com/)
