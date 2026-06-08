@@ -38,9 +38,12 @@ export default defineConfig({
     target: 'esnext',
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vuetify': ['vuetify'],
-          'vue-vendor': ['vue', 'vue-router', 'pinia'],
+        manualChunks(id: string) {
+          if (id.includes('node_modules/vuetify')) return 'vuetify';
+          if (id.includes('node_modules/vue') || id.includes('node_modules/pinia') || id.includes('node_modules/vue-router')) return 'vue-vendor';
+          if (id.includes('node_modules/lodash-es')) return 'lodash';
+          if (id.includes('node_modules/@mdi/js')) return 'mdi-icons';
+          if (id.includes('node_modules')) return 'vendor';
         },
       },
     },

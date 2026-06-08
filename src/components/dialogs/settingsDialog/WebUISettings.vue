@@ -136,23 +136,28 @@ import {Preferences} from '@/types'
 import {Config} from '@/store/config'
 import { ConfigPayload } from '@/store/types';
 import PreferenceRow from '@/components/dialogs/settingsDialog/PreferenceRow.vue'
+import { useConfigStore } from '@/store/config';
+import { useMainStore } from '@/store/index';
 
 @Component({
   components: {PreferenceRow},
 })
 export default class WebUISettings extends Vue {
+  configStore = useConfigStore()
+  mainStore = useMainStore()
+
   get config(): Config {
-    return this.$store.getters.config;
+    return this.configStore.config;
   }
   get preferences(): Preferences {
-    return this.$store.getters.allPreferences;
+    return this.mainStore.allPreferences;
   }
 
   updateConfig(payload: ConfigPayload) {
-    this.$store.commit('updateConfig', payload);
+    this.configStore.updateConfig(payload);
   }
   updatePreferencesRequest(data: any) {
-    return this.$store.dispatch('updatePreferencesRequest', data);
+    return this.mainStore.updatePreferencesRequest(data);
   }
 
   changeSettings(property: string, value: string | boolean) {

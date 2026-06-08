@@ -59,7 +59,7 @@
 </template>
 
 <script lang="ts">
-import { sortBy, sumBy, isUndefined } from 'lodash';
+import { sortBy, sumBy, isUndefined } from 'lodash-es';
 import { Vue, Component, Prop, Emit, toNative } from 'vue-facing-decorator';
 import { useDisplay } from 'vuetify';
 
@@ -71,6 +71,7 @@ import { formatSize } from '@/filters';
 import { StateType } from '@/consts';
 import { getSiteByHostname } from '@/sites'
 import { getSiteAbbreviation } from '@/utils/siteMap'
+import { useMainStore } from '@/store/index';
 
 const stateList = [
   {
@@ -139,6 +140,7 @@ interface MenuChildrenItem extends MenuItem {
 })
 class Drawer extends Vue {
   display = useDisplay() as any;
+  mainStore = useMainStore()
 
   @Prop()
   readonly modelValue: any
@@ -155,28 +157,28 @@ class Drawer extends Vue {
   ]
 
   get isDataReady(): boolean {
-    return this.$store.getters.isDataReady;
+    return this.mainStore.isDataReady;
   }
   get allTorrents(): Torrent[] {
-    return this.$store.getters.allTorrents;
+    return this.mainStore.allTorrents;
   }
   get allCategories(): Category[] {
-    return this.$store.getters.allCategories;
+    return this.mainStore.allCategories;
   }
   get allTags(): Tag[] {
-    return this.$store.getters.allTags;
+    return this.mainStore.allTags;
   }
   get torrentGroupByCategory(): {[category: string]: Torrent[]} {
-    return this.$store.getters.torrentGroupByCategory;
+    return this.mainStore.torrentGroupByCategory;
   }
   get torrentGroupByTag(): {[tag: string]: Torrent[]} {
-    return this.$store.getters.torrentGroupByTag;
+    return this.mainStore.torrentGroupByTag;
   }
   get torrentGroupBySite(): {[site: string]: Torrent[]} {
-    return this.$store.getters.torrentGroupBySite;
+    return this.mainStore.torrentGroupBySite;
   }
   get torrentGroupByState(): {[state: string]: Torrent[]} {
-    return this.$store.getters.torrentGroupByState;
+    return this.mainStore.torrentGroupByState;
   }
 
   created() {

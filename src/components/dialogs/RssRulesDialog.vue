@@ -159,7 +159,7 @@
 </template>
 
 <script lang="ts">
-import { isEmpty, isEqual, pull, cloneDeep } from 'lodash'
+import { isEmpty, isEqual, pull, cloneDeep } from 'lodash-es'
 import { Vue, Component } from 'vue-facing-decorator';
 
 import { tr } from '@/locale'
@@ -167,9 +167,16 @@ import { Prop, Emit, Watch } from 'vue-facing-decorator';
 import { RssRule, Category, RssNode } from '../../types';
 import api from '../../Api';
 import { DialogConfig, DialogType, SnackBarConfig } from '../../store/types';
+import { useMainStore } from '@/store/index';
+import { useDialogStore } from '@/store/dialog';
+import { useSnackBarStore } from '@/store/snackBar';
 
 @Component
 export default class RssRulesDialog extends Vue {
+  mainStore = useMainStore()
+  dialogStore = useDialogStore()
+  snackBarStore = useSnackBarStore()
+
   @Prop({ type: Boolean })
   readonly modelValue!: boolean
 
@@ -187,17 +194,17 @@ export default class RssRulesDialog extends Vue {
   selectedRuleName: string | null = null
 
   get allCategories(): Category[] {
-    return this.$store.getters.allCategories;
+    return this.mainStore.allCategories;
   }
 
   asyncShowDialog(config: DialogConfig): Promise<string | undefined> {
-    return this.$store.dispatch('asyncShowDialog', config);
+    return this.dialogStore.asyncShowDialog(config);
   }
   showSnackBar(config: SnackBarConfig) {
-    this.$store.commit('showSnackBar', config);
+    this.snackBarStore.showSnackBar(config);
   }
   closeSnackBar() {
-    this.$store.commit('closeSnackBar');
+    this.snackBarStore.closeSnackBar();
   }
 
   get selectedRule(): RssRule {

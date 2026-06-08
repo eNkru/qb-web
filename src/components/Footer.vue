@@ -190,17 +190,19 @@
 </template>
 
 <script lang="ts">
-import { sumBy } from 'lodash';
+import { sumBy } from 'lodash-es';
 import { Vue, Component, Prop, Watch, toNative } from 'vue-facing-decorator';
 import { useDisplay } from 'vuetify';
 import api from '../Api';
 import buildInfo from '@/buildInfo';
 import { Torrent, ServerState } from '@/types';
+import { useMainStore } from '@/store/index';
 
 
 @Component
 class Footer extends Vue {
   display = useDisplay() as any;
+  mainStore = useMainStore()
 
   @Prop({ type: Boolean })
   readonly phoneLayout!: boolean
@@ -211,13 +213,13 @@ class Footer extends Vue {
   buildInfo = buildInfo
 
   get info(): ServerState | null {
-    return this.isDataReady ? (this.$store.state as any).mainData?.server_state ?? null : null;
+    return this.isDataReady ? this.mainStore.mainData?.server_state ?? null : null;
   }
   get isDataReady(): boolean {
-    return this.$store.getters.isDataReady;
+    return this.mainStore.isDataReady;
   }
   get allTorrents(): Torrent[] {
-    return this.$store.getters.allTorrents;
+    return this.mainStore.allTorrents;
   }
 
   get totalSize() {

@@ -44,7 +44,7 @@ import { useDisplay } from 'vuetify';
 
 import { tr } from '@/locale';
 import { DialogType, DialogConfig } from '@/store/types';
-import { useMutations, useState } from '@/store';
+import { useDialogStore } from '@/store/dialog';
 
 const BUTTONS = {
   [DialogType.Alert]: [
@@ -69,13 +69,13 @@ const DefaultDialogWidth = '25%'
 export default {
   setup() {
     const display = useDisplay() as any;
-    const mutations = useMutations(['closeDialog']);
-    const { dialogConfig: userConfig } = useState(['dialogConfig']);
+    const dialogStore = useDialogStore();
+
     const config = computed(() => {
-      if (!userConfig.value) {
+      if (!dialogStore.config) {
         return null;
       }
-      const o = Object.assign({dialog: {}}, userConfig.value) as DialogConfig;
+      const o = Object.assign({dialog: {}}, dialogStore.config) as DialogConfig;
 
       if (!('width' in o.dialog)) {
         o.dialog.width = display.smAndDown ? null : DefaultDialogWidth
@@ -102,7 +102,7 @@ export default {
         }
       }
 
-      mutations.closeDialog();
+      dialogStore.closeDialog();
     }
 
     watch(config, (v) => {

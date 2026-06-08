@@ -276,12 +276,14 @@
 </template>
 
 <script lang="ts">
-import { isNil } from 'lodash';
+import { isNil } from 'lodash-es';
 import { Vue, Component, Watch, toNative } from 'vue-facing-decorator';
 import { useDisplay } from 'vuetify';
 
 import api from '../Api';
 import { Preferences, Category } from '../types';
+import { useMainStore } from '@/store/index';
+import { useAddFormStore } from '@/store/addForm';
 
  
 const defaultParams = {
@@ -300,6 +302,8 @@ const defaultParams = {
 @Component
 class AddForm extends Vue {
   display = useDisplay() as any;
+  mainStore = useMainStore()
+  addFormStore = useAddFormStore()
 
   files: File[] = []
   defaultParams = defaultParams
@@ -310,16 +314,16 @@ class AddForm extends Vue {
   dialogOpen = false
 
   get downloadItem(): { title: string; url: string } | null {
-    return this.$store.state.addFormDownloadItem ?? null;
+    return this.addFormStore.downloadItem ?? null;
   }
   get pasteUrl(): string | null {
-    return this.$store.state.pasteUrl;
+    return this.mainStore.pasteUrl;
   }
   get prefs(): Preferences {
-    return this.$store.state.preferences;
+    return this.mainStore.preferences;
   }
   get allCategories(): Category[] {
-    return this.$store.getters.allCategories;
+    return this.mainStore.allCategories;
   }
 
   declare $refs: {

@@ -1,5 +1,5 @@
 import { createPinia, setActivePinia } from 'pinia';
-import store from '@/store';
+import { useMainStore } from '@/store/index';
 import { RootState } from '@/store/types';
 import { mock, mockBaseTorrent } from '../utils';
 
@@ -19,34 +19,35 @@ beforeAll(() => {
   setActivePinia(createPinia());
 });
 
+let mainStore: ReturnType<typeof useMainStore>;
+
 beforeEach(() => {
-  store.replaceState(emtpyState);
+  mainStore = useMainStore();
+  mainStore.$patch(emtpyState);
 });
 
 test('update preferences', () => {
   const obj = {
     url: 'something',
   };
-  store.commit('updatePreferences', obj);
+  mainStore.updatePreferences(obj);
 
-  expect(store.state.preferences).toEqual(obj);
+  expect(mainStore.preferences).toEqual(obj);
 });
 
 test('set paste url', () => {
-  store.commit('setPasteUrl', {
-    url: 'something',
-  });
+  mainStore.setPasteUrl('something');
 
-  expect(store.state.pasteUrl).toEqual('something');
+  expect(mainStore.pasteUrl).toEqual('something');
 });
 
 describe('all torrents getter', () => {
   test('empty', () => {
-    expect(store.getters.allTorrents).toEqual([]);
+    expect(mainStore.allTorrents).toEqual([]);
   });
 
   test('with data', () => {
-    store.replaceState(mockState({
+    mainStore.$patch(mockState({
       mainData: {
         categories: {},
         tags: [""],
@@ -59,7 +60,7 @@ describe('all torrents getter', () => {
       },
     }));
 
-    expect(store.getters.allTorrents).toMatchObject([
+    expect(mainStore.allTorrents).toMatchObject([
       { hash: 'a' }, { hash: 'b' },
     ]);
   });

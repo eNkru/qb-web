@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { cloneDeep, isString } from 'lodash';
+import { cloneDeep, isString } from 'lodash-es';
 import { SnackBarState, SnackBarConfig } from './types';
 
 export const useSnackBarStore = defineStore('snackBar', {

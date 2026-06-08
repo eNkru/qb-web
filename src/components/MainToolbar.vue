@@ -36,13 +36,15 @@
 </template>
 
 <script lang="ts">
-import { throttle } from 'lodash';
+import { throttle } from 'lodash-es';
 import { Vue, Component, Prop, Emit, Watch, toNative } from 'vue-facing-decorator';
 import { useDisplay } from 'vuetify';
+import { useMainStore } from '@/store/index';
 
 @Component
 class MainToolbar extends Vue {
   display = useDisplay() as any;
+  mainStore = useMainStore()
 
   @Prop({ type: Boolean })
   readonly modelValue!: boolean
@@ -51,11 +53,11 @@ class MainToolbar extends Vue {
   searchInput = ''
 
   setQuery(value: string | null) {
-    this.$store.commit('setQuery', value);
+    this.mainStore.setQuery(value);
   }
 
   get searchQuery() {
-    return this.$store.state.query;
+    return this.mainStore.query;
   }
 
   get phoneLayout() {

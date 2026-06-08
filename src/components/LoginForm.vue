@@ -87,17 +87,19 @@
 import { defineComponent, reactive, toRefs } from 'vue';
 
 import api from '@/Api';
-import { useStore } from '@/store';
+import { useConfigStore } from '@/store/config';
+import { useMainStore } from '@/store/index';
 
 export default defineComponent({
   emits: ['input'],
   setup(_, { emit }) {
-    const store = useStore();
+    const configStore = useConfigStore();
+    const mainStore = useMainStore();
     const data = reactive({
       submitting: false,
       showPassword: false,
       loginError: null as string | null,
-      baseUrl: store.getters.config.baseUrl || location.href,
+      baseUrl: configStore.config.baseUrl || location.href,
       params: {
         username: '',
         password: '',
@@ -121,11 +123,11 @@ export default defineComponent({
         if (resp === 'Ok.') {
           api.changeBaseUrl(data.baseUrl);
 
-          store.commit('updateConfig', {
+          configStore.updateConfig({
             key: 'baseUrl',
             value: data.baseUrl,
           });
-          store.commit('updateNeedAuth', false);
+          mainStore.updateNeedAuth(false);
 
           emit('input', false);
           return;

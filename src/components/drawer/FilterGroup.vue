@@ -49,10 +49,13 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-facing-decorator';
-import { Group } from '../types'
+import { Group } from '../types';
+import { useConfigStore } from '@/store/config';
 
 @Component
 export default class FilterGroup extends Vue {
+  configStore = useConfigStore()
+
   @Prop()
   readonly group!: Group
 
@@ -61,7 +64,7 @@ export default class FilterGroup extends Vue {
 
   created() {
     this.model = this.group.model;
-    const s = this.$store.getters.config.filter[this.group.select];
+    const s = this.configStore.config.filter[this.group.select];
     if (this.group.children.some(child => child.key === s)) {
       this.selected = s;
     } else {
@@ -74,7 +77,7 @@ export default class FilterGroup extends Vue {
 
   select(key: string | null) {
     this.selected = this.selected === key ? null : key;
-    this.$store.commit('updateConfig', {
+    this.configStore.updateConfig({
       key: 'filter',
       value: {
         [this.group.select]: this.selected,

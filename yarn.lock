@@ -2282,6 +2282,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash-es@npm:^4.17.12":
+  version: 4.17.12
+  resolution: "@types/lodash-es@npm:4.17.12"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: 990a99e2243bebe9505cb5ad19fbc172beb4a8e00f9075c99fc06c46c2801ffdb40bc2867271cf580d5f48994fc9fb076ec92cd60a20e621603bf22114e5b077
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:*":
+  version: 4.17.24
+  resolution: "@types/lodash@npm:4.17.24"
+  checksum: 2b254973145ecdf9b052d83f00ebaa111245f319d45b217c78f81cea8892fda81180fc749bd50a99c08f4e5efceb834c774d3f74153a50a9c4a28648343dc9f3
+  languageName: node
+  linkType: hard
+
 "@types/lodash@npm:4.14.149":
   version: 4.14.149
   resolution: "@types/lodash@npm:4.14.149"
@@ -5379,6 +5395,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash-es@npm:^4.18.1":
+  version: 4.18.1
+  resolution: "lodash-es@npm:4.18.1"
+  checksum: 578993943cfa779e784aeed96766484ec6ab15cd855e52c79631de6371ac49fadd6dd9f4719f8d1223ab2bcb0dfbece484f548191dd34d3dd8b39e1af712a343
+  languageName: node
+  linkType: hard
+
 "lodash.debounce@npm:^4.0.8":
   version: 4.0.8
   resolution: "lodash.debounce@npm:4.0.8"
@@ -6077,6 +6100,7 @@ __metadata:
     "@mdi/js": ^7.4.47
     "@types/debug": ^4.1.5
     "@types/lodash": 4.14.149
+    "@types/lodash-es": ^4.17.12
     "@types/node": ^22.0.0
     "@types/node-polyglot": ^0.4.34
     "@typescript-eslint/eslint-plugin": ^8.0.0
@@ -6092,7 +6116,7 @@ __metadata:
     eslint-plugin-vue: ^9.0.0
     jsdom: ^25.0.0
     lint-staged: ^15.0.0
-    lodash: ^4.17.21
+    lodash-es: ^4.18.1
     node-polyglot: ^2.4.0
     pinia: ^2.2.0
     pinia-plugin-persistedstate: ^4.1.0

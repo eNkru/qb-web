@@ -9,7 +9,6 @@ declare module '*.vue' {
 
 declare module 'vue' {
   interface ComponentCustomProperties {
-    $store: any;
     $t: (key: string, ...args: any[]) => string;
     $formatSize: (value: number) => string;
     $size: (value: number) => string;

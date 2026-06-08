@@ -25,17 +25,20 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-facing-decorator'
 import {Preferences} from '@/types'
+import { useMainStore } from '@/store/index';
 
 @Component({
   components: {},
 })
 export default class SpeedSettings extends Vue {
+  mainStore = useMainStore()
+
   get preferences(): Preferences {
-    return this.$store.getters.allPreferences;
+    return this.mainStore.allPreferences;
   }
 
   updatePreferencesRequest(data: any) {
-    return this.$store.dispatch('updatePreferencesRequest', data);
+    return this.mainStore.updatePreferencesRequest(data);
   }
 
   changeSettings(property: string, value: string | boolean | number) {

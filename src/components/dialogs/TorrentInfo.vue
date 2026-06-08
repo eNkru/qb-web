@@ -77,7 +77,7 @@
 </template>
 
 <script lang="ts">
-import {chunk, countBy} from 'lodash'
+import {chunk, countBy} from 'lodash-es'
 
 import api from '../../Api'
 import {formatDuration, formatSize, formatTimestamp, toPrecision} from '@/filters'
