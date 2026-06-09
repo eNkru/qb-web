@@ -21,6 +21,7 @@ export interface Config {
   themeMode: 'light' | 'dark' | 'grey' | 'luxury' | 'modern-dark' | 'crypto' | 'cyberpunk' | 'natural' | 'technology' | null;
   displaySpeedInTitle: boolean | null;
   fontScale: number | null;
+  drawer: boolean | null;
 }
 
 const defaultConfig = {
@@ -42,6 +43,7 @@ const defaultConfig = {
   themeMode: null,
   displaySpeedInTitle: false,
   fontScale: 1,
+  drawer: false,
 };
 
 function saveConfig(obj: any) {

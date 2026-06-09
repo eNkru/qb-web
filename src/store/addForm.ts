@@ -6,11 +6,7 @@ export const useAddFormStore = defineStore('addForm', {
     isOpen: false,
     downloadItem: null,
   }),
-  getters: {
-    isOpen(state) {
-      return state.isOpen;
-    },
-  },
+  getters: {},
   actions: {
     openAddForm() {
       this.isOpen = true;

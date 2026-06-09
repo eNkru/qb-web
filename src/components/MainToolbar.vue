@@ -32,6 +32,22 @@
       v-model="searchInput"
     />
     <v-spacer v-if="!phoneLayout" />
+    <a
+      href="https://github.com/eNkru/qb-web/issues"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="github-link"
+    >
+      <v-icon>mdi-bug</v-icon>
+    </a>
+    <a
+      href="https://github.com/eNkru/qb-web/releases"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="github-link"
+    >
+      <v-icon>mdi-github</v-icon>
+    </a>
   </v-app-bar>
 </template>
 
@@ -200,6 +216,20 @@ export default toNative(MainToolbar)
     .search-bar {
       flex: 1;
       margin: 0 0.5em 0 1em;
+    }
+  }
+
+  .github-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    opacity: 0.7;
+    transition: opacity 0.15s ease;
+    margin-inline-end: 12px;
+
+    &:hover {
+      opacity: 1;
     }
   }
 }
