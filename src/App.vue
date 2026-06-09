@@ -114,7 +114,7 @@ class App extends Vue {
   mainStore = useMainStore()
   configStore = useConfigStore()
 
-  drawer = true
+  drawer = false
   drawerOptions = {
     showLogs: false,
     showRss: false,
@@ -175,7 +175,10 @@ class App extends Vue {
   }
 
   async created() {
-    this.drawer = !this.phoneLayout;
+    this.drawer = this.config.drawer ?? false;
+    if (this.phoneLayout) {
+      this.drawer = false;
+    }
 
     this.initProtocolHandler();
 
@@ -298,7 +301,7 @@ class App extends Vue {
       }
 
       if (mode === 'grey' || mode === 'luxury' || mode === 'natural' || mode === 'technology') {
-        this.theme.global.name = 'light';
+        this.theme.change('light');
 
         if (mode === 'grey') {
           this.setThemeColors('light', {
@@ -336,7 +339,7 @@ class App extends Vue {
           }
         });
       } else if (mode === 'modern-dark') {
-        this.theme.global.name = 'dark';
+        this.theme.change('dark');
         this.setThemeColors('dark', {
           primary: '#5E6AD2', secondary: '#8A8F98', accent: '#5E6AD2',
           error: '#FF5252', info: '#2196F3', success: '#4CAF50', warning: '#FFC107',
@@ -348,7 +351,7 @@ class App extends Vue {
           if (app) app.classList.add('modern-dark-theme');
         });
       } else if (mode === 'crypto') {
-        this.theme.global.name = 'dark';
+        this.theme.change('dark');
         this.setThemeColors('dark', {
           primary: '#F7931A', secondary: '#94A3B8', accent: '#F7931A',
           error: '#FF5252', info: '#2196F3', success: '#FFD600', warning: '#EA580C',
@@ -360,7 +363,7 @@ class App extends Vue {
           if (app) app.classList.add('crypto-theme');
         });
       } else if (mode === 'cyberpunk') {
-        this.theme.global.name = 'dark';
+        this.theme.change('dark');
         this.setThemeColors('dark', {
           primary: '#00ff88', secondary: '#6b7280', accent: '#00ff88',
           error: '#ff3366', info: '#00d4ff', success: '#00ff88', warning: '#ff00ff',
@@ -377,26 +380,33 @@ class App extends Vue {
           error: '#FF5252', info: '#2196F3', success: '#4CAF50', warning: '#FFC107',
         });
 
+        this.theme.change((mode === 'dark') ? 'dark' : 'light');
+
         this.$nextTick(() => {
           this.removeThemeClasses();
         });
-
-        this.theme.global.name = (mode === 'dark') ? 'dark' : 'light';
       }
       return;
     }
 
     this.mql = window.matchMedia('(prefers-color-scheme: dark)');
     this.mql.addEventListener('change', (e: MediaQueryListEvent) => {
-      this.theme.global.name = e.matches ? 'dark' : 'light';
+      this.theme.change(e.matches ? 'dark' : 'light');
     });
-    this.theme.global.name = this.mql.matches ? 'dark' : 'light';
+    this.theme.change(this.mql.matches ? 'dark' : 'light');
   }
 
   @Watch('config.fontScale', {immediate: true})
   onFontScale(scale: number | null) {
     const safeScale = typeof scale === 'number' && scale > 0 ? scale : 1;
     document.documentElement.style.setProperty('--app-font-scale', String(safeScale));
+  }
+
+  @Watch('drawer')
+  onDrawerChange(v: boolean) {
+    if (!this.phoneLayout) {
+      this.configStore.updateConfig({ key: 'drawer', value: v });
+    }
   }
 
   @Watch('config.darkMode')
