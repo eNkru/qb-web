@@ -78,7 +78,7 @@
       <v-btn
         icon
         @click="triggerSwitchUi"
-        :title="tr('label.switch_to_old_ui')"
+        :title="$t('label.switch_to_old_ui')"
       >
         <v-icon>mdi-history</v-icon>
       </v-btn>

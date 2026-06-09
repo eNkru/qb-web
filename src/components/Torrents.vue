@@ -982,6 +982,21 @@ export default toNative(Torrents)
           top: 0;
           bottom: 0;
         }
+
+        .v-field--variant-outlined {
+          .v-field__outline {
+            display: none;
+          }
+
+          .v-field__field {
+            background: transparent !important;
+            border: none !important;
+          }
+
+          .v-field__overlay {
+            display: none;
+          }
+        }
       }
     }
   }

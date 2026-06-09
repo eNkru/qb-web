@@ -125,6 +125,8 @@ export default toNative(LogsDialog)
 @include dialog-title;
 
 .logs {
+  font-size: 0.8125rem;
+
   .log-item {
     line-height: 1.4em;
 

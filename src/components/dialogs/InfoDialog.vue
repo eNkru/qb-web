@@ -27,7 +27,7 @@
           </v-tab>
         </v-tabs>
         <v-window
-          :model-value="tab"
+          v-model="tabSync"
           touchless
         >
           <v-window-item value="general">
@@ -39,7 +39,7 @@
             >
               <torrent-info
                 :torrent="torrent"
-                :is-active="tab === 'general'"
+                :is-active="tabSync === 'general'"
               />
             </panel>
           </v-window-item>
@@ -52,7 +52,7 @@
             >
               <trackers
                 :hash="torrent.hash"
-                :is-active="tab === 'trackers'"
+                :is-active="tabSync === 'trackers'"
               />
             </panel>
           </v-window-item>
@@ -65,7 +65,7 @@
             >
               <peers
                 :hash="torrent.hash"
-                :is-active="tab === 'peers'"
+                :is-active="tabSync === 'peers'"
               />
             </panel>
           </v-window-item>
@@ -78,7 +78,7 @@
             >
               <torrent-content
                 :hash="torrent.hash"
-                :is-active="tab === 'content'"
+                :is-active="tabSync === 'content'"
               />
             </panel>
           </v-window-item>
@@ -126,11 +126,18 @@ class InfoDialog extends Vue {
   @Prop({ type: String })
   readonly tab!: string
 
-  tabSync!: string
+  tabSync = 'general'
 
   @Watch('tab', { immediate: true })
   onTabChanged(v: string) {
-    this.tabSync = v;
+    if (v) {
+      this.tabSync = v;
+    }
+  }
+
+  @Watch('tabSync')
+  onTabSyncChanged(v: string) {
+    this.$emit('update:tab', v);
   }
 
   get torrents() {

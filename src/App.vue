@@ -734,7 +734,7 @@ html {
       color: #EDEDEF !important;
     }
 
-    .v-field__field {
+    .v-field:not(.v-field--variant-outlined) .v-field__field {
       background-color: #141418 !important;
       border: 1px solid #1e1e24 !important;
 
@@ -885,7 +885,7 @@ html {
       color: #FFFFFF !important;
     }
 
-    .v-field__field {
+    .v-field:not(.v-field--variant-outlined) .v-field__field {
       background-color: #0F1115 !important;
       border: 1px solid #1E293B !important;
 
@@ -1024,7 +1024,7 @@ html {
       color: #e0e0e0 !important;
     }
 
-    .v-field__field {
+    .v-field:not(.v-field--variant-outlined) .v-field__field {
       background-color: #12121a !important;
       border: 1px solid #2a2a3a !important;
 
@@ -1051,7 +1051,7 @@ html {
       }
     }
 
-    .v-field--focused .v-field__field {
+    .v-field--focused:not(.v-field--variant-outlined) .v-field__field {
       border-color: #00ff88 !important;
       box-shadow: 0 0 6px rgba(0, 255, 136, 0.25) !important;
     }
@@ -1181,7 +1181,7 @@ html {
       color: #2C2C24 !important;
     }
 
-    .v-field__field {
+    .v-field:not(.v-field--variant-outlined) .v-field__field {
       background-color: #F0EBE5 !important;
       border: 1px solid #DED8CF !important;
 
@@ -1208,7 +1208,7 @@ html {
       }
     }
 
-    .v-field--focused .v-field__field {
+    .v-field--focused:not(.v-field--variant-outlined) .v-field__field {
       border-color: #5D7052 !important;
     }
 
@@ -1337,7 +1337,7 @@ html {
       color: #0F172A !important;
     }
 
-    .v-field__field {
+    .v-field:not(.v-field--variant-outlined) .v-field__field {
       background-color: #FFFFFF !important;
       border: 1px solid #E2E8F0 !important;
 
@@ -1364,7 +1364,7 @@ html {
       }
     }
 
-    .v-field--focused .v-field__field {
+    .v-field--focused:not(.v-field--variant-outlined) .v-field__field {
       border-color: #0052FF !important;
       box-shadow: 0 0 0 1px #0052FF !important;
     }
