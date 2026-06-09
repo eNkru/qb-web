@@ -153,7 +153,6 @@ class Drawer extends Vue {
 
   pcItems: MenuItem[] = [
     { icon: 'mdi-cog-box', title: tr('settings'), click: () => this.updateOptions('showSettings', true) },
-    { icon: 'mdi-history', title: tr('label.switch_to_old_ui'), click: this.switchUi },
   ]
 
   get isDataReady(): boolean {

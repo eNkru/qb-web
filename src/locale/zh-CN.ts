@@ -198,6 +198,10 @@ export default {
       title: '退出 qBittorrent',
       text: '您确定要退出qBittorrent吗？',
     },
+    switch_to_old_ui: {
+      title: '切换到原版 UI',
+      text: '确定要切换到原版 UI 吗？',
+    },
     add_torrents: {
       placeholder: '将种子拖到这里上传，\n或者点击右边的附件图标来选择。',
       hint: '每行一个链接',
