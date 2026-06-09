@@ -2,9 +2,9 @@
   <v-data-table
     :headers="headers"
     :items="trackers"
-    :items-per-page="99999"
+    :items-per-page="50"
+    :items-per-page-options="[10, 25, 50, -1]"
   >
-    <template #bottom />
     <template #item="row">
       <tr>
         <td>{{ row.item.tier }}</td>

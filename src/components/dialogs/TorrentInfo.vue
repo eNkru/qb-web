@@ -205,28 +205,53 @@ export default toNative(TorrentInfo)
 .torrent-info {
   font-size: 0.875rem;
 
+  fieldset {
+    margin: 0 0 12px;
+  }
+
   .label {
-    text-align: right;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: rgba(var(--v-theme-on-surface), 0.55);
     padding-right: 0.5em;
-    text-transform: capitalize;
+    white-space: nowrap;
   }
 
   .value {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    font-weight: 500;
+  }
+
+  .v-row + .v-row {
+    margin-top: 2px;
   }
 
   .progress {
-    margin: 0.5em;
+    margin: 12px 0 16px;
     display: flex;
+    align-items: center;
+    gap: 12px;
+
+    > span:first-child {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: rgba(var(--v-theme-on-surface), 0.55);
+      white-space: nowrap;
+    }
+
+    > span:last-child {
+      font-size: 0.82rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
 
     .progress-inner {
-      margin: 0 1em;
-      align-self: center;
-      height: 16px;
-      flex-grow: 1;
-      border: 1px inset;
+      flex: 1;
+      height: 22px;
+      border-radius: 11px;
+      background: rgba(var(--v-theme-on-surface), 0.08);
     }
   }
 }
