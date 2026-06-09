@@ -1,32 +1,54 @@
 <template>
   <div class="torrent-content">
+    <div class="file-controls">
+      <v-text-field
+        v-model="search"
+        prepend-inner-icon="mdi-magnify"
+        density="compact"
+        variant="outlined"
+        hide-details
+        :placeholder="$t('filter')"
+        clearable
+      />
+      <span class="file-count">{{ $t('files') }}: {{ files.length }}</span>
+    </div>
     <v-treeview
       open-on-click
-      :items="fileTree"
+      :items="filteredTree"
+      item-title="name"
+      item-children="children"
+      item-value="id"
       :model-value="selected"
       selectable
       @update:model-value="selectChanged"
     >
-      <template #prepend="row">
+      <template #prepend="{ item }">
         <v-progress-circular
-          v-if="inChanging.includes(row.item.id)"
+          v-if="inChanging.includes((item as any).id)"
           size="24"
           width="2"
           indeterminate
         />
         <v-icon v-else>
-          {{ getRowIcon(row) }}
+          {{ getRowIcon(item as any) }}
         </v-icon>
       </template>
-      <template #append="row">
+      <template #append="{ item }">
         <span>
-          [{{ $formatSize(row.item.size) }}]
+          [{{ $formatSize((item as any).size) }}]
         </span>
         <span class="progress">
-          {{ $progress(row.item.progress) }}
+          {{ $progress((item as any).progress) }}
         </span>
       </template>
     </v-treeview>
+    <div
+      v-if="files?.length && !filteredFiles.length"
+      class="no-matches"
+    >
+      <v-icon>mdi-file-search-outline</v-icon>
+      <span>{{ $t('no_matches') }}</span>
+    </div>
   </div>
 </template>
 
@@ -78,19 +100,27 @@ class TorrentContent extends BaseTorrentInfo {
   files: File[] = []
   folderIndex!: number
   inChanging: number[] = []
+  search = ''
 
-  get fileTree(): TreeItem[] {
-    return this.buildTree(this.files, 0);
+  get filteredFiles(): File[] {
+    const source = this.files ?? [];
+    if (!this.search) return source;
+    const q = this.search.toLowerCase();
+    return source.filter(f => f.name.toLowerCase().includes(q));
+  }
+
+  get filteredTree(): TreeItem[] {
+    return this.buildTree(this.filteredFiles, 0);
   }
 
   get selected(): number[] {
-    return this.files.filter((item) => {
+    return (this.files ?? []).filter((item) => {
       return item.priority !== EFilePriority.notDownload;
     }).map(item => item.id);
   }
 
   async getFiles() {
-    const files = await api.getTorrentFiles(this.hash) as File[]
+    const files = await api.getTorrentFiles(this.hash) as File[] ?? []
     files.forEach((v, i) => v.id = i)
     files.sort((a, b) => a.name.localeCompare(b.name))
 
@@ -100,23 +130,25 @@ class TorrentContent extends BaseTorrentInfo {
     this.inChanging = [];
   }
 
-  getRowIcon(row: any) {
-    if (row.item.item) {
+  getRowIcon(item: TreeItem) {
+    if (item.item) {
       return 'mdi-file';
     }
 
-    return row.open ? 'mdi-folder-open' : 'mdi-folder';
+    return 'mdi-folder';
   }
 
   async selectChanged(items: Array<number>) {
     const previous = this.selected;
-    const diff = xor(previous, items);
+    const visibleIds = new Set(this.filteredFiles.map(f => f.id));
+    const visiblePrevious = previous.filter(id => visibleIds.has(id));
+    const diff = xor(visiblePrevious, items);
 
-    if(diff.length == 0) return;
+    if (diff.length === 0) return;
 
     this.inChanging.push(...diff);
 
-    await api.setTorrentFilePriority(this.hash, diff, items.length > previous.length ?
+    await api.setTorrentFilePriority(this.hash, diff, items.length > visiblePrevious.length ?
       EFilePriority.normal : EFilePriority.notDownload);
   }
 
@@ -130,8 +162,8 @@ class TorrentContent extends BaseTorrentInfo {
     return name.substring(start, index);
   }
 
-  buildTree(files: Array<File>, start: number): TreeItem[] {
-    if (!files.length) {
+  buildTree(files: File[] | undefined, start: number): TreeItem[] {
+    if (!files?.length) {
       return [];
     }
 
@@ -192,6 +224,37 @@ export default toNative(TorrentContent)
 .torrent-content {
   :deep(.v-treeview-node__root) {
     min-height: 0;
+  }
+
+  .file-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: rgb(var(--v-theme-surface));
+
+    .v-text-field {
+      flex: 1;
+    }
+
+    .file-count {
+      font-size: 0.8125rem;
+      color: rgba(var(--v-theme-on-surface), 0.6);
+      white-space: nowrap;
+    }
+  }
+
+  .no-matches {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 32px;
+    color: rgba(var(--v-theme-on-surface), 0.4);
+    font-size: 0.875rem;
   }
 }
 

@@ -33,19 +33,34 @@ export default toNative(Panel);
 
 <style lang="scss" scoped>
 .panel {
-  margin-top: 1em;
+  margin: 16px 16px 0;
 
   .inner {
-    max-height: 500px;
     overflow-y: auto;
   }
 }
 
 fieldset {
-  border-width: 1px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  padding: 0;
+
+  .v-theme--dark & {
+    border-color: rgba(255, 255, 255, 0.08);
+  }
 
   legend {
-    margin-left: 1em;
+    margin-left: 12px;
+    padding: 0 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: rgba(var(--v-theme-on-surface), 0.5);
+  }
+
+  .inner {
+    padding: 12px;
   }
 }
 </style>

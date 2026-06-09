@@ -7,22 +7,32 @@
     <v-card>
       <v-card-title class="headline">
         <v-icon class="mr-2">
-          mdi-alert-circle
+          mdi-information-outline
         </v-icon>
         <span>{{ $t('info') }}</span>
       </v-card-title>
-      <v-card-text>
-        <v-tabs v-model="tabSync">
+      <v-card-text class="dialog-body">
+        <v-tabs
+          v-model="tabSync"
+          color="primary"
+          grow
+          density="comfortable"
+          variant="pills"
+        >
           <v-tab value="general">
+            <v-icon start>mdi-information-outline</v-icon>
             {{ $t("prop_tab_bar.general") }}
           </v-tab>
           <v-tab value="trackers">
+            <v-icon start>mdi-cloud-outline</v-icon>
             {{ $t("prop_tab_bar.trackers") }}
           </v-tab>
           <v-tab value="peers">
+            <v-icon start>mdi-account-group-outline</v-icon>
             {{ $t("prop_tab_bar.peers") }}
           </v-tab>
           <v-tab value="content">
+            <v-icon start>mdi-file-tree</v-icon>
             {{ $t("prop_tab_bar.content") }}
           </v-tab>
         </v-tabs>
@@ -170,31 +180,70 @@ export default toNative(InfoDialog)
 <style lang="scss" scoped>
 @include dialog-title;
 
-:deep(.v-dialog) {
-  max-width: 1100px;
+:deep(.v-dialog > .v-card) {
+  border-radius: 16px;
+}
 
-  .v-card__text {
+:deep(.v-dialog) {
+  max-width: 1200px;
+
+  .v-card__text.dialog-body {
+    padding: 0;
+
+    .v-tabs {
+      padding: 0 16px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+      .v-theme--dark & {
+        border-bottom-color: rgba(255, 255, 255, 0.08);
+      }
+
+      .v-tab {
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        font-size: 0.85rem;
+        min-width: 0;
+        padding: 0 12px;
+      }
+    }
+  }
+
+  .v-card__text:not(.dialog-body) {
     min-height: 200px;
-    padding: 0 8px 8px;
+    padding: 16px 20px;
   }
 }
 
-:deep(.v-data-table thead th), :deep(.v-data-table tbody td) {
-  padding: 0 2px !important;
-  height: auto;
-
-  white-space: nowrap;
-
-  &:first-child {
-    padding: 0 0 0 8px !important;
+:deep(.v-data-table) {
+  .v-data-table-footer {
+    margin-right: 0;
   }
-  &:last-child {
-    padding-right: 8px !important;
+
+  thead th, tbody td {
+    padding: 3px 8px !important;
+    height: auto;
+    white-space: nowrap;
+
+    &:first-child {
+      padding-left: 14px !important;
+    }
+    &:last-child {
+      padding-right: 14px !important;
+    }
+  }
+
+  thead th {
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: rgba(var(--v-theme-on-surface), 0.55);
   }
 }
 
 .v-dialog--fullscreen {
-  .v-card__text {
+  .v-card__text.dialog-body {
     padding-bottom: 52px;
   }
 
