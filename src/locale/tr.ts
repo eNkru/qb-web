@@ -128,6 +128,10 @@ export default {
       title: 'qBittorrent\'ten Çık',
       text: 'qBittorrent uygulamasından çıkmak istediğinize emin misiniz?',
     },
+    switch_to_old_ui: {
+      title: 'Resmi Web Arayüzü\'ne Geç',
+      text: 'Resmi web arayüzüne geçmek istediğinize emin misiniz?',
+    },
     add_torrents: {
       placeholder: 'Torrentleri yüklemek için\nlinkleri buraya girin\nveya sağdaki ataç butonuna tıklayıp seçim yapın.',
       hint: 'Her satıra sadece bir bağlantı',

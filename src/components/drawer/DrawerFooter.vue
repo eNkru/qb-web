@@ -77,6 +77,13 @@
       </v-menu>
       <v-btn
         icon
+        @click="triggerSwitchUi"
+        :title="$t('label.switch_to_old_ui')"
+      >
+        <v-icon>mdi-history</v-icon>
+      </v-btn>
+      <v-btn
+        icon
         @click="triggerApplicationShutdown"
         :title="$t('trigger_application_shutdown')"
       >
@@ -269,6 +276,20 @@ class DrawerFooter extends Vue {
       return;
     }
     await api.shutdownApplication();
+  }
+
+  async triggerSwitchUi() {
+    const v = await this.asyncShowDialog({
+      title:  tr('dialog.switch_to_old_ui.title'),
+      text:  tr('dialog.switch_to_old_ui.text'),
+      type: DialogType.OkCancel,
+    });
+
+    if (!v) {
+      return;
+    }
+    await api.switchToOldUi();
+    location.reload();
   }
 }
 

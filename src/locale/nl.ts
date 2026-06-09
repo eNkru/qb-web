@@ -198,6 +198,10 @@ export default {
         title: 'qBittorrent afsluiten',
         text: 'Weet u zeker dat u qBittorrent wilt afsluiten?',
       },
+      switch_to_old_ui: {
+        title: 'Overschakelen naar oude interface',
+        text: 'Weet u zeker dat u wilt overschakelen naar de oude interface?',
+      },
       add_torrents: {
         placeholder: 'Upload torrents door ze naar hier te slepen,\nof click rechts op de bijlageknop om ze te selecteren.',
         hint: 'Één link per regel',

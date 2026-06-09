@@ -198,6 +198,10 @@ export default {
       title: 'Exit qBittorrent',
       text: 'Are you sure you want to exit qBittorrent?',
     },
+    switch_to_old_ui: {
+      title: 'Switch to original UI',
+      text: 'Are you sure you want to switch to the original UI?',
+    },
     add_torrents: {
       placeholder: 'Upload torrents by dropping them here,\nor click attachment button at right to select.',
       hint: 'One link per line',

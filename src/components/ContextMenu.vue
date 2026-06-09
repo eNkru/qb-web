@@ -1,10 +1,9 @@
 <template>
   <v-menu
     v-model="show"
-    :position-x="x"
-    :position-y="y"
-    absolute
-    offset-y
+    :target="[x, y]"
+    location="top start"
+    origin="top start"
     transition="slide-y-transition"
   >
     <v-list density="compact">
