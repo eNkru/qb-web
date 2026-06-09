@@ -13,6 +13,13 @@ A modern, responsive alternative Web UI for qBittorrent. Built as a single-page 
 - **Search** — Integrated torrent search
 - **Real-time sync** — Incremental polling via qBittorrent's sync API
 
+## Screenshots
+
+| Light theme | Dark theme |
+| :---: | :---: |
+| ![Light theme — drawer expanded](docs/images/light-drawer.png) | ![Dark theme — drawer expanded](docs/images/dark-drawer.png) |
+| ![Light theme — drawer collapsed](docs/images/light-no-drawer.png) | ![Dark theme — drawer collapsed](docs/images/dark-no-drawer.png) |
+
 ## Installation
 
 ### Download a release build
@@ -20,15 +27,15 @@ A modern, responsive alternative Web UI for qBittorrent. Built as a single-page 
 The latest build artifacts are available from the **Actions** tab on GitHub.
 1. Go to [Releases](https://github.com/CzBiX/qb-web/releases) and download the latest `qb-web.zip`.
 2. Extract all files.
-3. In qBittorrent Web UI Options, enable **Use alternative Web UI** and set **Files location** to the extracted folder.
+3. In qBittorrent Web UI Options, enable **Use alternative Web UI** and set **Files location** to the `public` folder inside the extracted zip.
 
 ### Build from source
 ```bash
 yarn install
 yarn build
-# The output will be in the `dist/` folder.
+# The output will be in the `dist/public/` folder.
 ```
-Then point qBittorrent's alternative Web UI to the `dist/` folder.
+Then point qBittorrent's alternative Web UI to the `dist/public/` folder.
 
 **Recovery:** If something goes wrong, append `/api/v2/app/setPreferences?json=%7B%22alternative_webui_enabled%22:false%7D` to the URL in your browser to disable the alternative Web UI.
 
