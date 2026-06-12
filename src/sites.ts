@@ -39,6 +39,10 @@ const sites: {[key: string]: SiteInfo} = {
     name: 'CHDBits',
     icon: getSiteIcon('chdbits'),
   },
+  'chdbits.xyz': {
+    name: 'CHDBits',
+    icon: getSiteIcon('chdbits'),
+  },
   'hdhome.org': {
     name: 'HDHome',
     icon: getSiteIcon('hdhome'),
