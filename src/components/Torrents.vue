@@ -1042,41 +1042,26 @@ export default toNative(Torrents)
 .site-badge {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  height: 28px;
-  padding: 0 11px;
-  border-radius: 999px;
-  background: rgba(241, 245, 249, 0.95);
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  color: rgba(15, 23, 42, 0.85);
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 4px;
+  background: transparent;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.15);
+  color: rgba(var(--v-theme-on-surface), 0.7);
   cursor: default;
-  transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
-  max-width: 9rem;
+  transition: border-color 0.15s ease, color 0.15s ease;
 
   &:hover {
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
-    border-color: rgba(100, 116, 139, 0.45);
-    transform: translateY(-1px);
-  }
-}
-
-.v-theme--dark .site-badge {
-  background: rgba(30, 41, 59, 0.92);
-  border-color: rgba(100, 116, 139, 0.4);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.12);
-  color: rgba(241, 245, 249, 0.92);
-
-  &:hover {
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
-    border-color: rgba(148, 163, 184, 0.5);
+    border-color: rgba(var(--v-theme-on-surface), 0.3);
+    color: rgba(var(--v-theme-on-surface), 0.9);
   }
 }
 
 .site-badge__icon {
-  width: 18px;
-  height: 18px;
-  flex: 0 0 18px;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
   object-fit: contain;
   border-radius: 3px;
 }
@@ -1085,13 +1070,13 @@ export default toNative(Torrents)
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
-  flex: 0 0 18px;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
   border-radius: 4px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: #fff;
-  font-size: 0.65rem;
+  background: rgb(var(--v-theme-primary));
+  color: rgb(var(--v-theme-on-primary));
+  font-size: 0.6rem;
   font-weight: 700;
   line-height: 1;
   text-transform: uppercase;
@@ -1103,9 +1088,9 @@ export default toNative(Torrents)
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
   line-height: 1;
 }
 

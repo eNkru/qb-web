@@ -495,7 +495,7 @@ html {
     }
     
     .v-navigation-drawer .v-navigation-drawer__content {
-      background-color: #ececec !important;
+      background-color: #e5e5e5 !important;
     }
     
     .v-app-bar.v-toolbar {
@@ -565,7 +565,7 @@ html {
     }
 
     .v-navigation-drawer .v-navigation-drawer__content {
-      background-color: #F9F8F6 !important;
+      background-color: #F0EEEB !important;
     }
 
     .v-app-bar.v-toolbar {
@@ -655,7 +655,7 @@ html {
     }
 
     .v-navigation-drawer .v-navigation-drawer__content {
-      background-color: #0a0a0c !important;
+      background-color: #08080a !important;
     }
 
     .v-app-bar.v-toolbar {
@@ -806,7 +806,7 @@ html {
     }
 
     .v-navigation-drawer .v-navigation-drawer__content {
-      background-color: #0F1115 !important;
+      background-color: #0C0E12 !important;
     }
 
     .v-app-bar.v-toolbar {
@@ -944,7 +944,7 @@ html {
     }
 
     .v-navigation-drawer .v-navigation-drawer__content {
-      background-color: #1c1c2e !important;
+      background-color: #18182a !important;
     }
 
     .v-app-bar.v-toolbar {
@@ -1102,7 +1102,7 @@ html {
     }
 
     .v-navigation-drawer .v-navigation-drawer__content {
-      background-color: #FDFCF8 !important;
+      background-color: #F5F3EE !important;
     }
 
     .v-app-bar.v-toolbar {
@@ -1258,7 +1258,7 @@ html {
     }
 
     .v-navigation-drawer .v-navigation-drawer__content {
-      background-color: #FAFAFA !important;
+      background-color: #F5F5F5 !important;
     }
 
     .v-app-bar.v-toolbar {
@@ -1466,7 +1466,7 @@ html {
     z-index: 1;
     display: flex;
     flex-direction: column;
-    background-color: rgb(var(--v-theme-surface)) !important;
+    background-color: rgba(0, 0, 0, 0.03) !important;
 
     // Drawer list scrolls, footer stays pinned
     > .drawer {
@@ -1488,6 +1488,7 @@ html {
 }
 
 .v-theme--dark .v-navigation-drawer .v-navigation-drawer__content {
+  background-color: rgba(255, 255, 255, 0.03) !important;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3), 0 0 1px rgba(255, 255, 255, 0.06);
 }
 </style>

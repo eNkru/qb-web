@@ -22,6 +22,7 @@ export default {
   info: 'Info',
   reset: 'Reset',
   login: 'Login',
+  login_subtitle: 'Connect to qBittorrent Web UI',
   search: 'Search',
   refresh: 'Refresh',
   location: 'Location',
