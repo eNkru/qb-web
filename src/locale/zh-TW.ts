@@ -30,6 +30,8 @@ export default {
   reannounce: '重新通告',
   copy_save_path: '複製儲存路徑',
   show_details: '查看詳情',
+  pin_drawer: '固定側邊欄',
+  unpin_drawer: '取消固定側邊欄',
   recheck: '重新檢查',
   priority: {
     column: '優先級',

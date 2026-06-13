@@ -15,7 +15,7 @@
     <div class="button-bar">
       <v-btn
         icon
-        :title="pinned ? 'Unpin drawer' : 'Pin drawer'"
+        :title="pinned ? $t('unpin_drawer') : $t('pin_drawer')"
         @click="togglePin"
       >
         <v-icon>{{ pinned ? 'mdi-pin' : 'mdi-pin-off' }}</v-icon>
