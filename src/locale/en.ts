@@ -31,6 +31,8 @@ export default {
   reannounce: 'Reannounce',
   copy_save_path: 'Copy save path',
   show_details: 'Show details',
+  pin_drawer: 'Pin drawer',
+  unpin_drawer: 'Unpin drawer',
   filter: 'Filter...',
   no_matches: 'No matches found',
   recheck: 'Recheck',
