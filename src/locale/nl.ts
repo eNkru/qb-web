@@ -29,6 +29,7 @@ export default {
     trigger_application_shutdown: 'qBittorrent afsluiten',
     reannounce: 'Opnieuw Aankondigen',
   copy_save_path: 'Opslagpad kopiëren',
+  show_details: 'Details weergeven',
     recheck: 'Opnieuw Controleren',
     priority: {
       column: 'Prioriteit',

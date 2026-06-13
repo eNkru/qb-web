@@ -29,6 +29,7 @@ export default {
   reannounce: 'Yeniden Duyur',
   recheck: 'Yeniden Denetle',
   copy_save_path: 'Kaydetme yolunu kopyala',
+  show_details: 'Ayrıntıları göster',
   priority: {
     column: 'Öncelik',
     top: 'En yüksek öncelik',

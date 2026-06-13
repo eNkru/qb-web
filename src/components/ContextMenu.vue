@@ -4,9 +4,15 @@
     :target="[x, y]"
     location="top start"
     origin="top start"
-    transition="slide-y-transition"
+    transition="scale-transition"
   >
     <v-list density="compact">
+      <v-list-item @click="showDetails">
+        <template #prepend>
+          <v-icon>mdi-information-outline</v-icon>
+        </template>
+        <v-list-item-title>{{ $t('show_details') }}</v-list-item-title>
+      </v-list-item>
       <v-list-item @click="copySavePath">
         <template #prepend>
           <v-icon>mdi-content-copy</v-icon>
@@ -21,7 +27,7 @@
 import { Vue, Component, Prop } from 'vue-facing-decorator';
 
 @Component({
-  emits: ['update:modelValue', 'close'],
+  emits: ['update:modelValue', 'close', 'show-details'],
 })
 export default class ContextMenu extends Vue {
   @Prop({ type: Boolean, default: false })
@@ -36,6 +42,9 @@ export default class ContextMenu extends Vue {
   @Prop({ type: String, default: '' })
   readonly savePath!: string
 
+  @Prop({ type: String, default: '' })
+  readonly hash!: string
+
   get show() {
     return this.value;
   }
@@ -47,10 +56,33 @@ export default class ContextMenu extends Vue {
     }
   }
 
+  showDetails() {
+    this.$emit('show-details', this.hash);
+    this.show = false;
+  }
+
   async copySavePath() {
     if (this.savePath) {
-      await navigator.clipboard.writeText(this.savePath);
+      try {
+        await navigator.clipboard.writeText(this.savePath);
+      } catch {
+        const textarea = document.createElement('textarea');
+        textarea.value = this.savePath;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      this.show = false;
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+:deep(.v-menu__content) {
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+</style>

@@ -13,6 +13,14 @@
     <v-divider />
 
     <div class="button-bar">
+      <v-btn
+        icon
+        :title="pinned ? 'Unpin drawer' : 'Pin drawer'"
+        @click="togglePin"
+      >
+        <v-icon>{{ pinned ? 'mdi-pin' : 'mdi-pin-off' }}</v-icon>
+      </v-btn>
+
       <template v-if="phoneLayout">
         <v-btn
           icon
@@ -125,6 +133,17 @@ class DrawerFooter extends Vue {
   currentLocale: string = AUTO_KEY
   oldLocale = AUTO_KEY
   showInfo = false
+
+  get pinned() {
+    return this.configStore.config.drawerPinned ?? false;
+  }
+
+  togglePin() {
+    this.updateConfig({
+      key: 'drawerPinned',
+      value: !this.pinned,
+    });
+  }
 
   themeModes = [
     ['light', tr('light')],

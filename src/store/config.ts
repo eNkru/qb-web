@@ -22,6 +22,7 @@ export interface Config {
   displaySpeedInTitle: boolean | null;
   fontScale: number | null;
   drawer: boolean | null;
+  drawerPinned: boolean | null;
 }
 
 const defaultConfig = {
@@ -44,6 +45,7 @@ const defaultConfig = {
   displaySpeedInTitle: false,
   fontScale: 1,
   drawer: false,
+  drawerPinned: false,
 };
 
 function saveConfig(obj: any) {

@@ -30,6 +30,7 @@ export default {
   trigger_application_shutdown: 'Exit qBittorrent',
   reannounce: 'Reannounce',
   copy_save_path: 'Copy save path',
+  show_details: 'Show details',
   filter: 'Filter...',
   no_matches: 'No matches found',
   recheck: 'Recheck',

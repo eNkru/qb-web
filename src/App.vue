@@ -12,7 +12,7 @@
     </v-navigation-drawer>
     <main-toolbar v-model="drawer" />
 
-    <v-main>
+    <v-main @click="onMainClick">
       <torrents @torrent-contextmenu="onTorrentContextMenu" />
     </v-main>
 
@@ -51,7 +51,9 @@
       :x="contextMenu.x"
       :y="contextMenu.y"
       :save-path="contextMenu.savePath"
+      :hash="contextMenu.hash"
       @close="contextMenu.show = false"
+      @show-details="onShowDetails"
     />
     <GlobalDialog />
     <GlobalSnackBar />
@@ -126,6 +128,7 @@ class App extends Vue {
     x: 0,
     y: 0,
     savePath: '',
+    hash: '',
   }
   task: ReturnType<typeof setTimeout> | 0 = 0
   mql?: MediaQueryList
@@ -157,6 +160,12 @@ class App extends Vue {
   }
   updateNeedAuth(value: boolean) {
     this.mainStore.updateNeedAuth(value);
+  }
+
+  onMainClick() {
+    if (this.drawer && !this.config.drawerPinned) {
+      this.drawer = false;
+    }
   }
 
   get phoneLayout() {
@@ -257,14 +266,27 @@ class App extends Vue {
     }
   }
 
-  onTorrentContextMenu(payload: { x: number; y: number; savePath: string }) {
+  onTorrentContextMenu(payload: { x: number; y: number; savePath: string; hash: string }) {
     this.contextMenu.show = false;
     this.$nextTick(() => {
       this.contextMenu.x = payload.x;
       this.contextMenu.y = payload.y;
       this.contextMenu.savePath = payload.savePath;
+      this.contextMenu.hash = payload.hash;
       this.contextMenu.show = true;
     });
+  }
+
+  onShowDetails(hash: string) {
+    const mainData = this.mainStore.mainData;
+    if (mainData?.torrents) {
+      const baseTorrent = mainData.torrents[hash];
+      if (baseTorrent) {
+        const torrent = { ...baseTorrent, hash };
+        const event = new CustomEvent('show-torrent-details', { detail: torrent });
+        window.dispatchEvent(event);
+      }
+    }
   }
 
   private setThemeColors(
