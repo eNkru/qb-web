@@ -30,6 +30,7 @@ export default {
   trigger_application_shutdown: '退出qBittorrent',
   reannounce: '重新通告',
   copy_save_path: '复制保存路径',
+  show_details: '查看详情',
   recheck: '重新检查',
   priority: {
     column: '优先级',

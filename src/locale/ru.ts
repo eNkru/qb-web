@@ -29,6 +29,7 @@ export default {
   reannounce: 'Объявить повторно',
   recheck: 'Перепроверить',
   copy_save_path: 'Копировать путь сохранения',
+  show_details: 'Показать подробности',
   priority: {
     column: 'Приоритет',
     top: 'Наивысший приоритет',

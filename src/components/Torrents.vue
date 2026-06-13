@@ -224,7 +224,6 @@
               'torrent-row--selected': isSelected(item.hash),
             }"
             @click="toggleSelection(item.hash)"
-            @dblclick.prevent="showInfo(item)"
             @contextmenu.stop.prevent="onRowContextMenu($event, item)"
           >
             <td>
@@ -712,6 +711,7 @@ class Torrents extends Vue {
       x: e.clientX,
       y: e.clientY,
       savePath: torrent.save_path,
+      hash: torrent.hash,
     });
   }
 
@@ -721,6 +721,18 @@ class Torrents extends Vue {
       this.itemsPerPage = savedItemsPerPage;
     }
     this.sortBy = this.configStore.config.sortBy ?? [];
+  }
+
+  mounted() {
+    window.addEventListener('show-torrent-details', this.onShowTorrentDetails as any);
+  }
+
+  beforeUnmount() {
+    window.removeEventListener('show-torrent-details', this.onShowTorrentDetails as any);
+  }
+
+  onShowTorrentDetails(e: Event) {
+    this.showInfo((e as CustomEvent).detail);
   }
 
   confirmDelete() {
