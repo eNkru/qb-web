@@ -12,7 +12,7 @@
     </v-navigation-drawer>
     <main-toolbar v-model="drawer" />
 
-    <v-main>
+    <v-main @click="onMainClick">
       <torrents @torrent-contextmenu="onTorrentContextMenu" />
     </v-main>
 
@@ -160,6 +160,12 @@ class App extends Vue {
   }
   updateNeedAuth(value: boolean) {
     this.mainStore.updateNeedAuth(value);
+  }
+
+  onMainClick() {
+    if (this.drawer && !this.config.drawerPinned) {
+      this.drawer = false;
+    }
   }
 
   get phoneLayout() {
