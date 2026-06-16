@@ -85,8 +85,12 @@ export const useMainStore = defineStore('main', {
           return '';
         }
 
-        const url = new URL(torrent.tracker);
-        return url.hostname;
+        try {
+          const url = new URL(torrent.tracker);
+          return url.hostname;
+        } catch {
+          return '';
+        }
       });
     },
     torrentGroupByState(): Record<string, Torrent[]> {
@@ -128,14 +132,12 @@ export const useMainStore = defineStore('main', {
         }
         if (payload.categories_removed) {
           for (const key of payload.categories_removed) {
-            delete (mainData as any)[key];
+            delete mainData.categories?.[key];
           }
           delete payload.categories_removed;
         }
         if (payload.tags_removed) {
-          for (const key of payload.tags_removed) {
-            delete (mainData as any)[key];
-          }
+          mainData.tags = mainData.tags.filter(tag => !payload.tags_removed.includes(tag)) as any;
           delete payload.tags_removed;
         }
         stateMerge(mainData, payload);
@@ -170,5 +172,4 @@ export const useMainStore = defineStore('main', {
     },
   },
 });
-
 

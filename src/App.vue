@@ -132,6 +132,7 @@ class App extends Vue {
   }
   task: ReturnType<typeof setTimeout> | 0 = 0
   mql?: MediaQueryList
+  colorSchemeChangeHandler?: (e: MediaQueryListEvent) => void
 
   get mainData(): MainData | undefined {
     return this.mainStore.mainData;
@@ -200,6 +201,7 @@ class App extends Vue {
     if (this.task) {
       clearTimeout(this.task);
     }
+    this.removeColorSchemeListener();
     appWrapEl?.removeEventListener('paste', this.onPaste);
   }
 
@@ -217,13 +219,14 @@ class App extends Vue {
     }
 
     try {
-      await this.getMainData();
+      await this.getMainData(false);
     } catch {
       this.updateNeedAuth(true);
       return;
     }
 
     await this.getPreferences();
+    this.scheduleMainDataRefresh();
   }
 
   async getPreferences() {
@@ -232,25 +235,50 @@ class App extends Vue {
     this.updatePreferences(resp.data);
   }
 
-  async getMainData() {
-    const rid = this.rid ? this.rid : undefined;
-    const resp = await api.getMainData(rid);
-    const mainData = resp.data;
-
-    this.updateMainData(mainData);
-    if(this.config.displaySpeedInTitle) {
-      const upInfoSpeed = mainData.server_state.up_info_speed
-      const dlInfoSpeed = mainData.server_state.dl_info_speed
-      let dl = '', up = ''
-      if (dlInfoSpeed > 1024) {
-        dl = `D ${formatSize(dlInfoSpeed)}/s`
-      }
-      if (upInfoSpeed > 1024) {
-        up = `U ${formatSize(upInfoSpeed)}/s`
-      }
-      document.title = `[${up} ${dl}] qBittorrent Web UI`
+  scheduleMainDataRefresh() {
+    if (this.task) {
+      clearTimeout(this.task);
     }
-    this.task = setTimeout(this.getMainData, this.config.updateInterval);
+    this.task = setTimeout(() => {
+      this.task = 0;
+      void this.getMainData();
+    }, this.config.updateInterval);
+  }
+
+  async getMainData(scheduleNext = true) {
+    try {
+      const rid = this.rid ? this.rid : undefined;
+      const resp = await api.getMainData(rid);
+      const mainData = resp.data;
+
+      this.updateMainData(mainData);
+      if(this.config.displaySpeedInTitle) {
+        const upInfoSpeed = mainData.server_state.up_info_speed
+        const dlInfoSpeed = mainData.server_state.dl_info_speed
+        let dl = '', up = ''
+        if (dlInfoSpeed > 1024) {
+          dl = `D ${formatSize(dlInfoSpeed)}/s`
+        }
+        if (upInfoSpeed > 1024) {
+          up = `U ${formatSize(upInfoSpeed)}/s`
+        }
+        document.title = `[${up} ${dl}] qBittorrent Web UI`
+      }
+    } catch (error: any) {
+      const status = error?.response?.status;
+      if (status === 401 || status === 403) {
+        this.updateNeedAuth(true);
+      }
+
+      if (!scheduleNext) {
+        throw error;
+      }
+
+    } finally {
+      if (scheduleNext && !this.needAuth) {
+        this.scheduleMainDataRefresh();
+      }
+    }
   }
 
   onPaste(e: ClipboardEvent) {
@@ -306,6 +334,14 @@ class App extends Vue {
     }
   }
 
+  private removeColorSchemeListener() {
+    if (this.mql && this.colorSchemeChangeHandler) {
+      this.mql.removeEventListener('change', this.colorSchemeChangeHandler);
+    }
+    this.mql = undefined;
+    this.colorSchemeChangeHandler = undefined;
+  }
+
   @Watch('needAuth')
   onNeedAuth(v: boolean) {
     if (!v) {
@@ -316,11 +352,7 @@ class App extends Vue {
   @Watch('config.themeMode', {immediate: true})
   onThemeMode(mode: 'light' | 'dark' | 'grey' | 'luxury' | 'modern-dark' | 'crypto' | 'cyberpunk' | 'natural' | 'technology' | null) {
     if (mode != null) {
-      if (this.mql) {
-         
-        this.mql.removeEventListener('change', () => {});
-        this.mql = undefined
-      }
+      this.removeColorSchemeListener();
 
       if (mode === 'grey' || mode === 'luxury' || mode === 'natural' || mode === 'technology') {
         this.theme.change('light');
@@ -411,10 +443,12 @@ class App extends Vue {
       return;
     }
 
+    this.removeColorSchemeListener();
     this.mql = window.matchMedia('(prefers-color-scheme: dark)');
-    this.mql.addEventListener('change', (e: MediaQueryListEvent) => {
+    this.colorSchemeChangeHandler = (e: MediaQueryListEvent) => {
       this.theme.change(e.matches ? 'dark' : 'light');
-    });
+    };
+    this.mql.addEventListener('change', this.colorSchemeChangeHandler);
     this.theme.change(this.mql.matches ? 'dark' : 'light');
   }
 
