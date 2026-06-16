@@ -165,7 +165,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .login-dialog {
   :deep(.v-overlay__scrim) {
-    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.32);
   }
 }
 
@@ -195,7 +195,6 @@ export default defineComponent({
   height: 64px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
