@@ -1110,16 +1110,11 @@ export default toNative(Torrents)
   min-width: 110px;
   padding-right: 12px !important;
 
-  .v-progress-linear {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  }
-
   .progress-label {
     font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.02em;
     line-height: 1;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
   }
 }
 

@@ -490,9 +490,7 @@ export default toNative(AddForm)
     letter-spacing: 0.02em;
     // Peek out showing the full icon
     transform: translateX(calc(100% - 44px));
-    box-shadow: 0 3px 12px rgba(var(--v-theme-primary), 0.3);
     transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-                box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1),
                 padding 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 
     .btn-add-label {
@@ -506,7 +504,6 @@ export default toNative(AddForm)
     &:hover {
       transform: translateX(0);
       padding: 0 24px 0 20px;
-      box-shadow: 0 6px 20px rgba(var(--v-theme-primary), 0.4);
     }
 
     &:hover .btn-add-label {
@@ -516,7 +513,6 @@ export default toNative(AddForm)
 
     &:active {
       transform: translateX(2px);
-      box-shadow: 0 2px 8px rgba(var(--v-theme-primary), 0.3);
     }
   }
 

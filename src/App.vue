@@ -991,7 +991,6 @@ html {
 
       &:hover {
         border-color: #00ff88 !important;
-        box-shadow: 0 0 8px rgba(0, 255, 136, 0.15) !important;
       }
     }
 
@@ -1109,7 +1108,6 @@ html {
 
     .v-field--focused:not(.v-field--variant-outlined) .v-field__field {
       border-color: #00ff88 !important;
-      box-shadow: 0 0 6px rgba(0, 255, 136, 0.25) !important;
     }
 
     .v-tabs {
@@ -1422,7 +1420,6 @@ html {
 
     .v-field--focused:not(.v-field--variant-outlined) .v-field__field {
       border-color: #0052FF !important;
-      box-shadow: 0 0 0 1px #0052FF !important;
     }
 
     .v-tabs {
