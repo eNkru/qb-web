@@ -106,12 +106,14 @@ describe('update main data', () => {
       },
     }));
 
-    mainStore.updateMainData({
+    const payload = {
       rid: 2,
       torrents_removed: ['a'],
       categories_removed: ['movies'],
       tags_removed: ['audio'],
-    });
+    };
+
+    mainStore.updateMainData(payload);
 
     expect(mainStore.rid).toBe(2);
     expect(mainStore.mainData?.torrents).not.toHaveProperty('a');
@@ -119,5 +121,57 @@ describe('update main data', () => {
     expect(mainStore.mainData?.categories).not.toHaveProperty('movies');
     expect(mainStore.mainData?.categories).toHaveProperty('music');
     expect(mainStore.mainData?.tags).toEqual(['hd', 'keep']);
+    expect(payload).toEqual({
+      rid: 2,
+      torrents_removed: ['a'],
+      categories_removed: ['movies'],
+      tags_removed: ['audio'],
+    });
+  });
+
+  test('merges partial incremental updates into existing main data', () => {
+    mainStore.$patch(mockState({
+      mainData: {
+        categories: {},
+        tags: [],
+        server_state: {
+          dl_info_speed: 10,
+          up_info_speed: 20,
+        } as any,
+        torrents: {
+          a: mockBaseTorrent({ dlspeed: 1, name: 'kept' }),
+        },
+      },
+    }));
+
+    mainStore.updateMainData({
+      rid: 3,
+      server_state: {
+        up_info_speed: 30,
+      },
+      torrents: {
+        a: {
+          dlspeed: 2,
+        },
+      },
+    });
+
+    expect(mainStore.rid).toBe(3);
+    expect(mainStore.mainData?.server_state.dl_info_speed).toBe(10);
+    expect(mainStore.mainData?.server_state.up_info_speed).toBe(30);
+    expect(mainStore.mainData?.torrents.a.name).toBe('kept');
+    expect(mainStore.mainData?.torrents.a.dlspeed).toBe(2);
+  });
+
+  test('ignores incremental updates before initial main data', () => {
+    expect(() => mainStore.updateMainData({
+      rid: 4,
+      server_state: {
+        up_info_speed: 30,
+      },
+    })).not.toThrow();
+
+    expect(mainStore.rid).toBe(4);
+    expect(mainStore.mainData).toBeUndefined();
   });
 });

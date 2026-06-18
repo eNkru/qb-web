@@ -58,7 +58,11 @@ export function loadConfig(): Partial<Config> {
     return {};
   }
 
-  return JSON.parse(tmp);
+  try {
+    return JSON.parse(tmp);
+  } catch {
+    return {};
+  }
 }
 
 export const useConfigStore = defineStore('config', {

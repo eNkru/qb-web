@@ -5,7 +5,7 @@ import { torrentIsState } from '@/utils';
 import { RootState } from './types';
 import stateMerge from '@/utils/vue-object-merge';
 import api from '@/Api';
-import { Torrent } from '@/types';
+import { MainData, MainDataUpdate, Torrent } from '@/types';
 
 export const useMainStore = defineStore('main', {
   state: (): RootState => ({
@@ -116,31 +116,39 @@ export const useMainStore = defineStore('main', {
     },
   },
   actions: {
-    updateMainData(payload: any) {
-      this.rid = payload.rid;
-      delete payload.rid;
-      if (payload.full_update) {
-        delete payload.full_update;
-        this.mainData = payload;
+    updateMainData(payload: MainDataUpdate) {
+      const {
+        rid,
+        full_update,
+        torrents_removed,
+        categories_removed,
+        tags_removed,
+        ...data
+      } = payload;
+      this.rid = rid;
+
+      if (full_update) {
+        this.mainData = data as MainData;
       } else {
-        const mainData = this.mainData!;
-        if (payload.torrents_removed) {
-          for (const hash of payload.torrents_removed) {
+        if (!this.mainData) {
+          return;
+        }
+
+        const mainData = this.mainData;
+        if (torrents_removed) {
+          for (const hash of torrents_removed) {
             delete mainData.torrents[hash];
           }
-          delete payload.torrents_removed;
         }
-        if (payload.categories_removed) {
-          for (const key of payload.categories_removed) {
+        if (categories_removed) {
+          for (const key of categories_removed) {
             delete mainData.categories?.[key];
           }
-          delete payload.categories_removed;
         }
-        if (payload.tags_removed) {
-          mainData.tags = mainData.tags.filter(tag => !payload.tags_removed.includes(tag)) as any;
-          delete payload.tags_removed;
+        if (tags_removed) {
+          mainData.tags = mainData.tags.filter(tag => !tags_removed.includes(tag));
         }
-        stateMerge(mainData, payload);
+        stateMerge(mainData, data);
       }
     },
     updatePreferences(payload: any) {
@@ -172,4 +180,3 @@ export const useMainStore = defineStore('main', {
     },
   },
 });
-

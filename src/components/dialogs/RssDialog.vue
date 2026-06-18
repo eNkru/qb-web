@@ -123,7 +123,8 @@
                   <a
                     v-if="selectItem"
                     target="_blank"
-                    :href="selectItem.url"
+                    rel="noopener noreferrer"
+                    :href="safeExternalUrl(selectItem.url)"
                   >{{ selectItem.title }}</a>
                 </p>
                 <p>{{ $t('date') }}: {{ formatDate(selectItem ? selectItem.lastBuildDate : null) }}</p>
@@ -165,7 +166,8 @@
                   <a
                     v-if="selectArticle"
                     target="_blank"
-                    :href="selectArticle.link"
+                    rel="noopener noreferrer"
+                    :href="safeExternalUrl(selectArticle.link)"
                   >{{ selectArticle.title }}</a>
                 </p>
                 <p>{{ `${$t('category', 1)}: ${selectArticle ? selectArticle.category: ''}` }}</p>
@@ -176,7 +178,7 @@
                 class="iframe"
                 sandbox="allow-same-origin"
                 v-if="selectArticle"
-                v-body="selectArticle.description"
+                v-body="sanitizeHtml(selectArticle.description)"
               />
             </div>
           </template>
@@ -207,6 +209,7 @@ import RssRulesDialog from './RssRulesDialog.vue'
 import { useMainStore } from '@/store/index';
 import { useDialogStore } from '@/store/dialog';
 import { useSnackBarStore } from '@/store/snackBar';
+import { safeExternalUrl, sanitizeHtml } from '@/utils';
 
 let darkMode: boolean;
 
@@ -250,6 +253,8 @@ class RssDialog extends HasTask {
   mainStore = useMainStore()
   dialogStore = useDialogStore()
   snackBarStore = useSnackBarStore()
+  safeExternalUrl = safeExternalUrl
+  sanitizeHtml = sanitizeHtml
 
   @Prop({ type: Boolean })
   readonly modelValue!: boolean

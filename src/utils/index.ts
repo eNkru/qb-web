@@ -95,3 +95,46 @@ export function findSameNamedTorrents(allTorrents: Torrent[], torrents: Torrent[
 export function typed<T>(value: T): T {
   return value;
 }
+
+export function safeExternalUrl(value?: string | null) {
+  if (!value) {
+    return '#';
+  }
+
+  try {
+    const url = new URL(value, window.location.origin);
+    return ['http:', 'https:'].includes(url.protocol) ? url.href : '#';
+  } catch {
+    return '#';
+  }
+}
+
+export function sanitizeHtml(value?: string | null) {
+  if (!value) {
+    return '';
+  }
+
+  const doc = new DOMParser().parseFromString(value, 'text/html');
+  doc.querySelectorAll('script, style, iframe, object, embed, link, meta, base, form').forEach(node => node.remove());
+
+  doc.body.querySelectorAll('*').forEach((element) => {
+    for (const attr of [...element.attributes]) {
+      const name = attr.name.toLowerCase();
+      if (name.startsWith('on') || name === 'style' || name === 'srcdoc') {
+        element.removeAttribute(attr.name);
+        continue;
+      }
+
+      if (['href', 'src', 'xlink:href', 'poster', 'action'].includes(name) && safeExternalUrl(attr.value) === '#') {
+        element.removeAttribute(attr.name);
+      }
+    }
+
+    if (element.tagName.toLowerCase() === 'a') {
+      element.setAttribute('target', '_blank');
+      element.setAttribute('rel', 'noopener noreferrer');
+    }
+  });
+
+  return doc.body.innerHTML;
+}

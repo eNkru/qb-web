@@ -24,7 +24,7 @@
             :class="typeColor(row.type)"
           >
             <span class="tag">[{{ formatType(row.type) }} {{ $formatTimestamp(row.timestamp / 1000) }}]</span>
-            <span v-html="row.message" />
+            <span>{{ row.message }}</span>
           </li>
         </ol>
         <div ref="end" />
