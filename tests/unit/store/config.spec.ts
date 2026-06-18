@@ -25,6 +25,18 @@ test('load config', () => {
   spyGet.mockRestore();
 });
 
+test('ignores invalid stored config', () => {
+  const spyGet = vi.spyOn(Object.getPrototypeOf(localStorage), 'getItem');
+  spyGet.mockReturnValue('{');
+
+  setActivePinia(createPinia());
+  const newStore = useConfigStore();
+
+  expect(newStore.userConfig).toEqual({});
+
+  spyGet.mockRestore();
+});
+
 test('config getter', () => {
   expect(store.config).not.toEqual({});
 });

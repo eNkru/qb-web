@@ -1,4 +1,4 @@
-import { findSameNamedTorrents, codeToFlag, sleep } from '@/utils';
+import { findSameNamedTorrents, codeToFlag, safeExternalUrl, sanitizeHtml, sleep } from '@/utils';
 import { mockTorrent } from './utils';
 
 test('timeout', async () => {
@@ -55,5 +55,38 @@ describe('find same named torrents', () => {
     [[mockTorrent({ hash: '0', name: 'A' })], [torrents[2]]],
   ])('case %#', (target, result) => {
     expect(findSameNamedTorrents(torrents, target)).toEqual(result);
+  });
+});
+
+describe('safeExternalUrl', () => {
+  test('allows http and https urls', () => {
+    expect(safeExternalUrl('https://example.com/path')).toBe('https://example.com/path');
+    expect(safeExternalUrl('http://example.com/path')).toBe('http://example.com/path');
+  });
+
+  test('rejects unsafe or invalid urls', () => {
+    expect(safeExternalUrl('javascript:alert(1)')).toBe('#');
+    expect(safeExternalUrl('data:text/html,test')).toBe('#');
+    expect(safeExternalUrl('http://[invalid')).toBe('#');
+  });
+});
+
+describe('sanitizeHtml', () => {
+  test('removes scripts, event handlers, styles, and unsafe urls', () => {
+    const html = sanitizeHtml(`
+      <script>alert(1)</script>
+      <p style="color:red" onclick="alert(1)">Text</p>
+      <img src="javascript:alert(1)" onerror="alert(1)">
+      <a href="javascript:alert(1)">bad</a>
+      <a href="https://example.com/path">good</a>
+    `);
+
+    expect(html).not.toContain('<script');
+    expect(html).not.toContain('onclick');
+    expect(html).not.toContain('onerror');
+    expect(html).not.toContain('style=');
+    expect(html).not.toContain('javascript:');
+    expect(html).toContain('href="https://example.com/path"');
+    expect(html).toContain('rel="noopener noreferrer"');
   });
 });

@@ -7,7 +7,7 @@ import {
   ApiCategory,
   SearchTaskResponse,
   Preferences,
-  MainData,
+  MainDataUpdate,
 } from '@/types'
 
 const apiEndpoint = 'api/v2';
@@ -75,7 +75,7 @@ class Api {
     return this.axios.post('/app/shutdown');
   }
 
-  public getMainData(rid?: number): AxiosPromise<MainData> {
+  public getMainData(rid?: number): AxiosPromise<MainDataUpdate> {
     const params = {
       rid,
     };

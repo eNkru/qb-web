@@ -83,7 +83,7 @@ import ContextMenu from './components/ContextMenu.vue';
 
 
 import api from './Api';
-import { MainData } from './types';
+import { MainData, MainDataUpdate } from './types';
 import { Config } from './store/config';
 import Api from './Api';
 import {formatSize} from '@/filters'
@@ -150,7 +150,7 @@ class App extends Vue {
     return this.configStore.config;
   }
 
-  updateMainData(data: any) {
+  updateMainData(data: MainDataUpdate) {
     this.mainStore.updateMainData(data);
   }
   updatePreferences(data: any) {
@@ -252,9 +252,10 @@ class App extends Vue {
       const mainData = resp.data;
 
       this.updateMainData(mainData);
-      if(this.config.displaySpeedInTitle) {
-        const upInfoSpeed = mainData.server_state.up_info_speed
-        const dlInfoSpeed = mainData.server_state.dl_info_speed
+      const serverState = this.mainStore.mainData?.server_state;
+      if(this.config.displaySpeedInTitle && serverState) {
+        const upInfoSpeed = serverState.up_info_speed
+        const dlInfoSpeed = serverState.dl_info_speed
         let dl = '', up = ''
         if (dlInfoSpeed > 1024) {
           dl = `D ${formatSize(dlInfoSpeed)}/s`

@@ -100,9 +100,21 @@ export interface ServerState {
 
 export interface MainData {
   categories: Record<string, Category>;
-  tags: [string];
+  tags: string[];
   server_state: ServerState;
   torrents: Record<string, BaseTorrent>;
+}
+
+export interface MainDataUpdate {
+  rid: number;
+  full_update?: boolean;
+  categories?: Record<string, Category>;
+  categories_removed?: string[];
+  tags?: string[];
+  tags_removed?: string[];
+  server_state?: Partial<ServerState>;
+  torrents?: Record<string, Partial<BaseTorrent>>;
+  torrents_removed?: string[];
 }
 
 export interface RssTorrent {

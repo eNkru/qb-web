@@ -35,8 +35,9 @@
           >
             <template #[`item.fileName`]="{ item }">
               <a
-                :href="item.descrLink"
+                :href="safeExternalUrl(item.descrLink)"
                 target="_blank"
+                rel="noopener noreferrer"
               >{{ item.fileName }}</a>
             </template>
             <template #[`item.fileSize`]="{ item }">
@@ -70,6 +71,7 @@ import { Category, Preferences } from '@/types';
 import { useMainStore } from '@/store/index';
 import { useAddFormStore } from '@/store/addForm';
 import { useSearchEngineStore } from '@/store/searchEngine';
+import { safeExternalUrl } from '@/utils';
 
 interface GridConfig {
   searchItems: SearchTaskTorrent[];
@@ -89,6 +91,7 @@ export default class SearchDialog extends HasTask {
   mainStore = useMainStore()
   addFormStore = useAddFormStore()
   searchEngineStore = useSearchEngineStore()
+  safeExternalUrl = safeExternalUrl
 
   @Prop({ type: Boolean })
   readonly modelValue!: boolean;
