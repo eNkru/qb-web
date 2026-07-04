@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
-import { merge, cloneDeep } from 'lodash-es';
+import { cloneDeep } from 'lodash-es';
+import { safeMerge } from '@/utils/safe-merge';
 import { DialogState, DialogConfig } from './types';
 
 export const useDialogStore = defineStore('dialog', {
@@ -15,7 +16,7 @@ export const useDialogStore = defineStore('dialog', {
     },
     async asyncShowDialog(payload: DialogConfig): Promise<string | undefined> {
       return new Promise((resolve) => {
-        const options = merge({}, payload, {
+        const options = safeMerge({}, payload, {
           callback: resolve,
         });
 

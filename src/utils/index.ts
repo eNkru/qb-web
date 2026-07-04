@@ -115,7 +115,7 @@ export function sanitizeHtml(value?: string | null) {
   }
 
   const doc = new DOMParser().parseFromString(value, 'text/html');
-  doc.querySelectorAll('script, style, iframe, object, embed, link, meta, base, form').forEach(node => node.remove());
+  doc.querySelectorAll('script, style, iframe, object, embed, link, meta, base, form, svg, math, noscript, noembed, frame, frameset').forEach(node => node.remove());
 
   doc.body.querySelectorAll('*').forEach((element) => {
     for (const attr of [...element.attributes]) {

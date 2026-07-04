@@ -69,6 +69,7 @@
       <v-text-field
         variant="outlined"
         density="compact"
+        type="password"
         :model-value="preferences.web_ui_password"
         @change="changeSettings('web_ui_password', $event)"
         :placeholder="$t('preferences.new_password')"

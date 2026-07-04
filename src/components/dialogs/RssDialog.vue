@@ -176,9 +176,9 @@
               <v-divider />
               <iframe
                 class="iframe"
-                sandbox="allow-same-origin"
+                sandbox=""
                 v-if="selectArticle"
-                v-body="sanitizeHtml(selectArticle.description)"
+                :srcdoc="articleHtml"
               />
             </div>
           </template>
@@ -211,40 +211,9 @@ import { useDialogStore } from '@/store/dialog';
 import { useSnackBarStore } from '@/store/snackBar';
 import { safeExternalUrl, sanitizeHtml } from '@/utils';
 
-let darkMode: boolean;
-
 @Component({
   components: {
     RssRulesDialog,
-  },
-  directives: {
-    body: {
-      mounted(el: HTMLElement, binding: any) {
-        const doc = (el as HTMLIFrameElement).contentDocument!
-
-        const darkCss = darkMode ? 'body{color: #fff}' : null;
-
-        const css = `<style>
-          body{font-size:12px}
-          body img{max-width: 100%}
-          ${darkCss}
-        </style>`
-
-        doc.head.insertAdjacentHTML('beforeend', css)
-        doc.body.innerHTML = binding.value
-      },
-      updated(el: HTMLElement, binding: any) {
-        if (binding.oldValue === binding.value) {
-          return
-        }
-
-        const body = (el as HTMLIFrameElement).contentDocument!.body
-        body.innerHTML = binding.value
-        body.scrollTo({
-          top: 0,
-        })
-      },
-    },
   },
 })
 class RssDialog extends HasTask {
@@ -254,7 +223,6 @@ class RssDialog extends HasTask {
   dialogStore = useDialogStore()
   snackBarStore = useSnackBarStore()
   safeExternalUrl = safeExternalUrl
-  sanitizeHtml = sanitizeHtml
 
   @Prop({ type: Boolean })
   readonly modelValue!: boolean
@@ -312,6 +280,22 @@ class RssDialog extends HasTask {
 
     // Folder
     return null
+  }
+
+  get articleHtml(): string {
+    if (!this.selectArticle?.description) {
+      return ''
+    }
+
+    const description = sanitizeHtml(this.selectArticle.description)
+    const isDark = this.theme.global.name === 'dark'
+    const darkCss = isDark ? 'body{color:#fff}' : ''
+
+    return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+      body{font-size:12px;margin:8px}
+      body img{max-width:100%}
+      ${darkCss}
+    </style></head><body>${description}</body></html>`
   }
 
   get selectedPath() {
@@ -508,7 +492,6 @@ class RssDialog extends HasTask {
   }
 
   created() {
-    darkMode = this.theme.global.name === 'dark'
     this.setTaskAndRun(this.fetchRssItems, 5000)
   }
 
