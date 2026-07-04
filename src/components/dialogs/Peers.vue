@@ -43,7 +43,8 @@
 </template>
 
 <script lang="ts">
-import { map, merge, cloneDeep } from 'lodash-es';
+import { map, cloneDeep } from 'lodash-es';
+import { safeMerge } from '@/utils/safe-merge';
 import { codeToFlag, isWindows } from '../../utils';
 import api from '../../Api';
 import { formatSize } from '../../filters';
@@ -76,7 +77,7 @@ class Peers extends BaseTorrentInfo {
   isWindows: boolean = isWindows
 
   get peers() {
-    return map(this.peersObj, (value, key) => merge({}, value, { key }));
+    return map(this.peersObj, (value, key) => safeMerge({}, value, { key } as any));
   }
 
   codeToFlag(code: string): { char: string; url: string } {
@@ -100,7 +101,7 @@ class Peers extends BaseTorrentInfo {
           delete tmp[key];
         }
       }
-      this.peersObj = merge(tmp, resp.peers);
+      this.peersObj = safeMerge(tmp, resp.peers);
     }
   }
 

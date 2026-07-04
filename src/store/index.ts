@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia';
-import { merge, map, groupBy, sortBy } from 'lodash-es';
+import { map, groupBy, sortBy } from 'lodash-es';
 import { AllStateTypes } from '@/consts';
 import { torrentIsState } from '@/utils';
+import { safeMerge } from '@/utils/safe-merge';
 import { RootState } from './types';
 import stateMerge from '@/utils/vue-object-merge';
 import api from '@/Api';
@@ -31,7 +32,7 @@ export const useMainStore = defineStore('main', {
         return [];
       }
 
-      return map(state.mainData.torrents, (value, key) => merge({}, value, { hash: key }));
+      return map(state.mainData.torrents, (value, key) => safeMerge({}, value, { hash: key }));
     },
     allCategories(state) {
       if (!state.mainData) {
@@ -39,7 +40,7 @@ export const useMainStore = defineStore('main', {
       }
 
       const categories = map(state.mainData.categories,
-        (value, key) => merge({}, value, { key }));
+        (value, key) => safeMerge({}, value, { key }));
       return sortBy(categories, 'name');
     },
     allTags(state) {

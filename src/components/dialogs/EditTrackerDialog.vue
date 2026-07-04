@@ -146,7 +146,12 @@ class EditTrackerDialog extends Vue {
   }
 
   calcResults(): any[] {
-    const regex = new RegExp(this.search);
+    let regex: RegExp;
+    try {
+      regex = new RegExp(this.search, 'u');
+    } catch {
+      return [];
+    }
 
     return chain(this.torrents)
       .map(({ tracker, hash, name }) => {

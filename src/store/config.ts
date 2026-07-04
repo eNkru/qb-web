@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
-import { isPlainObject, merge } from 'lodash-es';
+import { isPlainObject } from 'lodash-es';
+import { safeMerge } from '@/utils/safe-merge';
 import { ConfigPayload } from './types';
 
 const configKey = 'qb-config';
@@ -71,14 +72,14 @@ export const useConfigStore = defineStore('config', {
   }),
   getters: {
     config(state) {
-      return merge({}, defaultConfig, state.userConfig);
+      return safeMerge({}, defaultConfig, state.userConfig);
     },
   },
   actions: {
     updateConfig(payload: ConfigPayload) {
       const { key, value } = payload;
       if (isPlainObject(value)) {
-        this.userConfig[key] = merge({}, this.userConfig[key], value);
+        this.userConfig[key] = safeMerge({}, this.userConfig[key], value);
       } else {
         this.userConfig[key] = value;
       }
