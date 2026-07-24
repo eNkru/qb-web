@@ -1,0 +1,28 @@
+{
+  "id": "00-bootstrap-guidelines",
+  "name": "00-bootstrap-guidelines",
+  "title": "Bootstrap Guidelines",
+  "description": "Fill in project development guidelines for AI agents",
+  "status": "completed",
+  "dev_type": "docs",
+  "scope": null,
+  "package": null,
+  "priority": "P1",
+  "creator": "Howard Ju",
+  "assignee": "Howard Ju",
+  "createdAt": "2026-07-24",
+  "completedAt": "2026-07-24",
+  "branch": null,
+  "base_branch": null,
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    ".trellis/spec/frontend/"
+  ],
+  "notes": "First-time setup task created by trellis init (frontend project). 2026-07-24: populated .trellis/spec/frontend/* from codebase (Vue3 class components, Pinia, Api.ts, Vitest).",
+  "meta": {}
+}
