@@ -1179,12 +1179,10 @@ export default toNative(Torrents)
 
 .narrow-list {
   .v-data-table {
-    :deep(thead) {
-      display: none;
-    }
-
-    :deep(.v-data-table__wrapper table) {
-      border-spacing: 0 10px;
+    /* leave table layout behind entirely: cards are plain blocks now */
+    :deep(thead),
+    :deep(tbody) {
+      display: block;
     }
 
     :deep(.torrent-row) {
@@ -1196,15 +1194,19 @@ export default toNative(Torrents)
         'size . dlspeed upspeed state';
       align-items: center;
       column-gap: 10px;
-      row-gap: 9px;
+      row-gap: 10px;
       padding: 12px;
+      margin-bottom: 10px;
       border-radius: 12px;
       background-color: rgb(var(--v-theme-surface));
-      border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
       box-shadow:
-        0 1px 2px rgba(0, 0, 0, 0.06),
-        0 2px 8px rgba(0, 0, 0, 0.05);
-      transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+        0 1px 2px rgba(0, 0, 0, 0.07),
+        0 2px 8px rgba(0, 0, 0, 0.06);
+      transition: box-shadow 0.15s ease, transform 0.1s ease;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
 
       &:active {
         transform: scale(0.995);
@@ -1212,15 +1214,23 @@ export default toNative(Torrents)
 
       &.torrent-row--selected {
         background-color: rgba(25, 118, 210, 0.1);
-        border-color: rgba(25, 118, 210, 0.4);
         box-shadow:
           inset 3px 0 0 rgb(var(--v-theme-primary)),
           0 1px 2px rgba(0, 0, 0, 0.06);
       }
     }
 
+    /* strip inherited table-cell padding — grid gaps own the spacing */
+    :deep(.torrent-row > td) {
+      padding: 0 !important;
+    }
+
     :deep(.torrent-row .cell-select) {
       grid-area: select;
+
+      .v-checkbox-btn {
+        margin: 0;
+      }
     }
 
     :deep(.torrent-row .cell-name) {
@@ -1243,8 +1253,6 @@ export default toNative(Torrents)
     :deep(.torrent-row .cell-progress) {
       grid-area: progress;
       min-width: 0;
-      padding-top: 2px !important;
-      padding-bottom: 2px !important;
     }
 
     :deep(.torrent-row .cell-size),
@@ -1294,6 +1302,19 @@ export default toNative(Torrents)
       border-radius: 999px;
       padding: 4px 9px !important;
       white-space: nowrap;
+    }
+  }
+}
+
+/* dark themes: shadows disappear against dark surfaces — restore a hairline border */
+.v-theme--dark .narrow-list {
+  .v-data-table {
+    :deep(.torrent-row) {
+      border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+    }
+
+    :deep(.torrent-row.torrent-row--selected) {
+      border-color: rgba(25, 118, 210, 0.45);
     }
   }
 }
