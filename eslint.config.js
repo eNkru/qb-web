@@ -8,7 +8,7 @@ import vueParser from 'vue-eslint-parser';
 export default [
   // Global ignores
   {
-    ignores: ['dist/**', 'node_modules/**', '*.config.*'],
+    ignores: ['dist/**', 'node_modules/**', '*.config.*', '.opencode/**', '.codex/**', '.trellis/**', '.agents/**'],
   },
 
   // Base JS recommended rules
