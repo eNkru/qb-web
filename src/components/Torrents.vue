@@ -1,7 +1,7 @@
 <template>
   <div
     class="torrents"
-    :class="{'phone-layout': isXs}"
+    :class="{'phone-layout': isXs, 'md-list': !isLgAndUp}"
   >
     <div class="toolbar-wrapper">
       <div class="toolbar">
@@ -194,7 +194,42 @@
       <v-divider />
     </div>
 
-    <div class="table-wrapper">
+    <div
+      v-if="isNarrow"
+      class="compact-sort-bar"
+    >
+      <v-checkbox-btn
+        :model-value="isAllSelected"
+        :indeterminate="isIndeterminate"
+        @update:model-value="toggleSelectAll"
+      />
+      <span
+        class="compact-sort-bar__count"
+        :title="String(torrents.length)"
+      >{{ torrents.length }}</span>
+      <v-select
+        :model-value="sortKey"
+        :items="sortableColumnOptions"
+        density="compact"
+        variant="outlined"
+        hide-details
+        class="compact-sort-bar__select"
+        @update:model-value="setSortColumn($event)"
+      />
+      <v-btn
+        icon
+        variant="text"
+        :disabled="!sortKey"
+        @click="toggleSortOrder"
+      >
+        <v-icon>{{ sortDescending ? 'mdi-arrow-down' : 'mdi-arrow-up' }}</v-icon>
+      </v-btn>
+    </div>
+
+    <div
+      class="table-wrapper"
+      :class="{'narrow-list': isNarrow}"
+    >
       <v-data-table
         :headers="headers"
         :items="torrents"
@@ -226,16 +261,16 @@
             @click="toggleSelection(item.hash)"
             @contextmenu.stop.prevent="onRowContextMenu($event, item)"
           >
-            <td>
+            <td class="cell-select">
               <v-checkbox-btn
                 :model-value="isSelected(item.hash)"
                 @click.stop="toggleSelection(item.hash)"
               />
             </td>
             <td
-              v-if="!isColumnHidden('name')"
+              v-if="isColumnVisible('name')"
               :title="item.name"
-              class="icon-label"
+              class="cell-name icon-label"
             >
               <v-icon :color="stateColor(item.state)">
                 {{ stateIcon(item.state) }}
@@ -245,8 +280,8 @@
               </span>
             </td>
             <td
-              v-if="!isColumnHidden('tracker')"
-              class="site-cell"
+              v-if="isColumnVisible('tracker')"
+              class="cell-tracker site-cell"
             >
               <v-tooltip location="bottom">
                 <template #activator="{ props: tooltipProps }">
@@ -274,12 +309,15 @@
                 <span>{{ getTrackerHostname(item.tracker) || item.tracker }}</span>
               </v-tooltip>
             </td>
-            <td v-if="!isColumnHidden('size')">
+            <td
+              v-if="isColumnVisible('size')"
+              class="cell-size"
+            >
               {{ $formatSize(item.size) }}
             </td>
             <td
-              v-if="!isColumnHidden('progress')"
-              class="progress-cell"
+              v-if="isColumnVisible('progress')"
+              class="cell-progress progress-cell"
             >
               <v-progress-linear
                 :model-value="item.progress * 100"
@@ -299,31 +337,70 @@
                 </template>
               </v-progress-linear>
             </td>
-            <td v-if="!isColumnHidden('state')">
+            <td
+              v-if="isColumnVisible('state')"
+              class="cell-state"
+            >
               {{ $t('torrent_state.' + item.state) }}
             </td>
-            <td v-if="!isColumnHidden('priority')">
+            <td
+              v-if="isColumnVisible('priority')"
+              class="cell-priority"
+            >
               {{ formatTorrentPriority(item.priority) }}
             </td>
-            <td v-if="!isColumnHidden('num_complete')">
+            <td
+              v-if="isColumnVisible('num_complete')"
+              class="cell-num-complete"
+            >
               {{ item.num_seeds }}/{{ item.num_complete }}
             </td>
-            <td v-if="!isColumnHidden('num_incomplete')">
+            <td
+              v-if="isColumnVisible('num_incomplete')"
+              class="cell-num-incomplete"
+            >
               {{ item.num_leechs }}/{{ item.num_incomplete }}
             </td>
-            <td v-if="!isColumnHidden('dlspeed')">
-              {{ formatNetworkSpeed(item.dlspeed) }}
+            <td
+              v-if="isColumnVisible('dlspeed')"
+              class="cell-dlspeed"
+            >
+              <v-icon
+                v-if="item.dlspeed > 0"
+                class="stat-arrow stat-arrow--dl"
+                size="13"
+              >
+                mdi-arrow-down
+              </v-icon><span class="stat-value">{{ formatNetworkSpeed(item.dlspeed) }}</span>
             </td>
-            <td v-if="!isColumnHidden('upspeed')">
-              {{ formatNetworkSpeed(item.upspeed) }}
+            <td
+              v-if="isColumnVisible('upspeed')"
+              class="cell-upspeed"
+            >
+              <v-icon
+                v-if="item.upspeed > 0"
+                class="stat-arrow stat-arrow--ul"
+                size="13"
+              >
+                mdi-arrow-up
+              </v-icon><span class="stat-value">{{ formatNetworkSpeed(item.upspeed) }}</span>
             </td>
-            <td v-if="!isColumnHidden('eta')">
+            <td
+              v-if="isColumnVisible('eta')"
+              class="cell-eta"
+            >
               {{ $formatDuration(item.eta, {dayLimit: 100}) }}
             </td>
-            <td v-if="!isColumnHidden('ratio')">
+            <td
+              v-if="isColumnVisible('ratio')"
+              class="cell-ratio"
+            >
               {{ item.ratio.toFixed(2) }}
             </td>
-            <td v-if="!isColumnHidden('added_on')">
+            <td
+              v-if="isColumnVisible('added_on')"
+              class="cell-added-on"
+            >
               <span :title="$formatTimestamp(item.added_on)">
                 {{ $formatAsDuration(item.added_on) }} ago
               </span>
@@ -462,6 +539,8 @@ function getStateInfo(state: string) {
   return icon;
 }
 
+type TorrentColumnTier = 'core' | 'standard' | 'secondary';
+
 @Component({
   components: {
     ConfirmDeleteDialog,
@@ -481,27 +560,29 @@ class Torrents extends Vue {
   snackBarStore = useSnackBarStore()
 
   get isXs() { return this.display.xs; }
+  get isNarrow() { return this.display.smAndDown; }
+  get isLgAndUp() { return this.display.lgAndUp; }
   get isDark() { return this.theme.global.current.dark; }
-  readonly allColumns = [
-    { title: tr('name'), key: 'name' },
-    { title: tr('sites'), key: 'tracker' },
-    { title: tr('size'), key: 'size' },
-    { title: tr('progress'), key: 'progress' },
-    { title: tr('status'), key: 'state' },
-    { title: tr('priority.column'), key: 'priority' },
-    { title: tr('seeds'), key: 'num_complete' },
-    { title: tr('peers'), key: 'num_incomplete' },
-    { title: tr('dl_speed'), key: 'dlspeed' },
-    { title: tr('up_speed'), key: 'upspeed' },
-    { title: tr('eta'), key: 'eta' },
-    { title: tr('ratio'), key: 'ratio' },
-    { title: tr('added_on'), key: 'added_on' },
+  readonly allColumns: { title: string, key: string, tier: TorrentColumnTier, width?: string }[] = [
+    { title: tr('name'), key: 'name', tier: 'core' },
+    { title: tr('sites'), key: 'tracker', tier: 'secondary', width: '130px' },
+    { title: tr('size'), key: 'size', tier: 'core', width: '76px' },
+    { title: tr('progress'), key: 'progress', tier: 'core', width: '120px' },
+    { title: tr('status'), key: 'state', tier: 'standard', width: '90px' },
+    { title: tr('priority.column'), key: 'priority', tier: 'secondary', width: '60px' },
+    { title: tr('seeds'), key: 'num_complete', tier: 'secondary', width: '80px' },
+    { title: tr('peers'), key: 'num_incomplete', tier: 'secondary', width: '80px' },
+    { title: tr('dl_speed'), key: 'dlspeed', tier: 'core', width: '80px' },
+    { title: tr('up_speed'), key: 'upspeed', tier: 'standard', width: '80px' },
+    { title: tr('eta'), key: 'eta', tier: 'secondary', width: '70px' },
+    { title: tr('ratio'), key: 'ratio', tier: 'secondary', width: '60px' },
+    { title: tr('added_on'), key: 'added_on', tier: 'secondary', width: '100px' },
   ]
 
   get headers() {
     const selectCol = { title: '', key: 'data-table-select', sortable: false, width: '48px' };
     const hidden = this.configStore.config.hiddenColumns || [];
-    const visible = this.allColumns.filter(c => !hidden.includes(c.key));
+    const visible = this.allColumns.filter(c => !hidden.includes(c.key) && this.isTierVisible(c.tier));
     return [selectCol, ...visible];
   }
 
@@ -555,9 +636,29 @@ class Torrents extends Vue {
     this.configStore.updateConfig(payload);
   }
 
+  /** Breakpoint-driven visibility: secondary tiers drop out on smaller screens regardless of user config. */
+  isTierVisible(tier: TorrentColumnTier): boolean {
+    if (tier === 'secondary') {
+      return this.isLgAndUp;
+    }
+    if (tier === 'standard') {
+      return !this.isXs;
+    }
+    return true;
+  }
+
   isColumnHidden(key: string): boolean {
     const hidden = this.configStore.config.hiddenColumns || [];
     return hidden.includes(key);
+  }
+
+  /** Single source of truth for cell rendering: user config AND breakpoint tiers must agree with the headers getter. */
+  isColumnVisible(key: string): boolean {
+    if (this.isColumnHidden(key)) {
+      return false;
+    }
+    const col = this.allColumns.find(c => c.key === key);
+    return col ? this.isTierVisible(col.tier) : true;
   }
 
   toggleColumn(key: string) {
@@ -643,6 +744,35 @@ class Torrents extends Vue {
     } else {
       this.selectedRows = this.torrents.map(t => t.hash);
     }
+  }
+
+  // Compact sort bar (shown when the header row is hidden on narrow screens)
+  get sortKey(): string | undefined {
+    return this.sortBy[0]?.key as string | undefined;
+  }
+
+  get sortDescending(): boolean {
+    return this.sortBy[0]?.order === 'desc';
+  }
+
+  get sortableColumnOptions() {
+    return this.allColumns.map(c => ({ title: c.title, value: c.key }));
+  }
+
+  setSortColumn(key: string | null) {
+    if (!key) {
+      this.sortBy = [];
+      return;
+    }
+    const order = this.sortBy[0]?.key === key ? (this.sortBy[0].order as 'asc' | 'desc') : 'asc';
+    this.sortBy = [{ key, order }];
+  }
+
+  toggleSortOrder() {
+    if (!this.sortBy.length || !this.sortKey) {
+      return;
+    }
+    this.sortBy = [{ key: this.sortKey, order: this.sortDescending ? 'asc' : 'desc' }];
   }
 
   stateIcon(state: string) {
@@ -897,6 +1027,7 @@ export default toNative(Torrents)
   gap: 2px;
   position: relative;
   z-index: 1;
+  flex-wrap: wrap;
 }
 
 .toolbar-divider {
@@ -959,6 +1090,10 @@ export default toNative(Torrents)
     }
 
     :deep(.v-data-table__wrapper table) {
+      /* fixed layout: columns honor header width hints, name flexes, cells
+         truncate via nowrap+ellipsis — the table never overflows its container */
+      table-layout: fixed;
+      width: 100%;
       border-collapse: separate;
       border-spacing: 0 6px;
     }
@@ -1010,6 +1145,176 @@ export default toNative(Torrents)
           }
         }
       }
+    }
+  }
+}
+
+.compact-sort-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 6px;
+
+  .compact-sort-bar__count {
+    font-size: 0.85rem;
+    opacity: 0.7;
+    flex-shrink: 0;
+    min-width: 1.5rem;
+    text-align: center;
+  }
+
+  .compact-sort-bar__select {
+    flex: 1;
+    max-width: 240px;
+  }
+}
+
+.md-list {
+  /* below lg the footer's decorative right margin can push the page wider
+     than the viewport — keep everything flush */
+  .v-data-table :deep(.v-data-table-footer) {
+    margin-right: 0;
+  }
+}
+
+.narrow-list {
+  .v-data-table {
+    /* leave table layout behind entirely: cards are plain blocks now */
+    :deep(thead),
+    :deep(tbody) {
+      display: block;
+    }
+
+    :deep(.torrent-row) {
+      display: grid;
+      grid-template-columns: auto 1fr auto auto auto;
+      grid-template-areas:
+        'select name name name name'
+        'progress progress progress progress progress'
+        'size . dlspeed upspeed state';
+      align-items: center;
+      column-gap: 10px;
+      row-gap: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 12px;
+      background-color: rgb(var(--v-theme-surface));
+      box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.07),
+        0 2px 8px rgba(0, 0, 0, 0.06);
+      transition: box-shadow 0.15s ease, transform 0.1s ease;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      &:active {
+        transform: scale(0.995);
+      }
+
+      &.torrent-row--selected {
+        background-color: rgba(25, 118, 210, 0.1);
+        box-shadow:
+          inset 3px 0 0 rgb(var(--v-theme-primary)),
+          0 1px 2px rgba(0, 0, 0, 0.06);
+      }
+    }
+
+    /* strip inherited table-cell padding — grid gaps own the spacing */
+    :deep(.torrent-row > td) {
+      padding: 0 !important;
+    }
+
+    :deep(.torrent-row .cell-select) {
+      grid-area: select;
+
+      .v-checkbox-btn {
+        margin: 0;
+      }
+    }
+
+    :deep(.torrent-row .cell-name) {
+      grid-area: name;
+      min-width: 0;
+      white-space: normal;
+
+      .torrent-title {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        max-width: 100%;
+        white-space: normal;
+        font-weight: 500;
+        line-height: 1.4;
+      }
+    }
+
+    :deep(.torrent-row .cell-progress) {
+      grid-area: progress;
+      min-width: 0;
+    }
+
+    :deep(.torrent-row .cell-size),
+    :deep(.torrent-row .cell-dlspeed),
+    :deep(.torrent-row .cell-upspeed) {
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      color: rgba(var(--v-theme-on-surface), 0.75);
+      white-space: nowrap;
+    }
+
+    :deep(.torrent-row .cell-size) {
+      grid-area: size;
+    }
+
+    :deep(.torrent-row .cell-dlspeed) {
+      grid-area: dlspeed;
+    }
+
+    :deep(.torrent-row .cell-upspeed) {
+      grid-area: upspeed;
+    }
+
+    :deep(.torrent-row .stat-arrow) {
+      display: inline-flex;
+      vertical-align: -2px;
+      margin-right: 2px;
+
+      &.stat-arrow--dl {
+        color: rgb(var(--v-theme-success));
+      }
+
+      &.stat-arrow--ul {
+        color: rgb(var(--v-theme-primary));
+      }
+    }
+
+    :deep(.torrent-row .cell-state) {
+      grid-area: state;
+      justify-self: end;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      line-height: 1;
+      color: rgba(var(--v-theme-on-surface), 0.75);
+      background: rgba(var(--v-theme-on-surface), 0.07);
+      border-radius: 999px;
+      padding: 4px 9px !important;
+      white-space: nowrap;
+    }
+  }
+}
+
+/* dark themes: shadows disappear against dark surfaces — restore a hairline border */
+.v-theme--dark .narrow-list {
+  .v-data-table {
+    :deep(.torrent-row) {
+      border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+    }
+
+    :deep(.torrent-row.torrent-row--selected) {
+      border-color: rgba(25, 118, 210, 0.45);
     }
   }
 }
@@ -1104,6 +1409,11 @@ export default toNative(Torrents)
   font-weight: 600;
   letter-spacing: 0.02em;
   line-height: 1;
+}
+
+.stat-arrow {
+  /* speed direction arrows exist only for the narrow card presentation */
+  display: none;
 }
 
 .progress-cell {
