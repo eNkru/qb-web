@@ -194,7 +194,42 @@
       <v-divider />
     </div>
 
-    <div class="table-wrapper">
+    <div
+      v-if="isNarrow"
+      class="compact-sort-bar"
+    >
+      <v-checkbox-btn
+        :model-value="isAllSelected"
+        :indeterminate="isIndeterminate"
+        @update:model-value="toggleSelectAll"
+      />
+      <span
+        class="compact-sort-bar__count"
+        :title="String(torrents.length)"
+      >{{ torrents.length }}</span>
+      <v-select
+        :model-value="sortKey"
+        :items="sortableColumnOptions"
+        density="compact"
+        variant="outlined"
+        hide-details
+        class="compact-sort-bar__select"
+        @update:model-value="setSortColumn($event)"
+      />
+      <v-btn
+        icon
+        variant="text"
+        :disabled="!sortKey"
+        @click="toggleSortOrder"
+      >
+        <v-icon>{{ sortDescending ? 'mdi-arrow-down' : 'mdi-arrow-up' }}</v-icon>
+      </v-btn>
+    </div>
+
+    <div
+      class="table-wrapper"
+      :class="{'narrow-list': isNarrow}"
+    >
       <v-data-table
         :headers="headers"
         :items="torrents"
@@ -226,7 +261,7 @@
             @click="toggleSelection(item.hash)"
             @contextmenu.stop.prevent="onRowContextMenu($event, item)"
           >
-            <td>
+            <td class="cell-select">
               <v-checkbox-btn
                 :model-value="isSelected(item.hash)"
                 @click.stop="toggleSelection(item.hash)"
@@ -235,7 +270,7 @@
             <td
               v-if="!isColumnHidden('name')"
               :title="item.name"
-              class="icon-label"
+              class="cell-name icon-label"
             >
               <v-icon :color="stateColor(item.state)">
                 {{ stateIcon(item.state) }}
@@ -246,7 +281,7 @@
             </td>
             <td
               v-if="!isColumnHidden('tracker')"
-              class="site-cell"
+              class="cell-tracker site-cell"
             >
               <v-tooltip location="bottom">
                 <template #activator="{ props: tooltipProps }">
@@ -274,12 +309,15 @@
                 <span>{{ getTrackerHostname(item.tracker) || item.tracker }}</span>
               </v-tooltip>
             </td>
-            <td v-if="!isColumnHidden('size')">
+            <td
+              v-if="!isColumnHidden('size')"
+              class="cell-size"
+            >
               {{ $formatSize(item.size) }}
             </td>
             <td
               v-if="!isColumnHidden('progress')"
-              class="progress-cell"
+              class="cell-progress progress-cell"
             >
               <v-progress-linear
                 :model-value="item.progress * 100"
@@ -299,31 +337,58 @@
                 </template>
               </v-progress-linear>
             </td>
-            <td v-if="!isColumnHidden('state')">
+            <td
+              v-if="!isColumnHidden('state')"
+              class="cell-state"
+            >
               {{ $t('torrent_state.' + item.state) }}
             </td>
-            <td v-if="!isColumnHidden('priority')">
+            <td
+              v-if="!isColumnHidden('priority')"
+              class="cell-priority"
+            >
               {{ formatTorrentPriority(item.priority) }}
             </td>
-            <td v-if="!isColumnHidden('num_complete')">
+            <td
+              v-if="!isColumnHidden('num_complete')"
+              class="cell-num-complete"
+            >
               {{ item.num_seeds }}/{{ item.num_complete }}
             </td>
-            <td v-if="!isColumnHidden('num_incomplete')">
+            <td
+              v-if="!isColumnHidden('num_incomplete')"
+              class="cell-num-incomplete"
+            >
               {{ item.num_leechs }}/{{ item.num_incomplete }}
             </td>
-            <td v-if="!isColumnHidden('dlspeed')">
+            <td
+              v-if="!isColumnHidden('dlspeed')"
+              class="cell-dlspeed"
+            >
               {{ formatNetworkSpeed(item.dlspeed) }}
             </td>
-            <td v-if="!isColumnHidden('upspeed')">
+            <td
+              v-if="!isColumnHidden('upspeed')"
+              class="cell-upspeed"
+            >
               {{ formatNetworkSpeed(item.upspeed) }}
             </td>
-            <td v-if="!isColumnHidden('eta')">
+            <td
+              v-if="!isColumnHidden('eta')"
+              class="cell-eta"
+            >
               {{ $formatDuration(item.eta, {dayLimit: 100}) }}
             </td>
-            <td v-if="!isColumnHidden('ratio')">
+            <td
+              v-if="!isColumnHidden('ratio')"
+              class="cell-ratio"
+            >
               {{ item.ratio.toFixed(2) }}
             </td>
-            <td v-if="!isColumnHidden('added_on')">
+            <td
+              v-if="!isColumnHidden('added_on')"
+              class="cell-added-on"
+            >
               <span :title="$formatTimestamp(item.added_on)">
                 {{ $formatAsDuration(item.added_on) }} ago
               </span>
@@ -462,6 +527,8 @@ function getStateInfo(state: string) {
   return icon;
 }
 
+type TorrentColumnTier = 'core' | 'standard' | 'secondary';
+
 @Component({
   components: {
     ConfirmDeleteDialog,
@@ -481,27 +548,28 @@ class Torrents extends Vue {
   snackBarStore = useSnackBarStore()
 
   get isXs() { return this.display.xs; }
+  get isNarrow() { return this.display.smAndDown; }
   get isDark() { return this.theme.global.current.dark; }
-  readonly allColumns = [
-    { title: tr('name'), key: 'name' },
-    { title: tr('sites'), key: 'tracker' },
-    { title: tr('size'), key: 'size' },
-    { title: tr('progress'), key: 'progress' },
-    { title: tr('status'), key: 'state' },
-    { title: tr('priority.column'), key: 'priority' },
-    { title: tr('seeds'), key: 'num_complete' },
-    { title: tr('peers'), key: 'num_incomplete' },
-    { title: tr('dl_speed'), key: 'dlspeed' },
-    { title: tr('up_speed'), key: 'upspeed' },
-    { title: tr('eta'), key: 'eta' },
-    { title: tr('ratio'), key: 'ratio' },
-    { title: tr('added_on'), key: 'added_on' },
+  readonly allColumns: { title: string, key: string, tier: TorrentColumnTier }[] = [
+    { title: tr('name'), key: 'name', tier: 'core' },
+    { title: tr('sites'), key: 'tracker', tier: 'secondary' },
+    { title: tr('size'), key: 'size', tier: 'core' },
+    { title: tr('progress'), key: 'progress', tier: 'core' },
+    { title: tr('status'), key: 'state', tier: 'standard' },
+    { title: tr('priority.column'), key: 'priority', tier: 'secondary' },
+    { title: tr('seeds'), key: 'num_complete', tier: 'secondary' },
+    { title: tr('peers'), key: 'num_incomplete', tier: 'secondary' },
+    { title: tr('dl_speed'), key: 'dlspeed', tier: 'core' },
+    { title: tr('up_speed'), key: 'upspeed', tier: 'standard' },
+    { title: tr('eta'), key: 'eta', tier: 'secondary' },
+    { title: tr('ratio'), key: 'ratio', tier: 'secondary' },
+    { title: tr('added_on'), key: 'added_on', tier: 'secondary' },
   ]
 
   get headers() {
     const selectCol = { title: '', key: 'data-table-select', sortable: false, width: '48px' };
     const hidden = this.configStore.config.hiddenColumns || [];
-    const visible = this.allColumns.filter(c => !hidden.includes(c.key));
+    const visible = this.allColumns.filter(c => !hidden.includes(c.key) && this.isTierVisible(c.tier));
     return [selectCol, ...visible];
   }
 
@@ -553,6 +621,17 @@ class Torrents extends Vue {
 
   updateConfig(payload: ConfigPayload) {
     this.configStore.updateConfig(payload);
+  }
+
+  /** Breakpoint-driven visibility: secondary tiers drop out on narrow screens regardless of user config. */
+  isTierVisible(tier: TorrentColumnTier): boolean {
+    if (tier === 'secondary') {
+      return !this.isNarrow;
+    }
+    if (tier === 'standard') {
+      return !this.isXs;
+    }
+    return true;
   }
 
   isColumnHidden(key: string): boolean {
@@ -643,6 +722,35 @@ class Torrents extends Vue {
     } else {
       this.selectedRows = this.torrents.map(t => t.hash);
     }
+  }
+
+  // Compact sort bar (shown when the header row is hidden on narrow screens)
+  get sortKey(): string | undefined {
+    return this.sortBy[0]?.key as string | undefined;
+  }
+
+  get sortDescending(): boolean {
+    return this.sortBy[0]?.order === 'desc';
+  }
+
+  get sortableColumnOptions() {
+    return this.allColumns.map(c => ({ title: c.title, value: c.key }));
+  }
+
+  setSortColumn(key: string | null) {
+    if (!key) {
+      this.sortBy = [];
+      return;
+    }
+    const order = this.sortBy[0]?.key === key ? (this.sortBy[0].order as 'asc' | 'desc') : 'asc';
+    this.sortBy = [{ key, order }];
+  }
+
+  toggleSortOrder() {
+    if (!this.sortBy.length || !this.sortKey) {
+      return;
+    }
+    this.sortBy = [{ key: this.sortKey, order: this.sortDescending ? 'asc' : 'desc' }];
   }
 
   stateIcon(state: string) {
@@ -1010,6 +1118,98 @@ export default toNative(Torrents)
           }
         }
       }
+    }
+  }
+}
+
+.compact-sort-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 6px;
+
+  .compact-sort-bar__count {
+    font-size: 0.85rem;
+    opacity: 0.7;
+    flex-shrink: 0;
+    min-width: 1.5rem;
+    text-align: center;
+  }
+
+  .compact-sort-bar__select {
+    flex: 1;
+    max-width: 240px;
+  }
+}
+
+.narrow-list {
+  .v-data-table {
+    :deep(thead) {
+      display: none;
+    }
+
+    :deep(.v-data-table__wrapper table) {
+      border-spacing: 0 8px;
+    }
+
+    :deep(.torrent-row) {
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      grid-template-areas:
+        'select name name name'
+        'progress progress progress progress'
+        'size dlspeed upspeed state';
+      align-items: center;
+      column-gap: 12px;
+      row-gap: 6px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background-color: rgb(var(--v-theme-surface));
+      border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
+
+      &.torrent-row--selected {
+        background-color: rgba(25, 118, 210, 0.12);
+        border-color: rgba(25, 118, 210, 0.35);
+      }
+    }
+
+    :deep(.torrent-row .cell-select) {
+      grid-area: select;
+    }
+
+    :deep(.torrent-row .cell-name) {
+      grid-area: name;
+      min-width: 0;
+      white-space: normal;
+
+      .torrent-title {
+        max-width: 100%;
+        white-space: normal;
+      }
+    }
+
+    :deep(.torrent-row .cell-progress) {
+      grid-area: progress;
+      min-width: 0;
+      padding-top: 2px !important;
+      padding-bottom: 2px !important;
+    }
+
+    :deep(.torrent-row .cell-size) {
+      grid-area: size;
+    }
+
+    :deep(.torrent-row .cell-dlspeed) {
+      grid-area: dlspeed;
+    }
+
+    :deep(.torrent-row .cell-upspeed) {
+      grid-area: upspeed;
+    }
+
+    :deep(.torrent-row .cell-state) {
+      grid-area: state;
+      text-align: right;
     }
   }
 }

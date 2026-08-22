@@ -2,6 +2,7 @@
   <v-dialog
     v-model="showDialog"
     persistent
+    :fullscreen="display.xs"
     width="50%"
   >
     <v-card>
@@ -170,9 +171,11 @@ import { DialogConfig, DialogType, SnackBarConfig } from '../../store/types';
 import { useMainStore } from '@/store/index';
 import { useDialogStore } from '@/store/dialog';
 import { useSnackBarStore } from '@/store/snackBar';
+import { useDisplay } from 'vuetify';
 
 @Component
 export default class RssRulesDialog extends Vue {
+  display = useDisplay() as any;
   mainStore = useMainStore()
   dialogStore = useDialogStore()
   snackBarStore = useSnackBarStore()
