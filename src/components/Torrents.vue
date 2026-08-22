@@ -1,7 +1,7 @@
 <template>
   <div
     class="torrents"
-    :class="{'phone-layout': isXs}"
+    :class="{'phone-layout': isXs, 'md-list': !isLgAndUp}"
   >
     <div class="toolbar-wrapper">
       <div class="toolbar">
@@ -554,14 +554,14 @@ class Torrents extends Vue {
   readonly allColumns: { title: string, key: string, tier: TorrentColumnTier, width?: string }[] = [
     { title: tr('name'), key: 'name', tier: 'core' },
     { title: tr('sites'), key: 'tracker', tier: 'secondary', width: '130px' },
-    { title: tr('size'), key: 'size', tier: 'core', width: '80px' },
-    { title: tr('progress'), key: 'progress', tier: 'core', width: '130px' },
-    { title: tr('status'), key: 'state', tier: 'standard', width: '100px' },
+    { title: tr('size'), key: 'size', tier: 'core', width: '76px' },
+    { title: tr('progress'), key: 'progress', tier: 'core', width: '120px' },
+    { title: tr('status'), key: 'state', tier: 'standard', width: '90px' },
     { title: tr('priority.column'), key: 'priority', tier: 'secondary', width: '60px' },
     { title: tr('seeds'), key: 'num_complete', tier: 'secondary', width: '80px' },
     { title: tr('peers'), key: 'num_incomplete', tier: 'secondary', width: '80px' },
-    { title: tr('dl_speed'), key: 'dlspeed', tier: 'core', width: '85px' },
-    { title: tr('up_speed'), key: 'upspeed', tier: 'standard', width: '85px' },
+    { title: tr('dl_speed'), key: 'dlspeed', tier: 'core', width: '80px' },
+    { title: tr('up_speed'), key: 'upspeed', tier: 'standard', width: '80px' },
     { title: tr('eta'), key: 'eta', tier: 'secondary', width: '70px' },
     { title: tr('ratio'), key: 'ratio', tier: 'secondary', width: '60px' },
     { title: tr('added_on'), key: 'added_on', tier: 'secondary', width: '100px' },
@@ -1015,6 +1015,7 @@ export default toNative(Torrents)
   gap: 2px;
   position: relative;
   z-index: 1;
+  flex-wrap: wrap;
 }
 
 .toolbar-divider {
@@ -1153,6 +1154,14 @@ export default toNative(Torrents)
   .compact-sort-bar__select {
     flex: 1;
     max-width: 240px;
+  }
+}
+
+.md-list {
+  /* below lg the footer's decorative right margin can push the page wider
+     than the viewport — keep everything flush */
+  .v-data-table :deep(.v-data-table-footer) {
+    margin-right: 0;
   }
 }
 
