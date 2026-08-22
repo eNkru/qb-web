@@ -365,13 +365,25 @@
               v-if="isColumnVisible('dlspeed')"
               class="cell-dlspeed"
             >
-              {{ formatNetworkSpeed(item.dlspeed) }}
+              <v-icon
+                v-if="item.dlspeed > 0"
+                class="stat-arrow stat-arrow--dl"
+                size="13"
+              >
+                mdi-arrow-down
+              </v-icon><span class="stat-value">{{ formatNetworkSpeed(item.dlspeed) }}</span>
             </td>
             <td
               v-if="isColumnVisible('upspeed')"
               class="cell-upspeed"
             >
-              {{ formatNetworkSpeed(item.upspeed) }}
+              <v-icon
+                v-if="item.upspeed > 0"
+                class="stat-arrow stat-arrow--ul"
+                size="13"
+              >
+                mdi-arrow-up
+              </v-icon><span class="stat-value">{{ formatNetworkSpeed(item.upspeed) }}</span>
             </td>
             <td
               v-if="isColumnVisible('eta')"
@@ -1172,27 +1184,38 @@ export default toNative(Torrents)
     }
 
     :deep(.v-data-table__wrapper table) {
-      border-spacing: 0 8px;
+      border-spacing: 0 10px;
     }
 
     :deep(.torrent-row) {
       display: grid;
-      grid-template-columns: auto 1fr auto auto;
+      grid-template-columns: auto 1fr auto auto auto;
       grid-template-areas:
-        'select name name name'
-        'progress progress progress progress'
-        'size dlspeed upspeed state';
+        'select name name name name'
+        'progress progress progress progress progress'
+        'size . dlspeed upspeed state';
       align-items: center;
-      column-gap: 12px;
-      row-gap: 6px;
-      padding: 10px 12px;
-      border-radius: 10px;
+      column-gap: 10px;
+      row-gap: 9px;
+      padding: 12px;
+      border-radius: 12px;
       background-color: rgb(var(--v-theme-surface));
-      border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
+      border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+      box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.06),
+        0 2px 8px rgba(0, 0, 0, 0.05);
+      transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+
+      &:active {
+        transform: scale(0.995);
+      }
 
       &.torrent-row--selected {
-        background-color: rgba(25, 118, 210, 0.12);
-        border-color: rgba(25, 118, 210, 0.35);
+        background-color: rgba(25, 118, 210, 0.1);
+        border-color: rgba(25, 118, 210, 0.4);
+        box-shadow:
+          inset 3px 0 0 rgb(var(--v-theme-primary)),
+          0 1px 2px rgba(0, 0, 0, 0.06);
       }
     }
 
@@ -1206,8 +1229,14 @@ export default toNative(Torrents)
       white-space: normal;
 
       .torrent-title {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
         max-width: 100%;
         white-space: normal;
+        font-weight: 500;
+        line-height: 1.4;
       }
     }
 
@@ -1216,6 +1245,15 @@ export default toNative(Torrents)
       min-width: 0;
       padding-top: 2px !important;
       padding-bottom: 2px !important;
+    }
+
+    :deep(.torrent-row .cell-size),
+    :deep(.torrent-row .cell-dlspeed),
+    :deep(.torrent-row .cell-upspeed) {
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      color: rgba(var(--v-theme-on-surface), 0.75);
+      white-space: nowrap;
     }
 
     :deep(.torrent-row .cell-size) {
@@ -1230,9 +1268,32 @@ export default toNative(Torrents)
       grid-area: upspeed;
     }
 
+    :deep(.torrent-row .stat-arrow) {
+      display: inline-flex;
+      vertical-align: -2px;
+      margin-right: 2px;
+
+      &.stat-arrow--dl {
+        color: rgb(var(--v-theme-success));
+      }
+
+      &.stat-arrow--ul {
+        color: rgb(var(--v-theme-primary));
+      }
+    }
+
     :deep(.torrent-row .cell-state) {
       grid-area: state;
-      text-align: right;
+      justify-self: end;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      line-height: 1;
+      color: rgba(var(--v-theme-on-surface), 0.75);
+      background: rgba(var(--v-theme-on-surface), 0.07);
+      border-radius: 999px;
+      padding: 4px 9px !important;
+      white-space: nowrap;
     }
   }
 }
@@ -1327,6 +1388,11 @@ export default toNative(Torrents)
   font-weight: 600;
   letter-spacing: 0.02em;
   line-height: 1;
+}
+
+.stat-arrow {
+  /* speed direction arrows exist only for the narrow card presentation */
+  display: none;
 }
 
 .progress-cell {
