@@ -268,7 +268,7 @@
               />
             </td>
             <td
-              v-if="!isColumnHidden('name')"
+              v-if="isColumnVisible('name')"
               :title="item.name"
               class="cell-name icon-label"
             >
@@ -280,7 +280,7 @@
               </span>
             </td>
             <td
-              v-if="!isColumnHidden('tracker')"
+              v-if="isColumnVisible('tracker')"
               class="cell-tracker site-cell"
             >
               <v-tooltip location="bottom">
@@ -310,13 +310,13 @@
               </v-tooltip>
             </td>
             <td
-              v-if="!isColumnHidden('size')"
+              v-if="isColumnVisible('size')"
               class="cell-size"
             >
               {{ $formatSize(item.size) }}
             </td>
             <td
-              v-if="!isColumnHidden('progress')"
+              v-if="isColumnVisible('progress')"
               class="cell-progress progress-cell"
             >
               <v-progress-linear
@@ -338,55 +338,55 @@
               </v-progress-linear>
             </td>
             <td
-              v-if="!isColumnHidden('state')"
+              v-if="isColumnVisible('state')"
               class="cell-state"
             >
               {{ $t('torrent_state.' + item.state) }}
             </td>
             <td
-              v-if="!isColumnHidden('priority')"
+              v-if="isColumnVisible('priority')"
               class="cell-priority"
             >
               {{ formatTorrentPriority(item.priority) }}
             </td>
             <td
-              v-if="!isColumnHidden('num_complete')"
+              v-if="isColumnVisible('num_complete')"
               class="cell-num-complete"
             >
               {{ item.num_seeds }}/{{ item.num_complete }}
             </td>
             <td
-              v-if="!isColumnHidden('num_incomplete')"
+              v-if="isColumnVisible('num_incomplete')"
               class="cell-num-incomplete"
             >
               {{ item.num_leechs }}/{{ item.num_incomplete }}
             </td>
             <td
-              v-if="!isColumnHidden('dlspeed')"
+              v-if="isColumnVisible('dlspeed')"
               class="cell-dlspeed"
             >
               {{ formatNetworkSpeed(item.dlspeed) }}
             </td>
             <td
-              v-if="!isColumnHidden('upspeed')"
+              v-if="isColumnVisible('upspeed')"
               class="cell-upspeed"
             >
               {{ formatNetworkSpeed(item.upspeed) }}
             </td>
             <td
-              v-if="!isColumnHidden('eta')"
+              v-if="isColumnVisible('eta')"
               class="cell-eta"
             >
               {{ $formatDuration(item.eta, {dayLimit: 100}) }}
             </td>
             <td
-              v-if="!isColumnHidden('ratio')"
+              v-if="isColumnVisible('ratio')"
               class="cell-ratio"
             >
               {{ item.ratio.toFixed(2) }}
             </td>
             <td
-              v-if="!isColumnHidden('added_on')"
+              v-if="isColumnVisible('added_on')"
               class="cell-added-on"
             >
               <span :title="$formatTimestamp(item.added_on)">
@@ -551,20 +551,20 @@ class Torrents extends Vue {
   get isNarrow() { return this.display.smAndDown; }
   get isLgAndUp() { return this.display.lgAndUp; }
   get isDark() { return this.theme.global.current.dark; }
-  readonly allColumns: { title: string, key: string, tier: TorrentColumnTier }[] = [
+  readonly allColumns: { title: string, key: string, tier: TorrentColumnTier, width?: string }[] = [
     { title: tr('name'), key: 'name', tier: 'core' },
-    { title: tr('sites'), key: 'tracker', tier: 'secondary' },
-    { title: tr('size'), key: 'size', tier: 'core' },
-    { title: tr('progress'), key: 'progress', tier: 'core' },
-    { title: tr('status'), key: 'state', tier: 'standard' },
-    { title: tr('priority.column'), key: 'priority', tier: 'secondary' },
-    { title: tr('seeds'), key: 'num_complete', tier: 'secondary' },
-    { title: tr('peers'), key: 'num_incomplete', tier: 'secondary' },
-    { title: tr('dl_speed'), key: 'dlspeed', tier: 'core' },
-    { title: tr('up_speed'), key: 'upspeed', tier: 'standard' },
-    { title: tr('eta'), key: 'eta', tier: 'secondary' },
-    { title: tr('ratio'), key: 'ratio', tier: 'secondary' },
-    { title: tr('added_on'), key: 'added_on', tier: 'secondary' },
+    { title: tr('sites'), key: 'tracker', tier: 'secondary', width: '130px' },
+    { title: tr('size'), key: 'size', tier: 'core', width: '80px' },
+    { title: tr('progress'), key: 'progress', tier: 'core', width: '130px' },
+    { title: tr('status'), key: 'state', tier: 'standard', width: '100px' },
+    { title: tr('priority.column'), key: 'priority', tier: 'secondary', width: '60px' },
+    { title: tr('seeds'), key: 'num_complete', tier: 'secondary', width: '80px' },
+    { title: tr('peers'), key: 'num_incomplete', tier: 'secondary', width: '80px' },
+    { title: tr('dl_speed'), key: 'dlspeed', tier: 'core', width: '85px' },
+    { title: tr('up_speed'), key: 'upspeed', tier: 'standard', width: '85px' },
+    { title: tr('eta'), key: 'eta', tier: 'secondary', width: '70px' },
+    { title: tr('ratio'), key: 'ratio', tier: 'secondary', width: '60px' },
+    { title: tr('added_on'), key: 'added_on', tier: 'secondary', width: '100px' },
   ]
 
   get headers() {
@@ -638,6 +638,15 @@ class Torrents extends Vue {
   isColumnHidden(key: string): boolean {
     const hidden = this.configStore.config.hiddenColumns || [];
     return hidden.includes(key);
+  }
+
+  /** Single source of truth for cell rendering: user config AND breakpoint tiers must agree with the headers getter. */
+  isColumnVisible(key: string): boolean {
+    if (this.isColumnHidden(key)) {
+      return false;
+    }
+    const col = this.allColumns.find(c => c.key === key);
+    return col ? this.isTierVisible(col.tier) : true;
   }
 
   toggleColumn(key: string) {
@@ -1068,6 +1077,10 @@ export default toNative(Torrents)
     }
 
     :deep(.v-data-table__wrapper table) {
+      /* fixed layout: columns honor header width hints, name flexes, cells
+         truncate via nowrap+ellipsis — the table never overflows its container */
+      table-layout: fixed;
+      width: 100%;
       border-collapse: separate;
       border-spacing: 0 6px;
     }
