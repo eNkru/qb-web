@@ -549,6 +549,7 @@ class Torrents extends Vue {
 
   get isXs() { return this.display.xs; }
   get isNarrow() { return this.display.smAndDown; }
+  get isLgAndUp() { return this.display.lgAndUp; }
   get isDark() { return this.theme.global.current.dark; }
   readonly allColumns: { title: string, key: string, tier: TorrentColumnTier }[] = [
     { title: tr('name'), key: 'name', tier: 'core' },
@@ -623,10 +624,10 @@ class Torrents extends Vue {
     this.configStore.updateConfig(payload);
   }
 
-  /** Breakpoint-driven visibility: secondary tiers drop out on narrow screens regardless of user config. */
+  /** Breakpoint-driven visibility: secondary tiers drop out on smaller screens regardless of user config. */
   isTierVisible(tier: TorrentColumnTier): boolean {
     if (tier === 'secondary') {
-      return !this.isNarrow;
+      return this.isLgAndUp;
     }
     if (tier === 'standard') {
       return !this.isXs;
