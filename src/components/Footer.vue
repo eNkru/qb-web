@@ -318,6 +318,8 @@ export default toNative(Footer)
   width: 100%;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   padding: 6px 0;
+  flex-wrap: wrap;
+  row-gap: 2px;
 }
 
 .v-theme--dark .footer {
