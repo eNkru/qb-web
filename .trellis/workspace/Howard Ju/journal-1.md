@@ -78,3 +78,36 @@ Made the torrent list fully responsive with one code path (user pivoted away fro
 ### Next Steps
 
 - None - task complete
+
+
+## Session 3: Fix security audit vulnerabilities (axios, vitest)
+
+**Date**: 2026-09-15
+**Task**: Fix security audit vulnerabilities (axios, vitest)
+**Branch**: `fix/security-audit-vulnerabilities`
+
+### Summary
+
+Resolved all yarn npm audit advisories on branch fix/security-audit-vulnerabilities: axios ^1.9.0 -> ^1.18.0 (GHSA-hcpx-6fm6-wx23), vitest ^3.2.6 -> ^4.1.11 (GHSA-82fw-gwwq-j7x9). Added vite ^6.4.3 resolution to prevent vitest 4 from pulling a second vite 8. Verified: audit clean, 52/52 tests pass, build and eslint clean. Pre-existing typecheck error in src/Api.ts (missing 'node' types) left out of scope. PR #26 opened.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `945daa3` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
