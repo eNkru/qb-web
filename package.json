@@ -16,7 +16,7 @@
   "dependencies": {
     "@mdi/font": "^7.4.47",
     "@mdi/js": "^7.4.47",
-    "axios": "^1.9.0",
+    "axios": "^1.18.0",
     "dayjs": "^1.8.23",
     "debug": "^4.1.1",
     "lodash-es": "^4.18.1",
@@ -52,7 +52,7 @@
     "vite-plugin-checker": "^0.8.0",
     "vite-plugin-eslint": "^1.8.0",
     "vite-plugin-pwa": "^1.0.0",
-    "vitest": "^3.2.6",
+    "vitest": "^4.1.11",
     "vue-tsc": "^2.0.0"
   },
   "lint-staged": {
@@ -62,7 +62,8 @@
   },
   "resolutions": {
     "form-data": "4.0.6",
-    "undici": "6.27.0"
+    "undici": "6.27.0",
+    "vite": "^6.4.3"
   },
   "type": "module",
   "packageManager": "yarn@3.5.0"
