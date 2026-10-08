@@ -22,7 +22,10 @@
         </v-btn>
       </v-card-title>
       <v-card-text>
-        <v-tabs v-model="tab">
+        <v-tabs
+          v-model="tab"
+          color="primary"
+        >
           <v-tab
             v-for="item of tabList"
             :key="item"

@@ -37,6 +37,8 @@ export default {
       increase: 'Prioriteit verhogen',
       decrease: 'Prioriteit verlagen',
       bottom: 'Laagste prioriteit',
+      queueing_required: 'Torrent-wachtrij moet zijn ingeschakeld',
+      queueing_disabled_hint: 'Schakel Torrent-wachtrij in bij Instellingen om prioriteitsbediening te gebruiken',
     },
   
     username: 'Gebruikersnaam',
@@ -126,6 +128,11 @@ export default {
   
       connection: 'Verbindingen',
       bittorrent: 'BitTorrent',
+      queueing: 'Torrent-wachtrij',
+      queueing_enabled: 'Torrent-wachtrij inschakelen',
+      max_active_downloads: 'Maximum actieve downloads',
+      max_active_uploads: 'Maximum actieve uploads',
+      max_active_torrents: 'Maximum actieve torrents',
   
       rss: 'RSS',
       rss_processing_enabled: 'Ophalen van RSS-feeds inschakelen',

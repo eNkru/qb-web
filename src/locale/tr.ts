@@ -36,6 +36,8 @@ export default {
     increase: 'Önceliği artır',
     decrease: 'Önceliği azalt',
     bottom: 'En düşük öncelik',
+    queueing_required: 'Torrent sıralaması etkinleştirilmeli',
+    queueing_disabled_hint: 'Öncelik kontrollerini kullanmak için Ayarlar bölümünde Torrent Sıralaması etkinleştirin',
   },
 
   username: 'Kullanıcı Adı',

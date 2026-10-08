@@ -39,6 +39,8 @@ export default {
     increase: '提高優先級',
     decrease: '降低優先級',
     bottom: '最低優先級',
+    queueing_required: '需要先啟用 torrent 佇列',
+    queueing_disabled_hint: '請在設定中啟用 Torrent 佇列後才能使用優先級控制',
   },
 
   username: '使用者名稱',
@@ -124,6 +126,11 @@ export default {
 
     connection: '連接',
     bittorrent: 'BitTorrent',
+    queueing: 'Torrent 佇列',
+    queueing_enabled: '啟用 torrent 佇列',
+    max_active_downloads: '最大活動下載數',
+    max_active_uploads: '最大活動上傳數',
+    max_active_torrents: '最大活動種子數',
 
     webui: 'Web UI',
     data_update_interval: '數據更新頻率(ms)',

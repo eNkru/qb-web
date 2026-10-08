@@ -49,6 +49,7 @@
     <v-row dense>
       <v-col>
         <v-checkbox
+          color="primary"
           :label="$t('preferences.display_speed_in_title')"
           :model-value="config.displaySpeedInTitle"
           @change="updateTitleSpeedConfig($event)"
@@ -105,6 +106,7 @@
     <v-row dense>
       <v-col>
         <v-checkbox
+          color="primary"
           :model-value="preferences.bypass_auth_subnet_whitelist_enabled"
           :label="$t('preferences.bypass_auth_subnet_whitelist')"
           @change="changeSettings('bypass_auth_subnet_whitelist_enabled', $event)"
@@ -112,6 +114,7 @@
       </v-col>
       <v-col>
         <v-checkbox
+          color="primary"
           :model-value="preferences.bypass_local_auth"
           :label="$t('preferences.bypass_local_auth')"
           @change="changeSettings('bypass_local_auth', $event)"
@@ -176,3 +179,16 @@ export default class WebUISettings extends Vue {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+h4 {
+  margin-top: 16px;
+  margin-bottom: 4px;
+  padding-left: 4px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: rgb(var(--v-theme-primary));
+}
+
+@include dialog-title;
+</style>
