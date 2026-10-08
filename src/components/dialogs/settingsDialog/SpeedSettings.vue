@@ -47,6 +47,7 @@
               :placeholder="convertToKB(Number(preferences.alt_up_limit) || 0)"
             />
             <v-checkbox
+              color="primary"
               :label="$t('preferences.alternate_schedule_enable_time')"
               @change="changeSettings('scheduler_enabled', $event)"
               :model-value="preferences.scheduler_enabled"
@@ -85,20 +86,66 @@
       fluid
     >
       <v-switch
+        color="primary"
         :model-value="preferences.limit_utp_rate"
         :label="$t('preferences.limit_utp_rate')"
         @change="changeSettings('limit_utp_rate', !(preferences.limit_utp_rate ?? false))"
       />
       <v-switch
+        color="primary"
         :model-value="preferences.limit_tcp_overhead"
         :label="$t('preferences.limit_tcp_overhead')"
         @change="changeSettings('limit_tcp_overhead', !(preferences.limit_tcp_overhead ?? false))"
       />
       <v-switch
+        color="primary"
         :model-value="preferences.limit_lan_peers"
         :label="$t('preferences.limit_lan_peers')"
         @change="changeSettings('limit_lan_peers', !(preferences.limit_lan_peers ?? false))"
       />
+    </v-container>
+    <h4>{{ $t('preferences.queueing') }}</h4>
+    <v-divider />
+    <v-container
+      class="px-0"
+      fluid
+    >
+      <v-switch
+        color="primary"
+        :model-value="preferences.queueing_enabled"
+        :label="$t('preferences.queueing_enabled')"
+        @change="changeSettings('queueing_enabled', !(preferences.queueing_enabled ?? false))"
+      />
+      <preference-row i18n-key="max_active_downloads">
+        <v-text-field
+          variant="outlined"
+          density="compact"
+          type="number"
+          :disabled="!preferences.queueing_enabled"
+          :model-value="preferences.max_active_downloads"
+          @change="changeSettings('max_active_downloads', Number($event))"
+        />
+      </preference-row>
+      <preference-row i18n-key="max_active_uploads">
+        <v-text-field
+          variant="outlined"
+          density="compact"
+          type="number"
+          :disabled="!preferences.queueing_enabled"
+          :model-value="preferences.max_active_uploads"
+          @change="changeSettings('max_active_uploads', Number($event))"
+        />
+      </preference-row>
+      <preference-row i18n-key="max_active_torrents">
+        <v-text-field
+          variant="outlined"
+          density="compact"
+          type="number"
+          :disabled="!preferences.queueing_enabled"
+          :model-value="preferences.max_active_torrents"
+          @change="changeSettings('max_active_torrents', Number($event))"
+        />
+      </preference-row>
     </v-container>
   </v-container>
 </template>
@@ -106,10 +153,13 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-facing-decorator'
 import {Preferences} from '@/types'
+import PreferenceRow from './PreferenceRow.vue'
 import { useMainStore } from '@/store/index';
 
 @Component({
-  components: {},
+  components: {
+    PreferenceRow,
+  },
 })
 export default class SpeedSettings extends Vue {
   mainStore = useMainStore()
@@ -159,7 +209,7 @@ h4 {
   padding-left: 4px;
   font-weight: 600;
   font-size: 0.875rem;
-  color: rgba(var(--v-theme-on-surface), 0.7);
+  color: rgb(var(--v-theme-primary));
 }
 
 @include dialog-title;

@@ -1,11 +1,13 @@
 <template>
   <v-container>
     <v-switch
+      color="primary"
       :model-value="preferences.rss_processing_enabled"
       :label="$t('preferences.rss_processing_enabled')"
       @change="changeSettings('rss_processing_enabled', !preferences.rss_processing_enabled)"
     />
     <v-switch
+      color="primary"
       :model-value="preferences.rss_auto_downloading_enabled"
       :label="$t('preferences.rss_auto_downloading_enabled')"
       @change="changeSettings('rss_auto_downloading_enabled', !preferences.rss_auto_downloading_enabled)"

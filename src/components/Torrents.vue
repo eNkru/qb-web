@@ -7,6 +7,7 @@
       <div class="toolbar">
         <v-btn
           icon
+          color="error"
           @click="confirmDelete"
           :title="$t('delete')"
           :disabled="!hasSelected"
@@ -16,6 +17,7 @@
         <div class="toolbar-divider" />
         <v-btn
           icon
+          color="success"
           @click="resumeTorrents"
           :title="$t('resume')"
           :disabled="!hasSelected"
@@ -24,6 +26,7 @@
         </v-btn>
         <v-btn
           icon
+          color="warning"
           @click="pauseTorrents"
           :title="$t('pause')"
           :disabled="!hasSelected"
@@ -33,6 +36,7 @@
 
         <v-btn
           icon
+          color="deep-purple"
           @click="forceStartTorrents"
           :title="$t('force_start')"
           :disabled="!hasSelected"
@@ -43,6 +47,7 @@
         <div class="toolbar-divider" />
         <v-btn
           icon
+          color="info"
           @click="showInfo()"
           :title="$t('info')"
           :disabled="!hasSelected || selectedHashes.length > 5"
@@ -53,6 +58,7 @@
           <template #activator="{ props: menuProps }">
             <v-btn
               icon
+              color="teal"
               v-bind="menuProps"
               :title="$t('title.set_category')"
               :disabled="!hasSelected"
@@ -89,33 +95,37 @@
         </v-menu>
         <v-btn
           icon
+          color="primary"
           @click="maximizeTorrentPriority"
-          :title="$t('priority.top')"
-          :disabled="!hasSelected"
+          :title="!isQueueingEnabled ? $t('priority.queueing_disabled_hint') : $t('priority.top')"
+          :disabled="!hasSelected || !isQueueingEnabled"
         >
           <v-icon>mdi-chevron-double-up</v-icon>
         </v-btn>
         <v-btn
           icon
+          color="primary"
           @click="increaseTorrentPriority"
-          :title="$t('priority.increase')"
-          :disabled="!hasSelected"
+          :title="!isQueueingEnabled ? $t('priority.queueing_disabled_hint') : $t('priority.increase')"
+          :disabled="!hasSelected || !isQueueingEnabled"
         >
           <v-icon>mdi-chevron-up</v-icon>
         </v-btn>
         <v-btn
           icon
+          color="primary"
           @click="decreaseTorrentPriority"
-          :title="$t('priority.decrease')"
-          :disabled="!hasSelected"
+          :title="!isQueueingEnabled ? $t('priority.queueing_disabled_hint') : $t('priority.decrease')"
+          :disabled="!hasSelected || !isQueueingEnabled"
         >
           <v-icon>mdi-chevron-down</v-icon>
         </v-btn>
         <v-btn
           icon
+          color="primary"
           @click="minimizeTorrentPriority"
-          :title="$t('priority.bottom')"
-          :disabled="!hasSelected"
+          :title="!isQueueingEnabled ? $t('priority.queueing_disabled_hint') : $t('priority.bottom')"
+          :disabled="!hasSelected || !isQueueingEnabled"
         >
           <v-icon>mdi-chevron-double-down</v-icon>
         </v-btn>
@@ -123,6 +133,7 @@
           <div class="toolbar-divider" />
           <v-btn
             icon
+            color="indigo"
             @click="toggleSequentialTorrents"
             :title="$t('toggle_sequential')"
             :disabled="!hasSelected"
@@ -131,6 +142,7 @@
           </v-btn>
           <v-btn
             icon
+            color="blue-grey"
             @click="setTorrentLocation"
             :title="$t('title.set_location')"
             :disabled="!hasSelected"
@@ -139,6 +151,7 @@
           </v-btn>
           <v-btn
             icon
+            color="cyan"
             @click="reannounceTorrents"
             :title="$t('reannounce')"
           >
@@ -146,12 +159,14 @@
           </v-btn>
           <v-btn
             icon
+            color="light-blue"
             @click="editTracker"
             :title="$t('title.edit_tracker')"
           >
             <v-icon>mdi-server</v-icon>
           </v-btn>          <v-btn
             icon
+            color="orange"
             @click="recheckTorrents"
             :title="$t('recheck')"
             :disabled="!hasSelected"
@@ -164,6 +179,7 @@
           <template #activator="{ props: menuProps }">
             <v-btn
               icon
+              color="secondary"
               v-bind="menuProps"
               title="Toggle columns"
             >
@@ -687,6 +703,9 @@ class Torrents extends Vue {
   get selectedHashes(): string[] {
     return this.selectedRows;
   }
+  get isQueueingEnabled(): boolean {
+    return !!this.mainStore.preferences?.queueing_enabled;
+  }
 
   get selectedTorrents(): Torrent[] {
     const hashSet = new Set(this.selectedRows);
@@ -946,19 +965,32 @@ class Torrents extends Vue {
   }
 
   async maximizeTorrentPriority() {
-    await api.maximizeTorrentPriority(this.selectedHashes);
+    await this.changeTorrentPriority(() => api.maximizeTorrentPriority(this.selectedHashes));
   }
 
   async increaseTorrentPriority() {
-    await api.increaseTorrentPriority(this.selectedHashes);
+    await this.changeTorrentPriority(() => api.increaseTorrentPriority(this.selectedHashes));
   }
 
   async decreaseTorrentPriority() {
-    await api.decreaseTorrentPriority(this.selectedHashes);
+    await this.changeTorrentPriority(() => api.decreaseTorrentPriority(this.selectedHashes));
   }
 
   async minimizeTorrentPriority() {
-    await api.minimizeTorrentPriority(this.selectedHashes);
+    await this.changeTorrentPriority(() => api.minimizeTorrentPriority(this.selectedHashes));
+  }
+
+  private async changeTorrentPriority(fn: () => Promise<unknown>) {
+    try {
+      await fn();
+    } catch (e: any) {
+      const status = e?.response?.status;
+      if (status === 409) {
+        this.showSnackBar({text: tr('priority.queueing_required')});
+      } else {
+        this.showSnackBar({text: e?.response?.data || e});
+      }
+    }
   }
 
   editTracker() {

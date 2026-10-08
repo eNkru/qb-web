@@ -7,16 +7,19 @@
       fluid
     >
       <v-switch
+        color="primary"
         :model-value="preferences.create_subfolder_enabled"
         :label="$t('preferences.create_subfolder_enabled')"
         @change="changeSettings('create_subfolder_enabled', !(preferences.create_subfolder_enabled ?? false))"
       />
       <v-switch
+        color="primary"
         :model-value="preferences.start_paused_enabled"
         :label="$t('preferences.start_paused_enabled')"
         @change="changeSettings('start_paused_enabled', !(preferences.start_paused_enabled ?? false))"
       />
       <v-switch
+        color="primary"
         :model-value="preferences.auto_delete_mode"
         :label="$t('preferences.auto_delete_mode')"
         @change="changeSettings('auto_delete_mode', !(preferences.auto_delete_mode ?? false))"
@@ -28,11 +31,13 @@
       fluid
     >
       <v-switch
+        color="primary"
         :model-value="preferences.preallocate_all"
         :label="$t('preferences.preallocate_all')"
         @change="changeSettings('preallocate_all', !(preferences.preallocate_all ?? false))"
       />
       <v-switch
+        color="primary"
         :model-value="preferences.incomplete_files_ext"
         :label="$t('preferences.incomplete_files_ext')"
         @change="changeSettings('incomplete_files_ext', !(preferences.incomplete_files_ext ?? false))"
@@ -170,7 +175,7 @@ h4 {
   padding-left: 4px;
   font-weight: 600;
   font-size: 0.875rem;
-  color: rgba(var(--v-theme-on-surface), 0.7);
+  color: rgb(var(--v-theme-primary));
 }
 
 :deep(.v-switch) {

@@ -40,6 +40,8 @@ export default {
     increase: '提高优先级',
     decrease: '降低优先级',
     bottom: '最低优先级',
+    queueing_required: '需要先启用 torrent 队列',
+    queueing_disabled_hint: '请在设置中启用 Torrent 队列后才能使用优先级控制',
   },
 
   username: '用户名',
@@ -129,6 +131,11 @@ export default {
 
     connection: '连接',
     bittorrent: 'BitTorrent',
+    queueing: 'Torrent 队列',
+    queueing_enabled: '启用 torrent 队列',
+    max_active_downloads: '最大活动下载数',
+    max_active_uploads: '最大活动上传数',
+    max_active_torrents: '最大活动种子数',
 
     rss: 'RSS',
     rss_processing_enabled: '启用自动刷新',

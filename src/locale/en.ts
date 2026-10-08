@@ -42,6 +42,8 @@ export default {
     increase: 'Increase Priority',
     decrease: 'Decrease Priority',
     bottom: 'Bottom Priority',
+    queueing_required: 'Torrent queueing must be enabled',
+    queueing_disabled_hint: 'Enable Torrent Queueing in Settings to use priority controls',
   },
 
   username: 'Username',
@@ -131,6 +133,11 @@ export default {
 
     connection: 'Connections',
     bittorrent: 'BitTorrent',
+    queueing: 'Torrent Queueing',
+    queueing_enabled: 'Enable torrent queueing',
+    max_active_downloads: 'Maximum active downloads',
+    max_active_uploads: 'Maximum active uploads',
+    max_active_torrents: 'Maximum active torrents',
 
     rss: 'RSS',
     rss_processing_enabled: 'Enable fetching RSS feeds',
