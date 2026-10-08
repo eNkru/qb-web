@@ -26,7 +26,7 @@
       hide-details
       :clearable="!phoneLayout || searchBarExpanded"
       prepend-inner-icon="mdi-magnify"
-      :label="$t('search')"
+      :placeholder="$t('search')"
       @focus="focusedSearch = true"
       @blur="focusedSearch = false"
       v-model="searchInput"
@@ -159,6 +159,11 @@ export default toNative(MainToolbar)
 
   .search-bar {
     max-width: 420px;
+
+    // The hint takes the label's place, so drop it once the field is focused.
+    :deep(.v-field__input:focus::placeholder) {
+      color: transparent;
+    }
 
     :deep(.v-field) {
       border-radius: 24px;

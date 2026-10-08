@@ -1,86 +1,84 @@
 <template>
   <v-container>
+    <h4>{{ $t('preferences.global_rate_limits') }}</h4>
+    <v-divider />
     <v-container
+      class="px-0"
       fluid
     >
-      <v-container>
-        <v-row justify="center">
-          <v-col
-            cols="12"
-            md="4"
-          >
-            <h4> {{ $t('preferences.global_rate_limits') }}</h4>
-            <v-text-field
-              variant="outlined"
-              density="compact"
-              @change="changeSettings('dl_limit', convertToBytes(Number($event) || 0))"
-              :label="($t as any)('preferences.dl_limit')"
-              :placeholder="convertToKB(Number(preferences.dl_limit) || 0)"
-            />
-            <v-text-field
-              variant="outlined"
-              density="compact"
-              @change="changeSettings('up_limit', convertToBytes(Number($event) || 0))"
-              :label="($t as any)('preferences.up_limit')"
-              :placeholder="convertToKB(Number(preferences.up_limit) || 0)"
-            />
-          </v-col>
-          <v-col
-            cols="12"
-            md="4"
-          >
-            <h4> {{ $t('preferences.alternate_rate_limits') }}</h4>
-            <v-text-field
-              variant="outlined"
-              density="compact"
-              type="number"
-              @change="changeSettings('alt_dl_limit', convertToBytes(Number($event) || 0))"
-              :label="($t as any)('preferences.dl_limit')"
-              :placeholder="convertToKB(Number(preferences.alt_dl_limit) || 0)"
-            />
-            <v-text-field
-              variant="outlined"
-              density="compact"
-              type="number"
-              @change="changeSettings('alt_up_limit', convertToBytes(Number($event) || 0))"
-              :label="($t as any)('preferences.up_limit')"
-              :placeholder="convertToKB(Number(preferences.alt_up_limit) || 0)"
-            />
-            <v-checkbox
-              color="primary"
-              :label="$t('preferences.alternate_schedule_enable_time')"
-              @change="changeSettings('scheduler_enabled', $event)"
-              :model-value="preferences.scheduler_enabled"
-            />
-          </v-col>
-        </v-row>
-        <v-row
-          v-if="preferences.scheduler_enabled"
-          class="justify-center"
-        >
-          <v-col
-            cols="auto"
-          >
-            <v-time-picker
-              :model-value="(preferences.schedule_from_hour ?? '') + ':' + (preferences.schedule_from_min ?? '')"
-              color="green-lighten-1"
-              format="24hr"
-              @update:model-value="updateSchedulerFrom($event)"
-            />
-          </v-col>
-          <v-col
-            cols="auto"
-          >
-            <v-time-picker
-              :model-value="(preferences.schedule_to_hour ?? '') + ':' + (preferences.schedule_to_min ?? '')"
-              color="green-lighten-1"
-              format="24hr"
-              @update:model-value="updateSchedulerTo($event)"
-            />
-          </v-col>
-        </v-row>
-      </v-container>
+      <preference-row i18n-key="dl_limit">
+        <v-text-field
+          variant="outlined"
+          density="compact"
+          @change="changeSettings('dl_limit', convertToBytes(Number($event) || 0))"
+          :placeholder="convertToKB(Number(preferences.dl_limit) || 0)"
+        />
+      </preference-row>
+      <preference-row i18n-key="up_limit">
+        <v-text-field
+          variant="outlined"
+          density="compact"
+          @change="changeSettings('up_limit', convertToBytes(Number($event) || 0))"
+          :placeholder="convertToKB(Number(preferences.up_limit) || 0)"
+        />
+      </preference-row>
     </v-container>
+    <h4>{{ $t('preferences.alternate_rate_limits') }}</h4>
+    <v-divider />
+    <v-container
+      class="px-0"
+      fluid
+    >
+      <preference-row i18n-key="dl_limit">
+        <v-text-field
+          variant="outlined"
+          density="compact"
+          type="number"
+          @change="changeSettings('alt_dl_limit', convertToBytes(Number($event) || 0))"
+          :placeholder="convertToKB(Number(preferences.alt_dl_limit) || 0)"
+        />
+      </preference-row>
+      <preference-row i18n-key="up_limit">
+        <v-text-field
+          variant="outlined"
+          density="compact"
+          type="number"
+          @change="changeSettings('alt_up_limit', convertToBytes(Number($event) || 0))"
+          :placeholder="convertToKB(Number(preferences.alt_up_limit) || 0)"
+        />
+      </preference-row>
+      <v-checkbox
+        color="primary"
+        :label="$t('preferences.alternate_schedule_enable_time')"
+        @change="changeSettings('scheduler_enabled', $event)"
+        :model-value="preferences.scheduler_enabled"
+      />
+    </v-container>
+    <v-row
+      v-if="preferences.scheduler_enabled"
+      class="justify-center"
+    >
+      <v-col
+        cols="auto"
+      >
+        <v-time-picker
+          :model-value="(preferences.schedule_from_hour ?? '') + ':' + (preferences.schedule_from_min ?? '')"
+          color="green-lighten-1"
+          format="24hr"
+          @update:model-value="updateSchedulerFrom($event)"
+        />
+      </v-col>
+      <v-col
+        cols="auto"
+      >
+        <v-time-picker
+          :model-value="(preferences.schedule_to_hour ?? '') + ':' + (preferences.schedule_to_min ?? '')"
+          color="green-lighten-1"
+          format="24hr"
+          @update:model-value="updateSchedulerTo($event)"
+        />
+      </v-col>
+    </v-row>
     <v-container
       class="px-0"
       fluid
@@ -201,6 +199,12 @@ export default class SpeedSettings extends Vue {
 <style lang="scss" scoped>
 :deep(.v-switch) {
   margin: 0
+}
+
+// The rate limit fields use the current value as a placeholder hint;
+// hide it while editing so the field starts out empty.
+:deep(.v-field__input:focus::placeholder) {
+  color: transparent;
 }
 
 h4 {
