@@ -12,25 +12,29 @@
       :label="$t('preferences.rss_auto_downloading_enabled')"
       @change="changeSettings('rss_auto_downloading_enabled', !preferences.rss_auto_downloading_enabled)"
     />
-    <v-text-field
-      variant="outlined"
-      density="compact"
-      suffix="min"
-      type="number"
-      :model-value="preferences.rss_refresh_interval"
-      :label="$t('preferences.rss_refresh_interval')"
-      @change="changeSettings('rss_refresh_interval', $event)"
-    />
+    <preference-row i18n-key="rss_refresh_interval">
+      <v-text-field
+        variant="outlined"
+        density="compact"
+        suffix="min"
+        type="number"
+        :model-value="preferences.rss_refresh_interval"
+        @change="changeSettings('rss_refresh_interval', $event)"
+      />
+    </preference-row>
   </v-container>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-facing-decorator'
 import {Preferences} from '@/types'
+import PreferenceRow from './PreferenceRow.vue'
 import { useMainStore } from '@/store/index';
 
 @Component({
-  components: {},
+  components: {
+    PreferenceRow,
+  },
 })
 export default class SpeedSettings extends Vue {
   mainStore = useMainStore()
