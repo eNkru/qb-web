@@ -57,10 +57,17 @@ class Api {
     const data = new URLSearchParams(params);
     return this.axios.post('/auth/login', data, {
       validateStatus(status) {
-        return status === 200 || status === 403;
+        return status === 200 || status === 204 || status === 403;
       },
       baseURL: this.normalizeBaseUrl(baseUrl),
-    }).then(Api.handleResponse);
+    }).then((resp) => {
+      // qBittorrent >= 5.2 answers 204 No Content on success, older versions
+      // answer 200 with "Ok." in the body. Normalize any 2xx to 'Ok.'.
+      if (resp.status >= 200 && resp.status < 300) {
+        return 'Ok.';
+      }
+      return Api.handleResponse(resp);
+    });
   }
 
   public getGlobalTransferInfo() {
