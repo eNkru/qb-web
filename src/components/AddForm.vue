@@ -414,8 +414,11 @@ class AddForm extends Vue {
       if (resp !== 'Ok.') {
         this.error = resp;
       }
-    } catch (e) {
-      this.error = e.message;
+    } catch (e: any) {
+      // qBittorrent reports failures with a plain text message in the body
+      // (e.g. "Error: 'foo.torrent' is not a valid torrent file.").
+      const detail = e?.response?.data;
+      this.error = typeof detail === 'string' && detail ? detail : e.message;
     }
 
     this.submitting = false;

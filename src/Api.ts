@@ -12,6 +12,11 @@ import {
 
 const apiEndpoint = 'api/v2';
 
+// qBittorrent >= 5.2 replies `204 No Content` for endpoints that have nothing to
+// return (login, actions that used to answer "Ok." in the body, ...), so every
+// 2xx status has to be treated as success.
+const isSuccessStatus = (status: number) => status >= 200 && status < 300;
+
 class Api {
   private axios: AxiosInstance;
 
@@ -57,13 +62,11 @@ class Api {
     const data = new URLSearchParams(params);
     return this.axios.post('/auth/login', data, {
       validateStatus(status) {
-        return status === 200 || status === 204 || status === 403;
+        return isSuccessStatus(status) || status === 403;
       },
       baseURL: this.normalizeBaseUrl(baseUrl),
     }).then((resp) => {
-      // qBittorrent >= 5.2 answers 204 No Content on success, older versions
-      // answer 200 with "Ok." in the body. Normalize any 2xx to 'Ok.'.
-      if (resp.status >= 200 && resp.status < 300) {
+      if (isSuccessStatus(resp.status)) {
         return 'Ok.';
       }
       return Api.handleResponse(resp);
@@ -108,7 +111,12 @@ class Api {
     } else {
       data = new URLSearchParams(params);
     }
-    return this.axios.post('/torrents/add', data).then(Api.handleResponse);
+    return this.axios.post('/torrents/add', data, {
+      // 409 is returned when none of the torrents could be added (all of them
+      // are already present, ...). Treat it as a soft failure instead of
+      // throwing, like the pre-5.2 "Fails." body did.
+      validateStatus: (status) => isSuccessStatus(status) || status === 409,
+    }).then(Api.handleAddTorrentsResponse);
   }
 
   public switchToOldUi() {
@@ -393,6 +401,27 @@ class Api {
 
   private static handleResponse(resp: AxiosResponse) {
     return resp.data;
+  }
+
+  private static handleAddTorrentsResponse(resp: AxiosResponse) {
+    if (resp.status === 409) {
+      return 'Fails.';
+    }
+
+    const { data } = resp;
+
+    // qBittorrent >= 5.2 answers with a JSON summary instead of "Ok."/"Fails.":
+    // { success_count, failure_count, pending_count, added_torrent_ids }.
+    // `pending_count` counts torrents whose metadata is still being fetched.
+    if (data && typeof data === 'object') {
+      const { success_count: added = 0, pending_count: pending = 0 } = data;
+
+      // Adding some of the torrents is still a success (pre-5.2 behaviour).
+      return (added > 0 || pending > 0) ? 'Ok.' : 'Fails.';
+    }
+
+    // 200 with an empty body (204-like) means the torrents were accepted.
+    return data || 'Ok.';
   }
 }
 
