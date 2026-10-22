@@ -1,10 +1,13 @@
 import { StateType } from '@/consts';
 import { Torrent } from '@/types';
 
-const dlState = ['downloading', 'metaDL', 'stalledDL', 'checkingDL', 'pausedDL', 'queuedDL', 'forcedDL', 'allocating'];
+// Torrent states as reported by qBittorrent. `pausedDL`/`pausedUP` were renamed
+// to `stoppedDL`/`stoppedUP` in 5.2, and `forcedMetaDL` was added, so both
+// spellings are accepted here.
+const dlState = ['downloading', 'metaDL', 'forcedMetaDL', 'stalledDL', 'checkingDL', 'pausedDL', 'stoppedDL', 'queuedDL', 'forcedDL', 'allocating'];
 const upState = ['uploading', 'stalledUP', 'checkingUP', 'queuedUP', 'forcedUP'];
-const completeState = ['uploading', 'stalledUP', 'checkingUP', 'pausedUP', 'queuedUP', 'forcedUP'];
-const activeState = ['metaDL', 'downloading', 'forcedDL', 'uploading', 'forcedUP', 'moving'];
+const completeState = ['uploading', 'stalledUP', 'checkingUP', 'pausedUP', 'stoppedUP', 'queuedUP', 'forcedUP'];
+const activeState = ['metaDL', 'forcedMetaDL', 'downloading', 'forcedDL', 'uploading', 'forcedUP', 'moving'];
 const errorState = ['error', 'missingFiles'];
 
 export function torrentIsState(type: StateType, state: string) {
@@ -24,7 +27,7 @@ export function torrentIsState(type: StateType, state: string) {
     }
     case StateType.Resumed:
     case StateType.Paused: {
-      const paused = state.startsWith('paused');
+      const paused = state.startsWith('paused') || state.startsWith('stopped');
       result = type === StateType.Paused ? paused : !paused;
       break;
     }

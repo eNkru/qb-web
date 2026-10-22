@@ -15,7 +15,10 @@ const apiEndpoint = 'api/v2';
 // qBittorrent >= 5.2 replies `204 No Content` for endpoints that have nothing to
 // return (login, actions that used to answer "Ok." in the body, ...), so every
 // 2xx status has to be treated as success.
+// `401` is a rejected login (qBittorrent >= 5.2), handled like the pre-5.2
+// "Fails." body, and `403` is a banned IP.
 const isSuccessStatus = (status: number) => status >= 200 && status < 300;
+const isLoginFailureStatus = (status: number) => status === 401 || status === 403;
 
 class Api {
   private axios: AxiosInstance;
@@ -62,12 +65,17 @@ class Api {
     const data = new URLSearchParams(params);
     return this.axios.post('/auth/login', data, {
       validateStatus(status) {
-        return isSuccessStatus(status) || status === 403;
+        return isSuccessStatus(status) || isLoginFailureStatus(status);
       },
       baseURL: this.normalizeBaseUrl(baseUrl),
     }).then((resp) => {
       if (isSuccessStatus(resp.status)) {
         return 'Ok.';
+      }
+      if (resp.status === 401) {
+        // qBittorrent >= 5.2 answers invalid credentials with 401 instead of a
+        // 200 response carrying "Fails.".
+        return 'Fails.';
       }
       return Api.handleResponse(resp);
     });
@@ -94,7 +102,13 @@ class Api {
     });
   }
 
-  public addTorrents(params: Record<string, any>, torrents?: any) {
+  public addTorrents(rawParams: Record<string, any>, torrents?: any) {
+    // `paused` was renamed to `stopped` in qBittorrent 5.0. Send both so that
+    // every version reads the one it knows (the other is ignored server-side).
+    const params = ('paused' in rawParams)
+      ? { ...rawParams, stopped: rawParams.paused }
+      : rawParams;
+
     let data: any;
     if (torrents) {
       const formData = new FormData();
@@ -165,12 +179,15 @@ class Api {
     return this.actionTorrents('delete', hashes, { deleteFiles });
   }
 
+  // `torrents/pause` and `torrents/resume` were removed in qBittorrent 5.0;
+  // `stop` and `start` have existed since 4.1, so they cover every supported
+  // version.
   public pauseTorrents(hashes: string[]) {
-    return this.actionTorrents('pause', hashes);
+    return this.actionTorrents('stop', hashes);
   }
 
   public resumeTorrents(hashes: string[]) {
-    return this.actionTorrents('resume', hashes);
+    return this.actionTorrents('start', hashes);
   }
 
   public setForceStartTorrents(hashes: string[]) {
@@ -225,7 +242,9 @@ class Api {
   }
 
   public editTracker(hash: string, origUrl: string, newUrl: string) {
-    return this.actionTorrent('editTracker', hash, { origUrl, newUrl });
+    // The `origUrl` parameter was renamed to `url` in qBittorrent 5.2.4.
+    // Send both so that every version finds the one it requires.
+    return this.actionTorrent('editTracker', hash, { origUrl, url: origUrl, newUrl });
   }
 
   public setTorrentLocation(hashes: string[], location: string) {

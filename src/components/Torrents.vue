@@ -484,6 +484,7 @@ function getStateInfo(state: string) {
   let icon;
   switch (state) {
     case 'metaDL':
+    case 'forcedMetaDL':
     case 'allocating':
     case 'downloading':
     case 'forcedDL':
@@ -512,12 +513,14 @@ function getStateInfo(state: string) {
       };
       break;
     case 'pausedDL':
+    case 'stoppedDL':
       icon = {
         icon: 'pause',
         color: 'warning',
       };
       break;
     case 'pausedUP':
+    case 'stoppedUP':
       icon = {
         icon: 'check',
         color: null,

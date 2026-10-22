@@ -1,4 +1,5 @@
-import { findSameNamedTorrents, codeToFlag, safeExternalUrl, sanitizeHtml, sleep } from '@/utils';
+import { findSameNamedTorrents, codeToFlag, safeExternalUrl, sanitizeHtml, sleep, torrentIsState } from '@/utils';
+import { StateType } from '@/consts';
 import { mockTorrent } from './utils';
 
 test('timeout', async () => {
@@ -88,5 +89,24 @@ describe('sanitizeHtml', () => {
     expect(html).not.toContain('javascript:');
     expect(html).toContain('href="https://example.com/path"');
     expect(html).toContain('rel="noopener noreferrer"');
+  });
+});
+
+describe('torrentIsState', () => {
+  test('recognises stopped torrents as paused (qBittorrent >= 5.2)', () => {
+    expect(torrentIsState(StateType.Paused, 'stoppedDL')).toBe(true);
+    expect(torrentIsState(StateType.Paused, 'stoppedUP')).toBe(true);
+    expect(torrentIsState(StateType.Resumed, 'stoppedDL')).toBe(false);
+  });
+
+  test('still recognises legacy paused torrents (qBittorrent < 5.2)', () => {
+    expect(torrentIsState(StateType.Paused, 'pausedDL')).toBe(true);
+    expect(torrentIsState(StateType.Paused, 'pausedUP')).toBe(true);
+    expect(torrentIsState(StateType.Resumed, 'downloading')).toBe(true);
+  });
+
+  test('counts stopped torrents as downloading/completed where applicable', () => {
+    expect(torrentIsState(StateType.Downloading, 'stoppedDL')).toBe(true);
+    expect(torrentIsState(StateType.Completed, 'stoppedUP')).toBe(true);
   });
 });
