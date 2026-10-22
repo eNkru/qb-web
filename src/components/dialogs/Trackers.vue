@@ -60,9 +60,12 @@ class Trackers extends BaseTorrentInfo {
       tr('properties_widget.working'),
       tr('properties_widget.updating'),
       tr('properties_widget.notWorking'),
+      // qBittorrent >= 5.2 (WebAPI 2.13.0)
+      tr('properties_widget.trackerError'),
+      tr('properties_widget.unreachable'),
     ];
 
-    return map[status];
+    return map[status] ?? '';
   }
 
   formatTrackerNum(num: number) {

@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "quality gate for the verification pass (tests, lint, typecheck)"}
+{"file": ".trellis/spec/frontend/type-safety.md", "reason": "torrent state strings and API params are stringly typed; check type-safety conventions"}

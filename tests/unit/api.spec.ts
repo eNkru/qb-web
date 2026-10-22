@@ -44,6 +44,12 @@ describe('login', () => {
 
     await expect(api.login({ username: 'a', password: 'b' })).resolves.toBe('Fails.');
   });
+
+  test('maps 401 Unauthorized to "Fails." (qBittorrent >= 5.2)', async () => {
+    instance.post.mockResolvedValue(response('Unauthorized', 401));
+
+    await expect(api.login({ username: 'a', password: 'b' })).resolves.toBe('Fails.');
+  });
 });
 
 describe('addTorrents', () => {
@@ -103,6 +109,16 @@ describe('addTorrents', () => {
 
     await expect(api.addTorrents({ urls: 'magnet:?xt=urn:btih:abc' })).resolves.toBe('Ok.');
   });
+
+  test('sends both `paused` and `stopped` so every version honors "add stopped"', async () => {
+    instance.post.mockResolvedValue(response('Ok.', 200));
+
+    await api.addTorrents({ urls: 'magnet:?xt=urn:btih:abc', paused: true });
+
+    const body = instance.post.mock.calls[0][1].toString();
+    expect(body).toContain('paused=true');
+    expect(body).toContain('stopped=true');
+  });
 });
 
 describe('actions', () => {
@@ -114,5 +130,29 @@ describe('actions', () => {
     await expect(api.setPreferences({ locale: 'en' })).resolves.not.toThrow();
     await expect(api.refreshRssFeed('feed')).resolves.not.toThrow();
     await expect(api.stopSearch(1)).resolves.not.toThrow();
+  });
+
+  test('pause/resume use the endpoints that exist on qBittorrent >= 5.0', async () => {
+    instance.post.mockResolvedValue(response('', 204));
+
+    await api.pauseTorrents(['abc']);
+    await api.resumeTorrents(['abc']);
+
+    expect(instance.post.mock.calls[0][0]).toBe('/torrents/stop');
+    expect(instance.post.mock.calls[0][1].toString()).toBe('hashes=abc');
+    expect(instance.post.mock.calls[1][0]).toBe('/torrents/start');
+    expect(instance.post.mock.calls[1][1].toString()).toBe('hashes=abc');
+  });
+
+  test('editTracker sends both the old and new url parameter names', async () => {
+    instance.post.mockResolvedValue(response('', 204));
+
+    await api.editTracker('abc', 'udp://old', 'udp://new');
+
+    const body = instance.post.mock.calls[0][1].toString();
+    expect(instance.post.mock.calls[0][0]).toBe('/torrents/editTracker');
+    expect(body).toContain('origUrl=udp%3A%2F%2Fold');
+    expect(body).toContain('url=udp%3A%2F%2Fold');
+    expect(body).toContain('newUrl=udp%3A%2F%2Fnew');
   });
 });
