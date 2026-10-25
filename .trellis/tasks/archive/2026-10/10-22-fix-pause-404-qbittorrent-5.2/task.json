@@ -3,7 +3,7 @@
   "name": "fix-pause-404-qbittorrent-5.2",
   "title": "Fix pause/resume 404 on qBittorrent 5.2",
   "description": "",
-  "status": "done",
+  "status": "completed",
   "dev_type": null,
   "scope": "frontend",
   "package": null,

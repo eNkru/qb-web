@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 3
-- **Last Active**: 2026-09-15
+- **Total Sessions**: 4
+- **Last Active**: 2026-10-22
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~113 | Active |
+| `journal-1.md` | ~156 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 4 | 2026-10-22 | Fix qBittorrent 5.2 incompatibilities (pause 404 + full API audit) | `2d3a4cf`, `55da12a`, `50bda8b` | `fix/qbittorrent-5.2-compat` |
 | 3 | 2026-09-15 | Fix security audit vulnerabilities (axios, vitest) | `945daa3` | `fix/security-audit-vulnerabilities` |
 | 2 | 2026-08-22 | Responsive torrent list: unified single-code-path UI | `7226df7`, `e51c8bc`, `29b327d`, `14c23eb`, `a481f5d`, `ebd1e19`, `7472825` | `feat/responsive-ui` |
 | 1 | 2026-07-24 | Bootstrap frontend Trellis specs | `2d168ad`, `32baf31` | `main` |
